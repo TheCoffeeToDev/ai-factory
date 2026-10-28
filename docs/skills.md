@@ -140,6 +140,7 @@ Refine an existing plan with a second iteration:
 - Removes redundant tasks
 - Surfaces useful-but-out-of-scope tasks in a separate "💡 Out of scope" report section (the skill does not save them anywhere — the user decides what to do with the idea)
 - Shows improvement report and asks for approval before applying
+- Validation uses the bundled `review-validator` only on runtimes enforcing its `Read`, `Glob`, `Grep` tool allowlist (currently Claude Code). If unavailable or unenforced, including Codex's sandbox-only boundary, it keeps all findings and reports `WARN [+check]`; it never falls back to a full-tool agent. This also applies to `workflow.improve_check: true`.
 - If no plan found — suggests running `/aif-plan` (feature/task) or `/aif-fix` (bugfix) first
 
 **Mandatory meaning preservation**
@@ -149,7 +150,7 @@ Refine an existing plan with a second iteration:
 
 **Optional validation (`+check`)**
 - `workflow.improve_check: true` enables validation by default; `--no-check` disables it for one invocation. Explicit flags override config; if both flags are supplied, the last one wins.
-- After Step 4 the skill dispatches a single fresh-context `general-purpose` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
+- After Step 4 the skill dispatches a single fresh-context, allowlisted `review-validator` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
 - Invented findings disappear, partially-correct ones are rewritten in place, real findings stay untouched; the `🔗 Dependency Fixes` group is recomputed against the filtered task list afterwards and is not sent to the validator
 - The Step 5 Summary block gains two extra lines — `Hidden by +check: N` and `Adjusted by +check: M`; if the validator call fails entirely, no counters are printed and a single `WARN [+check]` line is appended instead
 - Validation flags and the configured default are silently ignored with `--list` (no refinement to validate)
@@ -390,6 +391,14 @@ without blocking the flow.
 
 **Documentation website** — `--web` flag generates a complete static HTML site in `docs-html/` with navigation bar, dark mode support, and clean typography. Ready to host on GitHub Pages or any static hosting.
 
+**Optional technical writing profile** — `writing.profile: simple-technical`
+applies adapted RU/EN SimpleEn-RU rules only to exact files in `writing.targets`
+that are already in the authorized docs scope, including runbooks. It is off by
+default. Resolve artifact language first; preserve project dictionary terms,
+code, commands, and quoted errors. Meaning preservation precedes readability;
+this does not validate requirement correctness or certify standards compliance.
+See [Writing settings](config-reference.md#writing).
+
 **Quality checks:**
 - Every doc page in `paths.docs` gets prev/next navigation header + "See Also" cross-links
 - Meaning preservation — mandatory source comparison for requirement rewrites, with a fixed `Meaning preservation: PASS` / `FAIL` verdict before readability; `N/A` only when no requirements were rewritten
@@ -548,8 +557,14 @@ Reviews staged changes or PR diffs:
 - Appends a final `aif-gate-result` JSON block for Handoff/AIFHub and other orchestrators
 - If you only need the rules gate, use `/aif-rules-check`
 
+**PR sources (with or without `+check`)**
+- Before reviewing, captures a source package with full base/head/merge-base SHAs and the SHA-256 of the exact reviewed diff. Additional files, including unchanged callees, types, configs and context-gate artifacts, come from the pinned tree using existing Git objects or GitHub GET APIs; the branch and working files stay unchanged.
+- The bundled `references/pr-source.mjs` collector requires Node.js 18+, Git and authenticated `gh`; it prints JSON without writing artifacts. Run `snapshot <owner/repo> <PR>` to capture the diff and `context <owner/repo> <commit-SHA> <path>` for exact file versions. Set `AIF_REVIEW_DEBUG=1` for command diagnostics.
+- **Review Sources** records the commit IDs, diff hash, each additional file's blob/content hashes, local discrepancies, unavailable context and freshness check. Context reads accept regular UTF-8 text up to 1 MiB; symlinks, submodules, binary content and inaccessible dependencies are explicitly excluded. Unavailable context remains a visible limitation (`warn` at minimum); actionable hypotheses keep confidence markers and follow validation.
+- If the PR moves, the result states which snapshot was reviewed; it never mixes the old diff with new context. If the initial snapshot cannot be collected, PR review stops with a source error. See the full [PR source contract](../skills/aif-review/references/PR-SOURCE.md).
+
 **Optional validation (`+check`)**
-- After the review is drafted the skill dispatches a single fresh-context `review-validator` subagent — allowlisted to `Read`, `Glob`, `Grep` on Claude Code — that re-reads cited files and judges each item from "Critical Issues" and "Suggestions". The prompt embeds the reviewed diff verbatim, so the automatic pass requires a runtime-enforced tool restriction, not a prompt instruction; when markers made the pass automatic and that agent is unavailable or its allowlist is not enforced (Codex agents have a read-only sandbox but no tool allowlist), nothing is dispatched and the gate reports the validation failure
+- After the review is drafted the skill dispatches a single fresh-context `review-validator` subagent — allowlisted to `Read`, `Glob`, `Grep` on Claude Code — that judges each item from "Critical Issues" and "Suggestions". In PR mode it receives the same pinned diff and source package and cannot supplement them from disk; other modes retain local read-only context. The prompt embeds the reviewed diff verbatim, so the automatic pass requires a runtime-enforced tool restriction, not a prompt instruction; when markers made the pass automatic and that agent is unavailable or its allowlist is not enforced (Codex agents have a read-only sandbox but no tool allowlist), nothing is dispatched and the gate reports the validation failure
 - Invented findings are dropped, partially-correct ones are rewritten in place, real findings stay untouched — except confirmed marked findings, which come back through `modify` with the confidence marker removed
 - Only actionable code findings are validated: context-gate findings, commit-structure findings, "Questions", and "Positive Notes" are not — the validator judges items against the reviewed diff, which is not evidence for those classes
 - The subagent can also reclassify items between the two severity levels — promote a suggestion to "Critical Issues" if the underlying behavior is actually merge-blocking, or demote a critical finding to "Suggestions" if the framing was too harsh. The two levels and the promotion/demotion rules live in `references/SEVERITY.md`

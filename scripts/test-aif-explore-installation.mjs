@@ -13,7 +13,7 @@ const temp = await mkdtemp(path.join(tmpdir(), 'aif-explore-installation-'));
 const referenceNames = ['PROJECT-HYPOTHESES.md', 'RETRY-HYPOTHESIS.md'];
 const cases = [
   { agentId: 'claude', target: ['.claude', 'skills', 'aif-explore', 'references'] },
-  { agentId: 'antigravity', target: ['.agent', 'workflows', 'references'] },
+  { agentId: 'antigravity', target: ['.agents', 'skills', 'aif-explore', 'references'] },
   { agentId: 'kilocode', target: ['.kilocode', 'workflows', 'references'] },
 ];
 

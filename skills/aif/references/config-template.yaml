@@ -27,6 +27,22 @@ language:
   technical_terms: keep
 
 # =============================================================================
+# Optional Technical Writing Profile (user-owned; /aif preserves on reruns)
+# =============================================================================
+# Used only by /aif-docs, after the artifact language is fixed.
+# Missing section, profile: none, or empty targets means no editorial pass.
+writing:
+  # Options: none, simple-technical (adapted RU/EN SimpleEn-RU rules)
+  profile: none
+  # Exact project-relative Markdown file paths; no globs or directory entries.
+  # Select only README.md or files under paths.docs, including runbooks.
+  # Example: [README.md, docs/runbooks/recovery.md]
+  targets: []
+  # Optional project-relative dictionary file; read-only terminology authority.
+  # Empty means preserve existing terms; the editor never invents a dictionary.
+  dictionary: ""
+
+# =============================================================================
 # Path Configuration
 # =============================================================================
 # Custom paths for AI Factory artifacts.

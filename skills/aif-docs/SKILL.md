@@ -31,6 +31,7 @@ Generate, maintain, and improve project documentation following a landing-page R
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
 - **Paths:** `paths.description`, `paths.architecture`, and `paths.docs`
 - **Language:** `language.ui` for prompts and `language.artifacts` for generated docs
+- **Editorial profile:** `writing.profile`, `writing.targets`, and `writing.dictionary` (optional, disabled by default); `language.technical_terms` remains the fallback terminology policy
 
 If config.yaml doesn't exist, use defaults:
 - DESCRIPTION.md: `.ai-factory/DESCRIPTION.md`
@@ -39,6 +40,19 @@ If config.yaml doesn't exist, use defaults:
 - Language: `en` (English)
 
 **Note:** `README.md` remains the landing page in the project root. Detailed docs are written to the resolved `paths.docs` directory (default: `docs/`).
+
+**Fix each artifact's language before selecting an editorial profile.** An
+explicit instruction for that artifact takes priority. Preserve an existing
+document's language unless translation was requested; for new documents use
+`language.artifacts` (fallback: `language.ui`, then `en`). The conversation
+language never overrides the artifact language. The profile cannot translate.
+
+If `writing.profile` is set to anything other than `none`, read
+`references/WRITING-PROFILE.md` to validate settings before drafting (including
+unknown profiles). A malformed `writing` section yields `WARN [writing]` and
+skips the pass. Missing section/profile defaults to `none`. Activate only a
+valid `simple-technical` profile with non-empty targets; otherwise keep the
+ordinary workflow without loading RU/EN editorial references or running a pass.
 
 **THEN:** Read `.ai-factory/DESCRIPTION.md` (use path from config) if it exists to understand:
 - Tech stack (language, framework, database)
@@ -439,6 +453,18 @@ Proposed fixes:
 Apply fixes?
 ```
 
+### Step 2.4: Optional Technical Writing Pass
+
+When Step 0 activates a valid profile, after drafting, splitting, or improving
+content and before saving final Markdown or rendering HTML, apply
+`references/WRITING-PROFILE.md` only to selected files already authorized for
+this run. Compare the candidate with the pre-editorial draft/source before
+accepting it. For an audit-only request,
+report suggestions without rewriting. Generate-HTML-only skips this pass.
+
+This step adds no files or actions to the approved scope. It does not affect
+chat replies, issues, plans, requirements validation, or quality-gate verdicts.
+
 ### Step 3: Generate HTML Version (--web flag)
 
 When `--web` flag is passed, generate a static HTML site from the markdown docs.
@@ -542,7 +568,7 @@ Suggest the user to free up context space if needed: `/clear` (full reset) or `/
 ## Artifact Ownership
 
 - Primary ownership: `README.md`, `<resolved docs dir>/*`, and the Documentation section in `AGENTS.md`.
-- Config use: `config.yaml` resolves `paths.description`, `paths.architecture`, `paths.docs`, `language.ui`, and `language.artifacts`.
+- Config use: `config.yaml` resolves `paths.description`, `paths.architecture`, `paths.docs`, `language.ui`, `language.artifacts`, `language.technical_terms`, and optional `writing.profile`, `writing.targets`, `writing.dictionary`. The profile and project dictionary are read-only inputs; targets never grant write ownership.
 - Read-only context: `.ai-factory/DESCRIPTION.md`, `.ai-factory/ARCHITECTURE.md`, roadmap/rules/research artifacts unless the user explicitly asks for broader edits.
 
 ## Important Rules
@@ -550,7 +576,7 @@ Suggest the user to free up context space if needed: `/clear` (full reset) or `/
 1. **Always ask before making changes** to existing documentation — show the plan first
 2. **Never delete content** without moving it somewhere else
 3. **Detect real project info** — don't invent features, read package.json/config files
-4. **Use the project's language** — if project README is in Russian, write docs in Russian
+4. **Resolve language before style** — explicit artifact instruction first; preserve existing document language unless translation was requested; new docs use `language.artifacts`, then `language.ui`, then `en`
 5. **Preserve existing badges/logos** — don't remove them during restructuring
 6. **Add to .gitignore** if generating HTML: add `docs-html/` to .gitignore
 7. **Ownership boundary** — this command owns documentation artifacts (`README.md`, `<resolved docs dir>/*`, and the Documentation section in `AGENTS.md`), not the roadmap, RULES.md, or research artifacts resolved from config
