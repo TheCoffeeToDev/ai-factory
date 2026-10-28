@@ -2,7 +2,7 @@
 name: aif-review
 description: Perform code review on staged changes or a pull request. Checks for bugs, security issues, performance problems, and best practices. Use when user says "review code", "check my code", "review PR", or "is this code okay". The +check flag validates findings via a fresh-context subagent; validation also runs automatically when the review produced confidence markers.
 argument-hint: "[PR number | branch/commit/tag | empty] [+check]"
-allowed-tools: Bash(git *) Bash(gh *) Read Glob Grep Task Agent AskUserQuestion
+allowed-tools: Bash(git *) Bash(gh *) Bash(node *) Read Glob Grep Task Agent AskUserQuestion
 disable-model-invocation: false
 ---
 
@@ -21,6 +21,8 @@ If config.yaml doesn't exist, use defaults:
 - Paths: `.ai-factory/` for all artifacts
 - Language: `en` (English)
 - Git: `base_branch: main`
+
+**PR source boundary:** Local config initially supplies runtime preferences only. Once routed to PR mode, load `references/PR-SOURCE.md` before reading review evidence. Versioned config and context artifacts used for conclusions must come from the pinned PR tree; local copies cannot establish facts about that tree.
 
 ## Behavior
 
@@ -42,15 +44,16 @@ If the leftover argument string is empty, fall back to the empty-argument mode (
 
 ### With PR Number/URL
 
-1. Use `gh pr view <number> --json` to get PR details
-2. Use `gh pr diff <number>` to get the diff
-3. Review all changes in the PR
+1. Read `references/PR-SOURCE.md` and build its source package before analyzing code. Resolve the supplied URL's repository explicitly; pin base/head/merge-base SHAs and the SHA-256 of the exact diff.
+2. Review the captured diff. Retrieve every additional file or fragment used for verification from the pinned commit through `references/pr-source.mjs`; record blob/content hashes and local discrepancies. Never use local surrounding code as PR evidence.
+3. Record unavailable context and excluded conclusions in Review Sources. Actionable hypotheses remain findings with confidence markers and follow the existing validation lifecycle; never disguise them as Questions. Use the same source package for explicit or automatic validation.
+4. Check PR freshness and render **Review Sources** with SHAs, diff hash, file versions, and limitations as specified in `PR-SOURCE.md`, even when there are no findings or validation fails.
 
 ### With Git Ref (Commits Mode)
 
 Argument routing chain:
 1. **Empty** → staged review (see above)
-2. **Digits or `#N`** → PR mode (see above)
+2. **PR URL, digits or `#N`** → PR mode (see above)
 3. **Everything else** → validate via `git rev-parse --verify` → commits mode or ask user
 
 Validation:
@@ -117,6 +120,8 @@ git rev-parse --verify <argument> 2>/dev/null
 
 Before finalizing review findings, run read-only context gates:
 
+In PR mode, gate evidence follows `references/PR-SOURCE.md`: read the versioned config and resolved artifacts from the pinned head. Report unavailable artifacts as limitations; do not evaluate local-only conventions against a different source tree.
+
 - Check the resolved architecture artifact (if present) for boundary/dependency alignment issues.
 - Check the resolved RULES.md artifact (if present) for explicit convention violations.
 - Check the resolved roadmap artifact (if present) for milestone alignment and mention missing linkage for likely `feat`/`fix`/`perf` work.
@@ -148,6 +153,8 @@ This section is the single owner of `aif-gate-result` computation:
 - `"suggested_next.command"` follows `"status"`: `fail` → `/aif-fix` by default, but if every blocker came from a single context gate point at that gate's command instead (rules gate → `/aif-rules`, architecture gate → `/aif-architecture`, roadmap gate → `/aif-roadmap`); `warn`/`pass` → `/aif-commit`. When the `review-validation-failed` blocker is present the command is `null` regardless of the other blockers — a fix pass on an incomplete blocker list would consume a report the review never finished. `null` keeps its original meaning — no allowlisted command fits — and is not used to encode an unresolved finding.
 
 ### Resolving markers before the gate
+
+PR source limitations and uncertain freshness remain review uncertainty (`warn` at minimum), independently of filtering. Preserve them in **Review Sources** without changing the shared JSON schema or suppressing a `review-validation-failed` gate. A validator that drops an item because pinned evidence is unavailable must name that reason; preserve the limitation instead of treating the claim as disproved.
 
 A review that produced at least one `(confidence: low)` / `(confidence: medium)` marker runs the `+check` validation automatically, even when the flag was not given. The flag stays opt-in for everything else: a review with no markers behaves exactly as before and dispatches nothing.
 
@@ -268,6 +275,11 @@ A marker never survives to the published gate: its presence triggers the validat
 
 ### Context Gates
 [Architecture / Rules / Roadmap gate results with WARN/ERROR labels]
+
+### Review Sources
+[PR mode only: repository/PR; full base/head/merge-base SHAs; diff SHA-256, bytes and source;
+additional file versions and excerpt ranges; local discrepancies; unavailable context and
+excluded conclusions; freshness check. Follow references/PR-SOURCE.md. Omit in other modes.]
 
 ### Critical Issues
 [Each item is a short paragraph in prose, not a labeled record. Order inside the paragraph:

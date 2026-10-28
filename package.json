@@ -75,7 +75,8 @@
     ],
     "ignore": [
       "examples/**",
-      "skills/aif/references/update-config.mjs"
+      "skills/aif/references/update-config.mjs",
+      "skills/aif-review/references/pr-source.mjs"
     ],
     "ignoreDependencies": [
       "@cutcode/ai-tester"
