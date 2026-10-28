@@ -5,7 +5,9 @@ import { fileURLToPath } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { createHash } from 'node:crypto';
 
-export const WORKFLOW_VERSION = 2;
+import { collectProjectContext, mergeProjectContext, pinnedProjectContext } from './project-context.mjs';
+
+export const WORKFLOW_VERSION = 3;
 const marked = text => /\(confidence: (?:low|medium)\)\s*$/.test(text);
 const shellQuote = value => "'" + value.replaceAll("'", "'\\''") + "'";
 const reference = name => fs.readFileSync(new URL(name, import.meta.url), 'utf8');
@@ -235,29 +237,6 @@ export async function runCheck(input, call) {
   return finishCheck({ prepared, result, freshness });
 }
 
-function pinnedProjectContext(drafted, source) {
-  const excerpt = drafted.project_context;
-  if (!excerpt) return '';
-  // The parent resolves relocated paths from pinned config, never local config.
-  const path = drafted.project_context_path ?? '.ai-factory/DESCRIPTION.md';
-  const error = 'PR project context requires verified pinned description content; retrieve it or record unavailable evidence and return an empty excerpt';
-  assert(typeof path === 'string' && path.length && !path.startsWith('/') && !/^[A-Za-z]:/.test(path)
-    && !path.includes('\\') && !path.includes('\0') && path.split('/').every(part => part && part !== '.' && part !== '..'), error);
-  assert(Array.isArray(source.files), error);
-  const files = source.files.filter(file => file?.path === path);
-  assert(files.length === 1, error);
-  const file = files[0];
-  debug(`checking pinned project context: ${path}`);
-  assert(file.status === 'available' && file.repository === source.repository && file.commit_sha === source.head_sha
-    && ['git-objects', 'github-git-blob'].includes(file.source) && typeof file.content === 'string', error);
-  const bytes = Buffer.from(file.content, 'utf8');
-  assert(bytes.length <= 1024 * 1024 && !file.content.includes('\0') && bytes.toString('utf8') === file.content
-    && bytes.length === file.bytes && createHash('sha256').update(bytes).digest('hex') === file.sha256
-    && createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex') === file.blob_sha
-    && file.content.includes(excerpt), error);
-  return excerpt;
-}
-
 export async function runReview(request, call) {
   const tokens = (request.argument ?? '').trim().split(/\s+/).filter(Boolean);
   assert(tokens.includes('+check'), 'Replay workflow requires the explicit +check flag');
@@ -268,6 +247,8 @@ export async function runReview(request, call) {
   const pr = url?.[2] ?? (/^#?[1-9]\d*$/.test(target) ? target.replace('#', '') : null);
   let source;
   let diff;
+  let projectEvidence;
+  let excerpt;
   if (pr) {
     assert(typeof request.working_directory === 'string' && request.working_directory.trim(),
       'PR working_directory must be a non-empty string');
@@ -281,6 +262,8 @@ export async function runReview(request, call) {
     diff = source.diff.text;
     assert(typeof diff === 'string' && source.diff.bytes === Buffer.byteLength(diff)
       && source.diff.sha256 === createHash('sha256').update(diff).digest('hex'), 'PR diff hash/size mismatch');
+    projectEvidence = await collectProjectContext(source, helper, call);
+    source = mergeProjectContext(source, projectEvidence);
     // The host reviewer returns the completed package, including every pinned
     // context dependency retrieved via PR-SOURCE.md; never local PR evidence.
   } else if (!target) {
@@ -293,23 +276,24 @@ export async function runReview(request, call) {
   assert(typeof diff === 'string', 'Source tool must return the exact diff text');
   const drafted = await call('Reviewer', {
     skill: skillText(), procedure: reference('CHECK-MODE.md'),
-    project_context: source.mode === 'pr' ? request.working_directory : request.project_context ?? '', source, diff,
+    project_context: source.mode === 'pr' ? request.working_directory : request.project_context ?? '', source: structuredClone(source), diff,
   });
   if (source.mode === 'pr') {
     assert(typeof drafted.project_context === 'string', 'PR reviewer project_context must be a string (empty when no pinned excerpt is used)');
     const completed = drafted.source;
     assert(completed && ['mode', 'schema_version', 'repository', 'pr', 'base_sha', 'head_sha', 'merge_base_sha'].every(key => completed[key] === source[key])
       && isDeepStrictEqual(completed.diff, source.diff), 'Reviewer changed pinned PR identity/diff');
-    source = { ...completed, stale: source.stale || completed.stale,
+    excerpt = pinnedProjectContext(drafted, projectEvidence);
+    source = mergeProjectContext({ ...completed, stale: source.stale || completed.stale,
       unavailable_context: [...new Map([...(source.unavailable_context ?? []), ...(completed.unavailable_context ?? [])]
-        .map(item => [JSON.stringify(item), item])).values()] };
+        .map(item => [JSON.stringify(item), item])).values()] }, projectEvidence);
   }
   const { diff: capturedDiff, ...metadata } = source;
   if (capturedDiff) metadata.diff = { ...capturedDiff, text: undefined };
   // Runtime location and versioned description have different provenance. Keep
   // the directory even when no excerpt is used; never fall back to local prose.
   const projectContext = source.mode === 'pr'
-    ? request.working_directory + (drafted.project_context ? '\n' + pinnedProjectContext(drafted, source) : '')
+    ? request.working_directory + (excerpt ? '\n' + excerpt : '')
     : request.project_context ?? '';
   return runCheck({ review: drafted.review, source: metadata, diff,
     project_context: projectContext, validator: request.validator }, call);

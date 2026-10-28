@@ -27,7 +27,7 @@ const report = {
     workflow_sha256: sourceHash('skills/aif-review/references/check-workflow.mjs'),
     replay_sha256: sourceHash('scripts/lib/tool-replay.mjs'), runner_sha256: sourceHash('scripts/test-review-check.mjs') },
   skill: { name: 'aif-review', package_version: JSON.parse(fs.readFileSync(path.join(root, 'package.json'))).version,
-    sources: Object.fromEntries(['SKILL.md', 'references/CHECK-MODE.md', 'references/VALIDATOR.md', 'references/SEVERITY.md', 'references/pr-source.mjs']
+    sources: Object.fromEntries(['SKILL.md', 'references/CHECK-MODE.md', 'references/VALIDATOR.md', 'references/SEVERITY.md', 'references/pr-source.mjs', 'references/project-context.mjs']
       .map(file => [file, sourceHash(`skills/aif-review/${file}`)])) },
   recordings_sha256: hash(fs.readFileSync(casesPath)), cases: [], checks: [],
 };
@@ -160,7 +160,7 @@ await check('sequential keys keep identical pending/done calls distinct', async 
 });
 await check('missing records fail loudly through the workflow', async () => {
   const test = fixture.cases[0];
-  const replay = new ToolReplay(test.records.slice(0, 2), { normalize });
+  const replay = new ToolReplay(test.records.slice(0, test.records.findIndex(record => record.tool === 'Reviewer') + 1), { normalize });
   await assert.rejects(runReview(test.request, replay.call.bind(replay)), /Missing replay record: 3:Task:/);
 });
 await check('wrong arguments and unused records are errors', async () => {
@@ -190,11 +190,13 @@ await check('PR reviewer must explicitly return pinned context or an empty excer
   const test = fixture.cases.find(test => test.id === 'pr-drop-all-fresh');
   for (const project_context of [undefined, null, {}, 42]) {
     let validatorCalls = 0;
+    let index = 0;
     await assert.rejects(runReview(test.request, async tool => {
-      if (tool === 'Bash') return structuredClone(test.records[0].response);
-      if (tool === 'Reviewer') return { ...structuredClone(test.records[1].response), project_context };
-      validatorCalls += 1;
-      throw new Error('Unexpected validator before project-context validation');
+      const record = test.records[index++];
+      assert.equal(tool, record.tool);
+      if (tool === 'Reviewer') return { ...structuredClone(record.response), project_context };
+      if (tool === 'Task') { validatorCalls += 1; throw new Error('Unexpected validator before project-context validation'); }
+      return structuredClone(record.response);
     }), /PR reviewer project_context must be a string/);
     assert.equal(validatorCalls, 0);
   }
@@ -205,12 +207,12 @@ for (const [field, values] of [['mode', ['staged', 'commits', undefined]], ['sch
   for (const value of values) {
     await check(`PR reviewer cannot change ${field} to ${JSON.stringify(value) ?? 'missing'}`, async () => {
       const test = fixture.cases.find(test => test.id === 'pr-drop-all-unconfirmed');
-      const records = structuredClone(test.records.slice(0, 2));
-      if (value === undefined) delete records[1].response.source[field];
-      else records[1].response.source[field] = value;
+      const records = structuredClone(test.records.slice(0, test.records.findIndex(record => record.tool === 'Reviewer') + 1));
+      if (value === undefined) delete records.find(record => record.tool === 'Reviewer').response.source[field];
+      else records.find(record => record.tool === 'Reviewer').response.source[field] = value;
       const replay = new ToolReplay(records, { normalize });
       const journal = { request: test.request, responses: [] };
-      for (let turn = 0; turn < 2; turn += 1) {
+      for (let turn = 0; turn < records.length; turn += 1) {
         const step = await advanceReview(journal);
         assert.equal(step.done, false);
         journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
@@ -218,7 +220,8 @@ for (const [field, values] of [['mode', ['staged', 'commits', undefined]], ['sch
       replay.assertConsumed();
       // No validator or freshness call, and no gate may follow an invalid package.
       await assert.rejects(advanceReview(journal), new RegExp('Reviewer changed pinned PR identity/diff'));
-      assert.deepEqual(replay.calls.map(call => call.tool), ['Bash', 'Reviewer']);
+      assert.equal(replay.calls.at(-1).tool, 'Reviewer');
+      assert(!replay.calls.some(call => call.tool === 'Task'));
     });
   }
 }
@@ -227,8 +230,8 @@ for (const mutation of ['missing-file', 'unrelated-file', 'wrong-repository', 'w
   'wrong-blob', 'wrong-hash', 'wrong-size', 'different-excerpt', 'missing-content', 'duplicate-file', 'unsafe-path']) {
   await check(`PR context rejects ${mutation}`, async () => {
     const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
-    const records = structuredClone(test.records.slice(0, 2));
-    const draft = records[1].response;
+    const records = structuredClone(test.records.slice(0, test.records.findIndex(record => record.tool === 'Reviewer') + 1));
+    const draft = records.find(record => record.tool === 'Reviewer').response;
     const file = draft.source.files[0];
     if (mutation === 'missing-file') draft.source.files = [];
     if (mutation === 'unrelated-file') file.path = 'src/unrelated.ts';
@@ -244,7 +247,7 @@ for (const mutation of ['missing-file', 'unrelated-file', 'wrong-repository', 'w
     if (mutation === 'unsafe-path') draft.project_context_path = '../DESCRIPTION.md';
     const replay = new ToolReplay(records, { normalize });
     const journal = { request: test.request, responses: [] };
-    for (let turn = 0; turn < 2; turn += 1) {
+    for (let turn = 0; turn < records.length; turn += 1) {
       const step = await advanceReview(journal);
       assert.equal(step.done, false);
       journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
@@ -255,13 +258,13 @@ for (const mutation of ['missing-file', 'unrelated-file', 'wrong-repository', 'w
 }
 await check('PR description permits a verbatim excerpt from a verified full file', async () => {
   const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
-  const records = structuredClone(test.records.slice(0, 2));
-  const draft = records[1].response;
+  const records = structuredClone(test.records.slice(0, test.records.findIndex(record => record.tool === 'Reviewer') + 1));
+  const draft = records.find(record => record.tool === 'Reviewer').response;
   const excerpt = draft.source.files[0].content.split('\n').at(-1);
   draft.project_context = excerpt;
   const replay = new ToolReplay(records, { normalize });
   const journal = { request: test.request, responses: [] };
-  for (let turn = 0; turn < 2; turn += 1) {
+  for (let turn = 0; turn < records.length; turn += 1) {
     const step = await advanceReview(journal);
     journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
   }
@@ -302,6 +305,133 @@ for (const verdict of ['keep', 'modify', 'drop']) {
     }
   }
 }
+for (const attack of ['self-consistent-content', 'self-selected-path']) {
+  await check(`independent pinned context rejects ${attack}`, async () => {
+    const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
+    const captured = structuredClone(test.records[0].response);
+    const original = structuredClone(test.records.find(record => record.tool === 'Reviewer').response);
+    const pinned = original.source.files.find(file => file.path === '.ai-factory/DESCRIPTION.md');
+    const bytes = Buffer.from('# Local checkout\nSELF_CONSISTENT_FORGED_DESCRIPTION');
+    let validatorCalls = 0;
+    await assert.rejects(runReview(test.request, async (tool, args) => {
+      if (tool === 'Bash') {
+        if (args.command.includes(' snapshot ')) return captured;
+        if (args.command.includes(' context ')) {
+          if (args.command.includes('.ai-factory/config.yaml')) return {
+            repository: captured.repository, commit_sha: captured.head_sha, path: '.ai-factory/config.yaml',
+            status: 'unavailable', reason_code: 'not-found', reason: 'Proven absent from pinned tree',
+          };
+          return structuredClone(pinned);
+        }
+        return { base: { sha: captured.base_sha }, head: { sha: captured.head_sha } };
+      }
+      if (tool === 'Reviewer') {
+        const response = structuredClone(original);
+        const forged = response.source.files.find(file => file.path === '.ai-factory/DESCRIPTION.md');
+        if (attack === 'self-consistent-content') {
+          Object.assign(forged, { content: bytes.toString(), bytes: bytes.length,
+            sha256: hash(bytes), blob_sha: createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex') });
+          response.project_context = forged.content;
+        } else {
+          response.project_context_path = 'docs/unrelated.md';
+          forged.path = response.project_context_path;
+        }
+        return response;
+      }
+      validatorCalls += 1;
+      return { outcome: 'success', text: '### Item 1 (section: critical)\nVerdict: drop\nReason: Refuted.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Refuted.\n' };
+    }), /PR project context requires verified pinned description/);
+    assert.equal(validatorCalls, 0, 'Unsupported excerpt reached the validator');
+  });
+}
+const makePinnedFile = (source, path, content) => {
+  const bytes = Buffer.from(content);
+  return { repository: source.repository, commit_sha: source.head_sha, path, status: 'available', source: 'git-objects',
+    content, bytes: bytes.length, sha256: hash(bytes), blob_sha: createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex') };
+};
+for (const [name, configText, selected] of [
+  ['plain', 'paths:\n  description: docs/product.md\n', 'docs/product.md'],
+  ['double quoted', 'paths:\n    description: "docs/Project brief.md" # comment\n', 'docs/Project brief.md'],
+  ['single quoted', "paths:\n  description: 'docs/O''Brien.md'\n", "docs/O'Brien.md"],
+  ['default', 'language:\n  ui: ru\n', '.ai-factory/DESCRIPTION.md'],
+  ['empty paths', 'paths: {}\n', '.ai-factory/DESCRIPTION.md'],
+  ['merge alias', 'paths:\n  <<: *defaults\n', null],
+  ['root alias', 'paths: *defaults\n', null],
+  ['flow map', 'paths: {description: docs/product.md}\n', null],
+  ['duplicate', 'paths:\n  description: a.md\n  description: b.md\n', null],
+  ['multiple docs', '---\npaths:\n  description: a.md\n---\npaths:\n  description: b.md\n', null],
+  ['unsafe path', 'paths:\n  description: ../local.md\n', null],
+  ['null path', 'paths:\n  description: null\n', null],
+  ['children under inline map', 'paths: {}\n  description: forged.md\n', null],
+  ['duplicate root', 'paths: {}\npaths:\n  description: forged.md\n', null],
+]) {
+  await check(`independent pinned config resolves ${name}`, async () => {
+    const test = fixture.cases.find(test => test.id === 'pr-drop-all-fresh');
+    const captured = structuredClone(test.records[0].response);
+    const contextCalls = [];
+    const text = '# Independently captured description';
+    const result = await runReview(test.request, async (tool, args) => {
+      if (tool === 'Bash') {
+        if (args.command.includes(' snapshot ')) return captured;
+        if (args.command.includes(' context ')) {
+          assert(args.command.includes(captured.head_sha));
+          contextCalls.push(args.command);
+          return args.command.includes('.ai-factory/config.yaml')
+            ? makePinnedFile(captured, '.ai-factory/config.yaml', configText) : makePinnedFile(captured, selected, text);
+        }
+        return { base: { sha: captured.base_sha }, head: { sha: captured.head_sha } };
+      }
+      if (tool === 'Reviewer') {
+        assert(args.source.files.some(file => file.path === '.ai-factory/config.yaml'));
+        return { ...structuredClone(test.records.find(record => record.tool === 'Reviewer').response),
+          source: structuredClone(args.source), project_context: selected ? text : '' };
+      }
+      return { outcome: 'success', text: test.records.find(record => record.tool === 'Task').response.text };
+    });
+    assert.equal(contextCalls.length, selected ? 2 : 1);
+    if (selected) assert(contextCalls[1].endsWith("'" + selected.replaceAll("'", "'\\''") + "'"));
+    assert.equal(result.gate.status, selected ? 'pass' : 'warn');
+    if (!selected) assert(result.output.includes('description path is unknown'));
+  });
+}
+await check('Reviewer cannot mutate independent evidence through request aliases', async () => {
+  const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
+  let index = 0;
+  await assert.rejects(runReview(test.request, async (tool, args) => {
+    const record = test.records[index++];
+    assert.equal(tool, record.tool);
+    if (tool === 'Reviewer') {
+      const file = args.source.files.find(file => file.path === '.ai-factory/DESCRIPTION.md');
+      Object.assign(file, makePinnedFile(args.source, file.path, '# MUTATED_REQUEST_ALIAS'));
+      return { ...structuredClone(record.response), source: args.source, project_context: file.content };
+    }
+    return structuredClone(record.response);
+  }), /PR project context requires verified pinned description/);
+});
+await check('missing independent source recording never falls back to live tools', async () => {
+  const test = fixture.cases.find(test => test.id === 'pr-drop-all-fresh');
+  const replay = new ToolReplay(test.records.slice(0, 1), { normalize });
+  await assert.rejects(runReview(test.request, replay.call.bind(replay)), /Missing replay record: 2:Bash:/);
+});
+await check('source collector proves missing paths from existing local Git tree', () => {
+  const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'aif-pinned-context-'));
+  const git = args => execFileSync('git', args, { cwd: sandbox, windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] });
+  try {
+    git(['init', '--quiet']);
+    fs.writeFileSync(path.join(sandbox, 'description.md'), 'Known pinned content.');
+    git(['add', '--', 'description.md']);
+    git(['-c', 'user.name=Fixture', '-c', 'user.email=fixture@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'fixture']);
+    const commit = git(['rev-parse', 'HEAD']).toString().trim();
+    const context = file => JSON.parse(execFileSync(process.execPath, [helper, 'context', 'fixture/demo', commit, file], {
+      cwd: sandbox, encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'],
+    }));
+    assert.equal(context('description.md').content, 'Known pinned content.');
+    const absent = context('.ai-factory/config.yaml');
+    assert.equal(absent.status, 'unavailable');
+    assert.equal(absent.reason_code, 'not-found');
+    assert.equal(absent.commit_sha, commit);
+  } finally { fs.rmSync(sandbox, { recursive: true, force: true }); }
+});
 await check('CLI executes the same complete journal and returns the same gate', async () => {
   const test = fixture.cases[0];
   const replay = new ToolReplay(test.records, { normalize });

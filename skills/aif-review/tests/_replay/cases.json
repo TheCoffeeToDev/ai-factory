@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "workflow_version": 2,
+  "workflow_version": 3,
   "provenance": "scripted deterministic tool responses; no model calls",
   "cases": [
     {
@@ -25,7 +25,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -102,7 +102,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -175,7 +175,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -248,7 +248,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -321,7 +321,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -395,7 +395,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -474,7 +474,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -556,7 +556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -638,7 +638,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -720,7 +720,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -802,7 +802,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -884,7 +884,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -966,7 +966,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1048,7 +1048,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1130,7 +1130,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1212,7 +1212,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -1305,7 +1305,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1406,7 +1406,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -1481,7 +1481,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -1556,7 +1556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -1639,7 +1639,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1713,7 +1713,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1787,7 +1787,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1861,7 +1861,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -1939,7 +1939,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -2017,7 +2017,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -2094,7 +2094,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
           "response": {
             "review": {
               "items": [
@@ -2190,8 +2190,37 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+            "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+            "bytes": 24,
+            "content": "# Pinned fixture project"
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
           "response": {
             "review": {
               "items": [
@@ -2232,7 +2261,27 @@
                 "bytes": 818,
                 "source": "git-objects"
               },
-              "files": [],
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+                  "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+                  "bytes": 24,
+                  "content": "# Pinned fixture project"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
               "unavailable_context": [],
               "stale": false
             },
@@ -2240,16 +2289,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
+          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2316,8 +2365,37 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+            "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+            "bytes": 24,
+            "content": "# Pinned fixture project"
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
           "response": {
             "review": {
               "items": [
@@ -2358,7 +2436,27 @@
                 "bytes": 818,
                 "source": "git-objects"
               },
-              "files": [],
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+                  "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+                  "bytes": 24,
+                  "content": "# Pinned fixture project"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
               "unavailable_context": [],
               "stale": false
             },
@@ -2366,16 +2464,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
+          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2437,8 +2535,37 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "8fe059501dddecd3933a65e274d08969f323e8eb",
+            "sha256": "a56a32bec1779196f541855d71bb9347452ed72fa9799957f87fbe74d29dcf61",
+            "bytes": 81,
+            "content": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "args_sha256": "ddfc5c41dc548b2a312d12b20c3b1bd38a556f079c3cb73cef3b0705a3c75a64",
           "response": {
             "review": {
               "items": [
@@ -2490,6 +2617,14 @@
                   "sha256": "a56a32bec1779196f541855d71bb9347452ed72fa9799957f87fbe74d29dcf61",
                   "bytes": 81,
                   "content": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
                 }
               ],
               "unavailable_context": [],
@@ -2499,16 +2634,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "93afd80def1a40ad62596f9d8d423539d349049cdd821fe1dec1bab186447a7b",
+          "args_sha256": "5ab6a13f4421cd5c1442c84fb376e801f38f4fb4f99fedde833d8765376c0c50",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2573,8 +2708,40 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "8e5a52ea4c4716e7a8ec9bcdda82ea8aefb7b5ef",
+            "sha256": "fd8fa9a51c8d614540d6c485d19547b0171a21e4fd347704eff775442f8c5e52",
+            "bytes": 40,
+            "content": "paths:\n  description: \"docs/product.md\"\n"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "19952044ebb8f5ff4bcfe34232466ed002194034366872a4dabadc6b5da6ddc7",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": "docs/product.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "8fe059501dddecd3933a65e274d08969f323e8eb",
+            "sha256": "a56a32bec1779196f541855d71bb9347452ed72fa9799957f87fbe74d29dcf61",
+            "bytes": 81,
+            "content": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "args_sha256": "94ab9fe6e793d560e4f693dc921043533f0ba8c182a444b30800b106bfae2b40",
           "response": {
             "review": {
               "items": [
@@ -2626,6 +2793,17 @@
                   "sha256": "a56a32bec1779196f541855d71bb9347452ed72fa9799957f87fbe74d29dcf61",
                   "bytes": 81,
                   "content": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "8e5a52ea4c4716e7a8ec9bcdda82ea8aefb7b5ef",
+                  "sha256": "fd8fa9a51c8d614540d6c485d19547b0171a21e4fd347704eff775442f8c5e52",
+                  "bytes": 40,
+                  "content": "paths:\n  description: \"docs/product.md\"\n"
                 }
               ],
               "unavailable_context": [],
@@ -2636,16 +2814,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "f67d56216ea9ed60282b11d74847c150eeabba611197436e4531c60dcf028769",
+          "args_sha256": "1ed190f00e9bdc305f2df12ae0b09de31ffcbff79c77e50c8f24d5fe66bcdc1d",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2669,6 +2847,471 @@
         "validator_context": "/sandbox\n# Pinned authentication service\nThis description belongs to the recorded PR head.",
         "pinned_context": "# Pinned authentication service\nThis description belongs to the recorded PR head.",
         "description_path": "docs/product.md"
+      }
+    },
+    {
+      "id": "pr-config-unavailable",
+      "scenario_file": "check-mode-happy-path.spec.yaml",
+      "original_assertions": false,
+      "request": {
+        "argument": "123 +check",
+        "project_context": "LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        },
+        "repository": "fixture/demo",
+        "working_directory": "/sandbox"
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "bd1c6d2900f07a83c2020be479bcfd0b68eeb419344e0a6f5ccce94f72f2a68c",
+          "response": {
+            "schema_version": 1,
+            "mode": "pr",
+            "repository": "fixture/demo",
+            "pr": 123,
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "diff": {
+              "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+              "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+              "bytes": 818,
+              "source": "git-objects"
+            },
+            "files": [],
+            "unavailable_context": [],
+            "stale": false
+          }
+        },
+        {
+          "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason": "Pinned config unavailable"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Reviewer",
+          "args_sha256": "6b8ed160d19d2d755a81fd79c7aa0bf54da5afa1f0349c47de32056ce43e008a",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            },
+            "source": {
+              "schema_version": 1,
+              "mode": "pr",
+              "repository": "fixture/demo",
+              "pr": 123,
+              "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+              "diff": {
+                "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+                "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+                "bytes": 818,
+                "source": "git-objects"
+              },
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason": "Pinned config unavailable"
+                }
+              ],
+              "unavailable_context": [
+                {
+                  "path": ".ai-factory/config.yaml",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "reason": "Pinned config unavailable"
+                }
+              ],
+              "stale": false
+            },
+            "project_context": ""
+          }
+        },
+        {
+          "call_id": 4,
+          "tool": "Task",
+          "args_sha256": "02609fc13cbe3f2b61c9572059a1e8a9f65d4f137f8dc924a156dd7cb7cf4d83",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        },
+        {
+          "call_id": 5,
+          "tool": "Bash",
+          "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
+          "response": {
+            "base": {
+              "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "head": {
+              "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "status": "warn",
+        "command": "/aif-commit",
+        "counters": {
+          "hidden": 2,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "contains": [
+          "Pinned config unavailable"
+        ]
+      }
+    },
+    {
+      "id": "pr-config-unsupported",
+      "scenario_file": "check-mode-happy-path.spec.yaml",
+      "original_assertions": false,
+      "request": {
+        "argument": "123 +check",
+        "project_context": "LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        },
+        "repository": "fixture/demo",
+        "working_directory": "/sandbox"
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "bd1c6d2900f07a83c2020be479bcfd0b68eeb419344e0a6f5ccce94f72f2a68c",
+          "response": {
+            "schema_version": 1,
+            "mode": "pr",
+            "repository": "fixture/demo",
+            "pr": 123,
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "diff": {
+              "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+              "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+              "bytes": 818,
+              "source": "git-objects"
+            },
+            "files": [],
+            "unavailable_context": [],
+            "stale": false
+          }
+        },
+        {
+          "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "3c3c754e3a68307959128ddb62871068a9c2fa13",
+            "sha256": "9f2c9901e6e34bcaacfe8699a98b4ae73b288f1809fbb92913b5769b4c856bd4",
+            "bytes": 31,
+            "content": "paths: {description: other.md}\n"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Reviewer",
+          "args_sha256": "604e56a3d3e4077cfb1d2a226f3f0cc1b36cdfdabcda0183e1c1f36ebf9dda6f",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            },
+            "source": {
+              "schema_version": 1,
+              "mode": "pr",
+              "repository": "fixture/demo",
+              "pr": 123,
+              "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+              "diff": {
+                "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+                "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+                "bytes": 818,
+                "source": "git-objects"
+              },
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "3c3c754e3a68307959128ddb62871068a9c2fa13",
+                  "sha256": "9f2c9901e6e34bcaacfe8699a98b4ae73b288f1809fbb92913b5769b4c856bd4",
+                  "bytes": 31,
+                  "content": "paths: {description: other.md}\n"
+                }
+              ],
+              "unavailable_context": [
+                {
+                  "path": ".ai-factory/config.yaml",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "reason": "Pinned config syntax/path is unsupported or ambiguous; description path is unknown"
+                }
+              ],
+              "stale": false
+            },
+            "project_context": ""
+          }
+        },
+        {
+          "call_id": 4,
+          "tool": "Task",
+          "args_sha256": "77be5ad456ff5847a1d7c2cb5339657f8f5f08bc3631c17590496a5bbc75322a",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        },
+        {
+          "call_id": 5,
+          "tool": "Bash",
+          "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
+          "response": {
+            "base": {
+              "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "head": {
+              "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "status": "warn",
+        "command": "/aif-commit",
+        "counters": {
+          "hidden": 2,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "contains": [
+          "description path is unknown"
+        ]
+      }
+    },
+    {
+      "id": "pr-empty-description-unavailable",
+      "scenario_file": "check-mode-happy-path.spec.yaml",
+      "original_assertions": false,
+      "request": {
+        "argument": "123 +check",
+        "project_context": "LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        },
+        "repository": "fixture/demo",
+        "working_directory": "/sandbox"
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "bd1c6d2900f07a83c2020be479bcfd0b68eeb419344e0a6f5ccce94f72f2a68c",
+          "response": {
+            "schema_version": 1,
+            "mode": "pr",
+            "repository": "fixture/demo",
+            "pr": 123,
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "diff": {
+              "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+              "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+              "bytes": 818,
+              "source": "git-objects"
+            },
+            "files": [],
+            "unavailable_context": [
+              {
+                "path": ".ai-factory/DESCRIPTION.md",
+                "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "reason": "description unavailable"
+              }
+            ],
+            "stale": false
+          }
+        },
+        {
+          "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "unavailable",
+            "reason": "description unavailable"
+          }
+        },
+        {
+          "call_id": 4,
+          "tool": "Reviewer",
+          "args_sha256": "8776e95a4bf25eeb3fab0e7a1ba253c869fd8567a009dfa386d254b4d79ef0f4",
+          "response": {
+            "review": {
+              "items": [],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            },
+            "source": {
+              "schema_version": 1,
+              "mode": "pr",
+              "repository": "fixture/demo",
+              "pr": 123,
+              "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+              "diff": {
+                "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+                "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+                "bytes": 818,
+                "source": "git-objects"
+              },
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "unavailable",
+                  "reason": "description unavailable"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
+              "unavailable_context": [
+                {
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "reason": "description unavailable"
+                }
+              ],
+              "stale": false
+            },
+            "project_context": ""
+          }
+        },
+        {
+          "call_id": 5,
+          "tool": "Bash",
+          "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
+          "response": {
+            "base": {
+              "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "head": {
+              "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "status": "warn",
+        "command": "/aif-commit",
+        "counters": {
+          "hidden": 0,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "dispatches": 0,
+        "contains": [
+          "description unavailable"
+        ]
       }
     },
     {
@@ -2717,8 +3360,33 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "unavailable",
+            "reason": "description unavailable"
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "15a0af16278633dc23c202731a3a0b5ae766a3006e75e2f89c2f5adcf671f572",
+          "args_sha256": "8776e95a4bf25eeb3fab0e7a1ba253c869fd8567a009dfa386d254b4d79ef0f4",
           "response": {
             "review": {
               "items": [
@@ -2759,7 +3427,23 @@
                 "bytes": 818,
                 "source": "git-objects"
               },
-              "files": [],
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "unavailable",
+                  "reason": "description unavailable"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
               "unavailable_context": [
                 {
                   "path": ".ai-factory/DESCRIPTION.md",
@@ -2773,16 +3457,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "4e2f19d446d53849344f2bbf4a53b26e266e9bc27f5afa6f579984d0f808cd17",
+          "args_sha256": "2ace7ca8cfe8edaa6c58c9a594846855d41c4d050e88e71d2ef8275e4b685015",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2855,8 +3539,37 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+            "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+            "bytes": 24,
+            "content": "# Pinned fixture project"
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "121f6117a826f73f571730be301c26920bdede8fdb04fc42ae12529e8caadd33",
+          "args_sha256": "ebe99db3be11dfbcc087178bbb17cfc82d403f37d3a97c42d56e24e145b018d4",
           "response": {
             "review": {
               "items": [
@@ -2897,7 +3610,27 @@
                 "bytes": 818,
                 "source": "git-objects"
               },
-              "files": [],
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+                  "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+                  "bytes": 24,
+                  "content": "# Pinned fixture project"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
               "unavailable_context": [
                 {
                   "path": "src/dependency.ts",
@@ -2910,16 +3643,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "9f93b20f00dab74c25c86a0e308d79276cedfd30b5955adb9e678b120e06fc80",
+          "args_sha256": "2a743886ac68b4bedd06dcc0cb12974945a8cc3e972458d67c460fffcee0d46a",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -2986,8 +3719,37 @@
         },
         {
           "call_id": 2,
+          "tool": "Bash",
+          "args_sha256": "e181d355e370effd727ceb5d7936d440ddda6c21ca8317372707874540e19dd4",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/config.yaml",
+            "status": "unavailable",
+            "reason_code": "not-found",
+            "reason": "Path is absent from the pinned Git tree"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Bash",
+          "args_sha256": "3a0acf27fd8baca657029bec2204c60471ead8a270cd0ddcd4685a141f7f4ca1",
+          "response": {
+            "repository": "fixture/demo",
+            "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "path": ".ai-factory/DESCRIPTION.md",
+            "status": "available",
+            "source": "git-objects",
+            "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+            "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+            "bytes": 24,
+            "content": "# Pinned fixture project"
+          }
+        },
+        {
+          "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
           "response": {
             "review": {
               "items": [
@@ -3028,7 +3790,27 @@
                 "bytes": 818,
                 "source": "git-objects"
               },
-              "files": [],
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "ec1257996dddbea355c60e9a2c103cd855ee189b",
+                  "sha256": "39f87880a89509f4116ce90f6f5c3e96de995ba9d5dca724d661a2178763cfe0",
+                  "bytes": 24,
+                  "content": "# Pinned fixture project"
+                },
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": ".ai-factory/config.yaml",
+                  "status": "unavailable",
+                  "reason_code": "not-found",
+                  "reason": "Path is absent from the pinned Git tree"
+                }
+              ],
               "unavailable_context": [],
               "stale": false
             },
@@ -3036,16 +3818,16 @@
           }
         },
         {
-          "call_id": 3,
+          "call_id": 5,
           "tool": "Task",
-          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
+          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Unverified due to missing pinned context: src/dependency.ts.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         },
         {
-          "call_id": 4,
+          "call_id": 6,
           "tool": "Bash",
           "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
           "response": {
@@ -3094,7 +3876,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -3168,7 +3950,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [
@@ -3242,7 +4024,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
+          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
           "response": {
             "review": {
               "items": [],

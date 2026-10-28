@@ -91,6 +91,12 @@ const specs = [
     description_path: 'docs/product.md', response: success(drop),
     expected: { status: 'pass', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 },
       validator_context: '/sandbox\n' + pinnedDescription, pinned_context: pinnedDescription, description_path: 'docs/product.md' } },
+  { id: 'pr-config-unavailable', file: happyFile, pr: true, fresh: true, config_unavailable: true, response: success(drop),
+    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['Pinned config unavailable'] } },
+  { id: 'pr-config-unsupported', file: happyFile, pr: true, fresh: true, config_text: 'paths: {description: other.md}\n', response: success(drop),
+    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['description path is unknown'] } },
+  { id: 'pr-empty-description-unavailable', file: happyFile, pr: true, fresh: true, empty: true, missing_description: true,
+    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 0, adjusted: 0, reclassified: 0 }, dispatches: 0, contains: ['description unavailable'] } },
   { id: 'pr-description-unavailable', file: happyFile, pr: true, fresh: true, missing_description: true, response: success(drop),
     expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 },
       contains: ['Review Sources', '.ai-factory/DESCRIPTION.md', 'description unavailable'] } },
@@ -132,22 +138,32 @@ for (const spec of specs) {
     project_context: spec.pr ? 'LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.' : '/sandbox\nDemo authentication service.',
     validator: spec.validator ?? { available: true, read_only_enforced: true },
     ...(spec.pr ? { repository: 'fixture/demo', working_directory: '/sandbox' } : {}) };
-  const completedSource = structuredClone(source);
-  if (spec.pinned_context) {
-    const bytes = Buffer.from(spec.pinned_context);
-    completedSource.files.push({ repository: source.repository, commit_sha: source.head_sha,
-      path: spec.description_path ?? '.ai-factory/DESCRIPTION.md', status: 'available', source: 'git-objects',
+  const contextFile = (path, content) => {
+    const bytes = Buffer.from(content);
+    return { repository: source.repository, commit_sha: source.head_sha, path, status: 'available', source: 'git-objects',
       blob_sha: createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),
-      sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, content: spec.pinned_context });
-  }
+      sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, content };
+  };
+  const config = spec.config_unavailable
+    ? { repository: source.repository, commit_sha: source.head_sha, path: '.ai-factory/config.yaml', status: 'unavailable', reason: 'Pinned config unavailable' }
+    : spec.config_text ? contextFile('.ai-factory/config.yaml', spec.config_text)
+      : spec.description_path
+    ? contextFile('.ai-factory/config.yaml', 'paths:\n  description: ' + JSON.stringify(spec.description_path) + '\n')
+    : { repository: source.repository, commit_sha: source.head_sha, path: '.ai-factory/config.yaml',
+      status: 'unavailable', reason_code: 'not-found', reason: 'Path is absent from the pinned Git tree' };
+  const description = spec.missing_description
+    ? { repository: source.repository, commit_sha: source.head_sha, path: '.ai-factory/DESCRIPTION.md', status: 'unavailable', reason: 'description unavailable' }
+    : contextFile(spec.description_path ?? '.ai-factory/DESCRIPTION.md', spec.pinned_context ?? '# Pinned fixture project');
   const records = [];
   let polls = 0;
   await runReview(request, async (tool, args) => {
     let response;
     if (tool === 'Bash') {
-      response = args.command === 'git diff --cached' ? diff : args.command.startsWith('node ')
-        ? source : spec.fresh ? { base: { sha: source.base_sha }, head: { sha: source.head_sha } } : { error: 'freshness unavailable' };
-    } else if (tool === 'Reviewer') response = { review, ...(spec.pr ? { source: completedSource, project_context: spec.pinned_context ?? '',
+      response = args.command === 'git diff --cached' ? diff
+        : args.command.includes(' snapshot ') ? source
+          : args.command.includes(' context ') ? args.command.includes('.ai-factory/config.yaml') ? config : description
+            : spec.fresh ? { base: { sha: source.base_sha }, head: { sha: source.head_sha } } : { error: 'freshness unavailable' };
+    } else if (tool === 'Reviewer') response = { review, ...(spec.pr ? { source: structuredClone(args.source), project_context: spec.pinned_context ?? '',
       ...(spec.description_path ? { project_context_path: spec.description_path } : {}) } : {}) };
     else if (tool === 'Task') response = spec.response;
     else if (tool === 'TaskStatus') response = spec.polls[polls++];
