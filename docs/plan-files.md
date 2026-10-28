@@ -256,6 +256,31 @@ After command tokens are removed, `/aif-plan` trims only outer whitespace introd
 
 This section is omitted only when the plan is created solely from `RESEARCH.md` without an explicit user request; in that case `## Research Context` is the committed source.
 
+## Meaning Preservation in Requirement Rewrites
+
+When `/aif-plan` turns requirements into tasks or `/aif-improve` rewords them,
+the editorial rewrite must preserve modal meaning and obligation levels,
+conditions, exceptions, negations, numbers and units, identifiers, links, and
+uncertainty. RFC 2119 keywords remain verbatim. Check, verify, confirm, and
+validate remain distinct unless the source defines them as equivalent.
+
+For example, "check the config only while the service is stopped" does not
+authorize stopping the service. Permission does not imply completion, a
+recommendation does not become mandatory, and an unknown cause stays unknown.
+Clearer wording cannot increase confidence or change the contract.
+
+The rewrite gets an explicit `Meaning preservation: PASS` or `FAIL` before
+presentation of the plan or readability results. The `Meaning preservation:`
+label and `PASS` / `FAIL` / `N/A` verdict tokens stay fixed across languages;
+explanations follow the configured output language. Failed comparisons must be
+repaired or restored before
+the rewrite is presented as ready; missing source or unresolved ambiguity
+fails the gate. `/aif-improve` checks proposed edits even without `+check` and
+rechecks before saving. Explicitly approved behavioral changes remain separate
+from editorial changes. `/aif-docs` applies the same gate to documentation
+rewrites, including translation, splitting, and consolidation. When no
+requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
+
 ## Roadmap Linkage (Optional)
 
 If `.ai-factory/ROADMAP.md` exists, `/aif-plan` may include a `## Roadmap Linkage` section in the plan file.
