@@ -138,11 +138,12 @@ Refine an existing plan with a second iteration:
 - Removes redundant tasks
 - Surfaces useful-but-out-of-scope tasks in a separate "💡 Out of scope" report section (the skill does not save them anywhere — the user decides what to do with the idea)
 - Shows improvement report and asks for approval before applying
+- Validation uses the bundled `review-validator` only on runtimes enforcing its `Read`, `Glob`, `Grep` tool allowlist (currently Claude Code). If unavailable or unenforced, including Codex's sandbox-only boundary, it keeps all findings and reports `WARN [+check]`; it never falls back to a full-tool agent. This also applies to `workflow.improve_check: true`.
 - If no plan found — suggests running `/aif-plan` (feature/task) or `/aif-fix` (bugfix) first
 
 **Optional validation (`+check`)**
 - `workflow.improve_check: true` enables validation by default; `--no-check` disables it for one invocation. Explicit flags override config; if both flags are supplied, the last one wins.
-- After Step 4 the skill dispatches a single fresh-context `general-purpose` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
+- After Step 4 the skill dispatches a single fresh-context, allowlisted `review-validator` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
 - Invented findings disappear, partially-correct ones are rewritten in place, real findings stay untouched; the `🔗 Dependency Fixes` group is recomputed against the filtered task list afterwards and is not sent to the validator
 - The Step 5 Summary block gains two extra lines — `Hidden by +check: N` and `Adjusted by +check: M`; if the validator call fails entirely, no counters are printed and a single `WARN [+check]` line is appended instead
 - Validation flags and the configured default are silently ignored with `--list` (no refinement to validate)
