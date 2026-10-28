@@ -164,6 +164,7 @@ Current config keys in active use:
 - `paths.*` - artifact discovery for description, architecture, roadmap, research, RULES.md, plan files, fix plans, QA artifacts,
   references, security state, patches, evolutions, loop state, rules, and archive
 - `language.ui` / `language.artifacts` / `language.technical_terms` - prompt/report language, generated artifact language, and terminology handling while preserving commands, paths, identifiers, config keys, and raw errors where required
+- `writing.profile` / `writing.targets` / `writing.dictionary` - user-owned, disabled-by-default `/aif-docs` editorial profile for exact authorized documentation/runbook paths; choose RU/EN rules after artifact language, preserve meaning and project terminology, and never use style as requirements validation
 - `git.enabled` / `git.base_branch` / `git.create_branches` / `git.branch_prefix` / `git.skip_push_after_commit` - planning, verification, and commit push behavior
 - `workflow.verify_mode` - default verification strictness
 - `workflow.explore_mode` / `workflow.plan_mode` / `workflow.improve_check` - command defaults (`regular` / `ask` / `false`); explicit arguments win, `/aif` reruns preserve values
@@ -435,11 +436,17 @@ Analyzes recurring patterns and tech-specific pitfalls
     ↓
 Reads current skills → identifies gaps
     ↓
-Proposes targeted improvements → user approves
+Builds rule-candidate cards with original problem, exact applicability, instruction diff, and a control where the rule must NOT apply
     ↓
-Applies improvements to skills
+Compares current effective instructions and each exact candidate on the same frozen cases; records output evidence, extra cost, and regressions
     ↓
-Saves evolution log to configured `paths.evolutions/`
+Outcomes: accept / narrow / refine / keep_old / postpone; narrowed or refined text requires another comparison
+    ↓
+Offers only validated accept revisions for user approval; unavailable execution means postpone
+    ↓
+Applies exact approved revisions; multiple rules also require a passing combined comparison
+    ↓
+Saves all outcomes, including "the new rule did not improve behavior", to configured `paths.evolutions/` after apply/report-save approval
 
 /aif-transfer <source-project-path> [skill-name|"all"]
     ↓

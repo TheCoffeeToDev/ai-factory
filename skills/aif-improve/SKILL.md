@@ -341,6 +341,11 @@ When `check_enabled = true` (and `--list` is not), run the validation procedure 
 
 ### Step 5: Present Improvements
 
+Run the meaning-preservation gate from Step 6.5 on proposed editorial rewrites
+before presenting them. This gate is mandatory even
+when optional `+check` validation is disabled; report its verdict before any
+readability assessment. Recheck the final wording before saving.
+
 Show the user what you found in a clear format. The emoji-grouped sections are kept for scannability, but the items inside "🆕 Missing Tasks", "📝 Task Improvements", "🗑️ Removals", and "💡 Out of scope" all follow the same prose shape — no labeled `Why:` / `Issue:` / `Fix:` fields:
 
 1. **Behavioral impact** — what breaks or becomes harder if the plan stays as-is (missing capability, vague task that will be misimplemented, redundant task that wastes effort).
@@ -350,13 +355,14 @@ Show the user what you found in a clear format. The emoji-grouped sections are k
 
 The "🔗 Dependency Fixes" group is **not** restated in this shape — it is always computed after the four other groups (and after `+check` filtering when the flag is set, see `references/CHECK-MODE.md`) and uses the short legacy form: `Task #X should depend on Task #Y. Reason: …`. The dependency entries reference only tasks that survived filtering.
 
-The Step 5 report template below defines structure only. Render all human-readable text in this user-facing response in `ui_language`. Preserve command names, paths, task IDs, section structure, option structure, task counts, numeric counts, `WARN`/`INFO` labels, and raw errors unchanged.
+The Step 5 report template below defines structure only. Render all human-readable text in this user-facing response in `ui_language`. Preserve command names, paths, task IDs, section structure, option structure, task counts, numeric counts, `WARN`/`INFO` labels, and raw errors unchanged. Keep the `Meaning preservation:` label and `PASS` / `FAIL` / `N/A` verdict tokens fixed; localize explanations only.
 
 ```
 ## Plan Refinement Report
 
 Plan: [plan artifact path]
 Tasks analyzed: N
+Meaning preservation: [PASS|FAIL|N/A]
 
 ### Findings
 
@@ -450,6 +456,25 @@ TaskUpdate(taskId, status: "deleted")
 The difference between the two is the report only. `removals` are dead-weight duplicates: mentioned once and forgotten. `out_of_scope` items appear in the "💡 Out of scope" section so the user sees the idea was noticed and consciously dropped from this plan, not removed without a trace. The skill does not persist out-of-scope tasks anywhere — capturing the idea elsewhere (issue tracker, backlog) is the user's call.
 
 **6.5: Update the plan artifact**
+
+**Meaning-preservation gate:** Before saving an editorial requirement rewrite,
+compare it with the original passage and committed requirements. Preserve modal
+meaning and obligation levels; keep RFC 2119 keywords verbatim. Preserve conditions,
+exceptions, negations, numbers/units, identifiers, links, and uncertainty. Do not
+merge check/verify/confirm/validate unless the source defines equivalence.
+Possibility stays possibility, recommendation stays recommendation, permission
+does not imply completion, and suspected or unknown causes do not become facts.
+State a cause only when known and supported. "Check only while the service is
+stopped" does not authorize stopping the service to enable the check. Editorial
+clarity grants no extra authority or confidence and cannot strengthen or weaken
+the contract. Keep the label `Meaning preservation:` and verdicts `PASS`, `FAIL`,
+and `N/A` fixed; localize explanations only. Report `Meaning preservation: PASS`
+or `FAIL` before presenting proposed rewrites or any readability assessment;
+use `N/A — no requirements rewritten` only when applicable. On failure,
+restore or repair the affected rewrite and repeat the comparison before saving
+or presenting it as ready. Missing source or unresolved ambiguity fails the
+gate: keep the original wording and report the gap. User-approved behavioral
+changes must be identified separately from editorial rewrites.
 
 **CRITICAL:** After all changes, update the selected plan artifact to reflect the new state:
 

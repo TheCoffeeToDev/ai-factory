@@ -256,6 +256,31 @@ After command tokens are removed, `/aif-plan` trims only outer whitespace introd
 
 This section is omitted only when the plan is created solely from `RESEARCH.md` without an explicit user request; in that case `## Research Context` is the committed source.
 
+## Meaning Preservation in Requirement Rewrites
+
+When `/aif-plan` turns requirements into tasks or `/aif-improve` rewords them,
+the editorial rewrite must preserve modal meaning and obligation levels,
+conditions, exceptions, negations, numbers and units, identifiers, links, and
+uncertainty. RFC 2119 keywords remain verbatim. Check, verify, confirm, and
+validate remain distinct unless the source defines them as equivalent.
+
+For example, "check the config only while the service is stopped" does not
+authorize stopping the service. Permission does not imply completion, a
+recommendation does not become mandatory, and an unknown cause stays unknown.
+Clearer wording cannot increase confidence or change the contract.
+
+The rewrite gets an explicit `Meaning preservation: PASS` or `FAIL` before
+presentation of the plan or readability results. The `Meaning preservation:`
+label and `PASS` / `FAIL` / `N/A` verdict tokens stay fixed across languages;
+explanations follow the configured output language. Failed comparisons must be
+repaired or restored before
+the rewrite is presented as ready; missing source or unresolved ambiguity
+fails the gate. `/aif-improve` checks proposed edits even without `+check` and
+rechecks before saving. Explicitly approved behavioral changes remain separate
+from editorial changes. `/aif-docs` applies the same gate to documentation
+rewrites, including translation, splitting, and consolidation. When no
+requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
+
 ## Roadmap Linkage (Optional)
 
 If `.ai-factory/ROADMAP.md` exists, `/aif-plan` may include a `## Roadmap Linkage` section in the plan file.
@@ -312,7 +337,9 @@ AI Factory has a built-in learning loop. Every bug fix creates a **patch** — a
 1. `/aif-fix` fixes a bug and creates a patch file in `paths.patches/YYYY-MM-DD-HH.mm.md`
 2. Each patch documents: **Problem**, **Root Cause**, **Solution**, **Prevention**, and **Tags**
 3. `/aif-evolve` reads patches incrementally using `paths.evolutions/patch-cursor.json` (first run reads all)
-4. Workflow skills (`/aif-implement`, `/aif-fix`, `/aif-improve`) prefer skill-context rules and use only limited recent patch fallback when needed
+4. Before approval, candidate rules are compared with the current effective instructions on the same problem and control cases; only validated revisions enter active skill-context
+5. Evolution logs retain exact candidate versions, cases, results, extra cost, regressions, and all outcomes, including no improvement or insufficient data; report-only saves do not advance the cursor by default
+6. Workflow skills (`/aif-implement`, `/aif-fix`, `/aif-improve`) prefer skill-context rules and use only limited recent patch fallback when needed
 
 **Example patch** (`paths.patches/2026-02-07-14.30.md`):
 
@@ -342,7 +369,7 @@ Added optional chaining: `user.avatar?.url` with fallback.
 
 The more you use `/aif-fix`, the smarter AI becomes on your project. Patches accumulate and create a project-specific knowledge base.
 
-**Periodic evolution** -- run `/aif-evolve` to analyze new patches and automatically improve skills:
+**Periodic evolution** -- run `/aif-evolve` to analyze new patches, compare candidate rules, and approve demonstrated improvements:
 
 ```
 /aif-evolve      # Analyze patches + project → improve all skills

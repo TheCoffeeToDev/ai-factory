@@ -1,6 +1,6 @@
 {
   "name": "ai-factory",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "type": "module",
   "description": "CLI tool for automating AI agent context setup in projects",
   "main": "dist/cli/index.js",
@@ -76,7 +76,8 @@
     ],
     "ignore": [
       "examples/**",
-      "skills/aif/references/update-config.mjs"
+      "skills/aif/references/update-config.mjs",
+      "skills/aif-review/references/pr-source.mjs"
     ],
     "ignoreDependencies": [
       "@cutcode/ai-tester"

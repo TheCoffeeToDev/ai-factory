@@ -45,6 +45,7 @@ During setup, `/aif` resolves `language.ui` and `language.artifacts` immediately
 | Section | Purpose |
 |---------|---------|
 | `language` | Prompt language and artifact language |
+| `writing` | Opt-in editorial profile for selected documentation; independent of language |
 | `paths` | Artifact locations under project root |
 | `warmup` | Optional extra session context for `/aif-warmup` |
 | `workflow` | Workflow-level defaults and feature flags |
@@ -59,7 +60,59 @@ During setup, `/aif` resolves `language.ui` and `language.artifacts` immediately
 |-----|---------|----------------|-------|
 | `language.ui` | `en` | `/aif-skills-audit`, `/aif`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-improve`, `/aif-loop`, `/aif-docs`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-rules`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | UI language for prompts, questions, and summaries; `/aif` resolves it before downstream setup questions |
 | `language.artifacts` | `en` | `/aif-skills-audit`, `/aif`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-improve`, `/aif-loop`, `/aif-docs`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-rules`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Language for generated or persisted artifacts; `/aif` locks it before the first setup artifact so DESCRIPTION/rules base/AGENTS/ARCHITECTURE stay aligned in one run; workflow artifact writers use it for plans, research, fix plans, patches, references, rules, security ignore state, docs, evolution reports, and QA artifacts, with fallback to `language.ui`; `/aif-warmup` only reports the configured preference |
-| `language.technical_terms` | `keep` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-fix`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-rules`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Present in schema and template; `/aif` preserves an existing value when present and otherwise writes the default `keep`; artifact-writing skills use it to decide whether human-readable terminology should stay in English, be translated, or use mixed style while preserving commands, paths, identifiers, config keys, package names, API names, machine-readable metadata keys/status values, and raw errors where required; `/aif-warmup` only reports the configured preference |
+| `language.technical_terms` | `keep` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-fix`, `/aif-transfer`, `/aif-docs`, `/aif-reference`, `/aif-distillation`, `/aif-rules`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Present in schema and template; `/aif` preserves an existing value when present and otherwise writes the default `keep`; artifact-writing skills use it to decide whether human-readable terminology should stay in English, be translated, or use mixed style while preserving commands, paths, identifiers, config keys, package names, API names, machine-readable metadata keys/status values, and raw errors where required; `/aif-warmup` only reports the configured preference |
+
+### `writing`
+
+These user-owned settings are read only by `/aif-docs`. New config templates
+include disabled defaults. `/aif` preserves the whole section on reruns and
+does not backfill it into existing configs; absence means disabled.
+
+| Key | Default | Read by skills | Notes |
+|-----|---------|----------------|-------|
+| `writing.profile` | `none` | `/aif-docs` | `none` or `simple-technical`; applies adapted SimpleEn-RU structural rules after artifact language resolution |
+| `writing.targets` | `[]` | `/aif-docs` | Exact project-relative Markdown file paths, using `/`; no globs, directories, absolute paths, or `..`. Intersect with the current authorized docs scope (`README.md` or files under resolved `paths.docs`, including runbooks). Empty disables the pass |
+| `writing.dictionary` | `""` | `/aif-docs` | Optional project-relative terminology file; read-only authority. Empty preserves established terms and uses `language.technical_terms` only for new prose |
+
+Example (the runbook must be included in the authorized `/aif-docs` task):
+
+```yaml
+language:
+  ui: ru
+  artifacts: en
+writing:
+  profile: simple-technical
+  targets:
+    - docs/runbooks/recovery.md
+  dictionary: docs/terminology.md
+```
+
+The English runbook stays English during a Russian conversation. An explicit
+artifact-language instruction takes priority; existing documents retain their
+language unless translation was requested. New documents use
+`language.artifacts`, then `language.ui`, then `en`. The profile selects RU/EN
+rules only after this resolution; unsupported languages are skipped. Selection
+does not authorize opening, rewriting, translating, or moving other artifacts.
+
+A dictionary can define a concept, its approved RU/EN terms, and distinctions
+from related concepts. For example, a project can define `validate` as schema
+validation and `verify` as checking evidence. The editor preserves this
+distinction, reports conflicts, and never updates the dictionary itself. A
+configured missing/unreadable/outside-root dictionary skips the editorial pass
+with `WARN [writing]`. Unknown profiles and malformed settings also warn and
+skip; ordinary documentation work can continue. Out-of-scope/invalid targets
+are reported and skipped. Symlink escapes are rejected.
+
+Meaning preservation precedes readability: preserve modality, conditions,
+exceptions, uncertainty, warnings, numbers/units, and project terminology.
+Code, commands, identifiers, paths, link targets, and quoted errors/logs remain
+exact. Failed rewrites are restored; style exceptions are reported separately.
+The profile does not affect chat, issues, plans, requirement correctness, or
+quality-gate verdicts. It is not a ГОСТ Р 58049-2017 / ASD-STE100 certification.
+Upstream −71% EN / −55% RU lint-hit reductions are heuristic conformance
+metrics, not local results or evidence of fewer technical errors. The bundled
+[profile contract](../skills/aif-docs/references/WRITING-PROFILE.md) links to the
+pinned source revision and MIT notice.
 
 ### `paths`
 
@@ -171,7 +224,7 @@ These settings support the three command options listed above.
 | `/aif-commit` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.rules`, `paths.plan`, `paths.plans`, `workflow.plan_id_format`, `language.ui`, `git.enabled`, `git.create_branches`, `git.skip_push_after_commit`, `rules.base`, `rules.<area>` |
 | `/aif-review` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.rules`, `language.ui`, `git.base_branch` |
 | `/aif-loop` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.plan`, `paths.plans`, `paths.evolution`, `language.ui`, `language.artifacts` |
-| `/aif-docs` | Yes | No | `paths.description`, `paths.architecture`, `paths.docs`, `language.ui`, `language.artifacts` |
+| `/aif-docs` | Yes | No | `paths.description`, `paths.architecture`, `paths.docs`, `language.ui`, `language.artifacts`, `language.technical_terms`, `writing.profile`, `writing.targets`, `writing.dictionary` |
 | `/aif-fix` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.rules`, `paths.research`, `paths.fix_plan`, `paths.patches`, `language.ui`, `language.artifacts`, `language.technical_terms`, `rules.base`, `rules.<area>` |
 | `/aif-evolve` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.rules`, `paths.patches`, `paths.evolutions`, `language.ui`, `language.artifacts`, `rules.base`, `rules.<area>` |
 | `/aif-skills-audit` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.rules`, `rules.base`, `rules.<area>`, `language.ui`, `language.artifacts`, `language.technical_terms` |

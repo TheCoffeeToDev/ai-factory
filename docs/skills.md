@@ -100,6 +100,8 @@ Plan prompts and summaries use `language.ui`; saved plan artifacts use `language
 /aif-plan --cleanup feature/stripe-checkout # Remove worktree and branch
 ```
 
+All `/aif-plan` modes apply a mandatory [meaning-preservation gate](plan-files.md#meaning-preservation-in-requirement-rewrites) when turning requirements into tasks, including requirements from the user request without existing requirement artifacts. The verdict precedes presentation of the plan and any readability assessment.
+
 ### `/aif-roadmap [check | vision or requirements]`
 Creates or updates a strategic project roadmap:
 ```
@@ -138,11 +140,17 @@ Refine an existing plan with a second iteration:
 - Removes redundant tasks
 - Surfaces useful-but-out-of-scope tasks in a separate "💡 Out of scope" report section (the skill does not save them anywhere — the user decides what to do with the idea)
 - Shows improvement report and asks for approval before applying
+- Validation uses the bundled `review-validator` only on runtimes enforcing its `Read`, `Glob`, `Grep` tool allowlist (currently Claude Code). If unavailable or unenforced, including Codex's sandbox-only boundary, it keeps all findings and reports `WARN [+check]`; it never falls back to a full-tool agent. This also applies to `workflow.improve_check: true`.
 - If no plan found — suggests running `/aif-plan` (feature/task) or `/aif-fix` (bugfix) first
+
+**Mandatory meaning preservation**
+
+- Before proposing editorial requirement rewrites and again before saving them, compare modality, conditions, negations, numbers, identifiers, links, and uncertainty with the source.
+- Report the fixed `Meaning preservation:` label with `PASS`, `FAIL`, or `N/A` before readability results; localize explanations only. This gate also runs without `+check`; `--list` still only lists plans. See [requirement rewrites](plan-files.md#meaning-preservation-in-requirement-rewrites).
 
 **Optional validation (`+check`)**
 - `workflow.improve_check: true` enables validation by default; `--no-check` disables it for one invocation. Explicit flags override config; if both flags are supplied, the last one wins.
-- After Step 4 the skill dispatches a single fresh-context `general-purpose` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
+- After Step 4 the skill dispatches a single fresh-context, allowlisted `review-validator` subagent that re-reads cited files and judges each finding from the `missing`, `improvements`, `removals`, and `out_of_scope` groups
 - Invented findings disappear, partially-correct ones are rewritten in place, real findings stay untouched; the `🔗 Dependency Fixes` group is recomputed against the filtered task list afterwards and is not sent to the validator
 - The Step 5 Summary block gains two extra lines — `Hidden by +check: N` and `Adjusted by +check: M`; if the validator call fails entirely, no counters are printed and a single `WARN [+check]` line is appended instead
 - Validation flags and the configured default are silently ignored with `--list` (no refinement to validate)
@@ -272,10 +280,13 @@ Self-improve skills based on project experience:
 - Reads `.ai-factory/config.yaml` for description, architecture, rules, patches, and evolution-log paths plus language settings; `.ai-factory/skill-context/` remains fixed
 - Analyzes project tech stack, conventions, and codebase patterns
 - Identifies gaps in existing skills (missing guards, tech-specific pitfalls)
-- Proposes targeted improvements with user approval
-- Writes project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
-- Saves evolution log to `paths.evolutions` (default: `.ai-factory/evolutions/`)
-- The more `/aif-fix` patches you accumulate, the smarter `/aif-evolve` becomes
+- Builds candidate cards with the original case, exact applicability, instruction diff, and a counterexample where the rule must not apply
+- Compares current effective instructions and each candidate on the same frozen cases, retaining output evidence, extra cost, and regressions
+- Records accept / narrow / refine / keep old / postpone outcomes; missing execution evidence means postpone
+- Offers only exact validated `accept` revisions for user approval; checks their combination when applying several rules
+- Writes approved project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
+- Saves all outcomes, including "the new rule did not improve behavior", to `paths.evolutions` (default: `.ai-factory/evolutions/`) after apply/report-save approval
+- See [Skill Evolution](evolve.md#comparing-rule-candidates) for the comparison contract and evidence requirements
 
 ### `/aif-skills-audit`
 
@@ -404,8 +415,17 @@ without blocking the flow.
 
 **Documentation website** — `--web` flag generates a complete static HTML site in `docs-html/` with navigation bar, dark mode support, and clean typography. Ready to host on GitHub Pages or any static hosting.
 
+**Optional technical writing profile** — `writing.profile: simple-technical`
+applies adapted RU/EN SimpleEn-RU rules only to exact files in `writing.targets`
+that are already in the authorized docs scope, including runbooks. It is off by
+default. Resolve artifact language first; preserve project dictionary terms,
+code, commands, and quoted errors. Meaning preservation precedes readability;
+this does not validate requirement correctness or certify standards compliance.
+See [Writing settings](config-reference.md#writing).
+
 **Quality checks:**
 - Every doc page in `paths.docs` gets prev/next navigation header + "See Also" cross-links
+- Meaning preservation — mandatory source comparison for requirement rewrites, with a fixed `Meaning preservation: PASS` / `FAIL` verdict before readability; `N/A` only when no requirements were rewritten
 - Technical review — verifies links, structure, code examples, no content loss
 - Readability review — "new user eyes" checklist: is it clear, scannable, jargon-free?
 

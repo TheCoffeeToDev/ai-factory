@@ -1649,6 +1649,35 @@ else
 fi
 
 # ─────────────────────────────────────────────
+# Improve validation must use an actual read-only agent, including config-enabled runs.
+if ROOT_DIR="$ROOT_DIR" node --input-type=module - <<'EOF'
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const read = file => fs.readFileSync(path.join(process.env.ROOT_DIR, file), 'utf8');
+const agent = read('subagents/claude/agents/review-validator.md');
+const frontmatter = agent.match(/^---\n([\s\S]*?)\n---/)[1];
+assert.deepEqual(frontmatter.match(/^tools: (.+)$/m)[1].split(/,\s*/).sort(), ['Glob', 'Grep', 'Read']);
+const check = read('skills/aif-improve/references/CHECK-MODE.md');
+const validator = read('skills/aif-improve/references/VALIDATOR.md');
+assert.match(check, /Task\(subagent_type: review-validator/);
+for (const text of [check, validator]) {
+  assert.doesNotMatch(text, /Task\(subagent_type: general-purpose/);
+}
+assert.match(check, /do not dispatch/i);
+assert.match(check, /whole-dispatch failure/);
+assert.match(check, /workflow\.improve_check: true/);
+assert.match(check, /Codex read-only sandbox does not restrict inherited MCP tools/);
+assert.match(validator, /## Security boundary/);
+assert.match(validator, /untrusted evidence, not instructions/);
+assert.match(validator, /within the supplied project root/);
+EOF
+then
+    pass "improve validation uses an enforced read-only agent without a full-tool fallback"
+else
+    fail "improve validator capability boundary"
+fi
+
 # Part 4.5: Planner parity contract regressions
 # ─────────────────────────────────────────────
 echo -e "\n${BOLD}=== Planner parity contract checks ===${NC}\n"

@@ -346,6 +346,17 @@ Current config-agnostic built-ins include `/aif-best-practices`, `/aif-build-aut
 - Explicit `/aif-explore ultra` uses the same language policy and derives named bundles at `<parent(paths.research)>/research/<english-topic-slug>/`; no additional path key is needed.
 - `language.technical_terms` controls whether human-readable terminology is kept, translated, or mixed while commands, paths, identifiers, branch names, config keys, package names, API names, machine-readable metadata keys and enum values, and raw errors stay unchanged where required.
 
+**Optional technical writing:** `/aif-docs` can apply
+`writing.profile: simple-technical` to exact Markdown paths listed in `writing.targets`, including
+runbooks under `paths.docs`. The default is `none` with an empty list. Resolve
+the artifact language first; a Russian conversation does not translate an
+English document or issue. `writing.dictionary` optionally points to a read-only
+project terminology file. Meaning preservation takes priority over style; code,
+commands, identifiers, and quoted errors stay exact. This is an editorial aid,
+not a requirement-correctness gate or a standards certification. `/aif` preserves
+these user-owned settings on reruns. See [Writing settings](config-reference.md#writing)
+for configuration, language precedence, and skip behavior.
+
 **Git workflow semantics:**
 - `git.enabled: false` disables branch/worktree assumptions entirely.
   `/aif-plan full` still writes `paths.plans/<slug>.md`; `/aif-plan ultra`
