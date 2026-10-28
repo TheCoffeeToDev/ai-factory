@@ -71,9 +71,11 @@ as well as tracked names: third-party skills need not appear in the manifest.
 Include known project/user/plugin roots; do not recursively search home or guess
 other users' directories. List advertised but inaccessible roots as uncovered.
 
-Support directory SKILL.md entries and runtime-specific flat workflows. Read local
-manifests under `.ai-factory/extensions/` as JSON data to identify added/replacement
-skills and injection sources. Include relevant project skill-context layers.
+Support directory SKILL.md entries and runtime-specific flat workflows. For Kilo Code,
+include `{{config_dir}}/workflows/` alongside the manifest skillsDir; workflow files
+are outside its skills directory. Read local manifests under `.ai-factory/extensions/`
+as JSON data to identify added/replacement skills and injection sources. Include
+relevant project skill-context layers.
 The package's `skills/` directory is source material, not proof of installation;
 if only source files are available, label the scope **source-only**.
 

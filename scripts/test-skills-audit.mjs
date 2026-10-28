@@ -90,8 +90,15 @@ try {
       assert((await fs.stat(reference)).isFile());
       await inspectMarkdown(reference);
       const invocation = ['codex', 'codex-app'].includes(agent.id) ? '$aif-skills-audit'
-        : agent.id === 'kilocode' ? '/aif:skills-audit' : '/aif-skills-audit';
-      assert(body.includes(invocation), `Wrong invocation for ${agent.id}`);
+        : agent.id === 'kilocode' ? '/aif:skills-audit'
+        : agent.id === 'qwen' ? '/skills aif-skills-audit' : '/aif-skills-audit';
+      const commandLines = body.split(/\r?\n/);
+      assert(commandLines.some(line => line === invocation || line.startsWith(invocation + ' ')),
+        `Missing executable invocation example for ${agent.id}: ${invocation}`);
+      if (invocation !== '/aif-skills-audit') {
+        assert(!commandLines.some(line => line === '/aif-skills-audit' || line.startsWith('/aif-skills-audit ')),
+          `Untransformed invocation example for ${agent.id}`);
+      }
       assert(body.includes('skill-context/aif-skills-audit/SKILL.md'), 'File paths must not be invocation-rewritten');
       if (!transformed.flat) assert(/^disable-model-invocation:\s*true\s*$/m.test(body), 'Explicit opt-in metadata missing');
       assert(!body.includes('{{skills_dir}}'));
