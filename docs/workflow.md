@@ -330,7 +330,7 @@ revisioned Research Context remains committed scope and drift produces
 `WARN [research-drift]`. `--list` is read-only.
 
 Optional `+check` (also enabled by `workflow.improve_check: true`, overridden
-for one invocation with `--no-check`) runs a single fresh-context `general-purpose` subagent on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation. Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
+for one invocation with `--no-check`) runs a single fresh-context `review-validator` with a runtime-enforced `Read`, `Glob`, `Grep` allowlist on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation. If that allowlist is unavailable or unenforced (including Codex), no validator is dispatched: findings stay unchanged, counters are omitted, and `WARN [+check]` explains the limitation. There is no full-tool fallback. Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
 
 ### `/aif-loop [new|resume|status|stop|list|history|clean] [task or alias]` — iterative quality loop
 
