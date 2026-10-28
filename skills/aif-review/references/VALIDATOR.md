@@ -105,7 +105,7 @@ Rules:
 
 - The `Verdict` field must contain exactly one of the three tokens: `keep`, `modify`, `drop`. No extra punctuation, no synonyms.
 - The `Severity` field is optional. When present, it must contain exactly one of the three tokens: `unchanged`, `critical`, `suggestion`. Omitting the line entirely is equivalent to `Severity: unchanged` — that is the common case; include the field only when you want to move the item between sections.
-- `Reason` must reference the validation question(s) that drove the decision, in plain text. Do not output JSON or bullet lists here. If `Severity` is not `unchanged`, also state in `Reason` why the original section was wrong.
+- Exactly one nonempty `Reason` is required before `Modified-text`; missing, blank, or duplicate fields invalidate the item verdict. `Reason` must reference the validation question(s) that drove the decision, in plain text. Do not output JSON or bullet lists here. If `Severity` is not `unchanged`, also state in `Reason` why the original section was wrong.
 - `Modified-text` MUST appear only with `Verdict: modify`. For `keep` and `drop` omit the line entirely.
 - `Modified-text` is always the **last** field of its block, and its value runs from after `Modified-text:` to the next `### Item` heading — continuation lines included, leading and trailing blank lines dropped. A corrected item may therefore span several lines (a path or a fix on its own line), and every line of it is the corrected text. Do not write any field below it: a `Verdict` or `Severity` line there is read as part of the corrected text, not as a field.
 - Confirming a marked item looks exactly like any other `modify` — same fields, same `Severity` handling — with the marker absent from `Modified-text`:

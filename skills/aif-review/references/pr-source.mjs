@@ -121,6 +121,8 @@ function context(repo, commit, file) {
   let source;
   try {
     const entry = command('git', ['ls-tree', '-z', commit, '--', `:(literal)${file}`]).toString('utf8');
+    if (!entry) return { ...identity, status: 'unavailable', reason_code: 'not-found',
+      reason: 'Path is absent from the pinned Git tree' };
     const match = /^(100644|100755) blob ([a-f0-9]{40})\t/.exec(entry);
     if (!match) throw new Error('Not a regular Git blob');
     blob = match[2];
@@ -138,6 +140,8 @@ function context(repo, commit, file) {
         const listing = json(api(`repos/${repo}/git/trees/${tree}`));
         if (listing.truncated) throw new Error('Incomplete tree');
         const entry = listing.tree.find(item => item.path === parts[index]);
+        if (!entry) return { ...identity, status: 'unavailable', reason_code: 'not-found',
+          reason: 'Path is absent from the pinned GitHub tree' };
         if (index < parts.length - 1) {
           if (entry?.type !== 'tree') throw new Error('Not a directory');
           tree = sha(entry.sha);

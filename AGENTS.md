@@ -673,6 +673,8 @@ Template variables (`{{config_dir}}`, `{{skills_dir}}`, etc.) in skill `.md` fil
 npm test
 ```
 
+The deterministic `/aif-review +check` scenarios also run via `npm run test:review-check` and are included in `npm test`. They use recorded source/reviewer/validator responses through the skill's executable host protocol, without inference or live-tool fallback. See `skills/aif-review/tests/README.md` for reports and recording maintenance.
+
 Runs `scripts/test-skills.sh` which validates:
 
 1. **All skills pass validation** — runs `validate.sh` on every `skills/aif-*/`

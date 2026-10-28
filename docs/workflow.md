@@ -394,6 +394,8 @@ Checks only rules compliance for staged changes, working-tree changes, or a prov
 
 ### `/aif-review [PR number or URL] [+check]` — code review with read-only context gates
 
+Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks. Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
+
 Reviews staged changes or PR diff and reports correctness/security/performance findings. Includes read-only architecture/roadmap/rules gate notes in review output (`WARN` for non-blocking inconsistencies, `ERROR` only for explicitly blocking criteria), then appends an `aif-gate-result` JSON block.
 
 For application API changes, the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md) adds a bounded comparison of supported contract revisions and actual consumers. It separates wire compatibility from semantics and preserves the existing findings, validation, source and gate contracts.
