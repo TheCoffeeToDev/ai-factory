@@ -329,7 +329,17 @@ export { relative as normalizeInstructionPath, localPath as resolveInstructionLo
 
 function validateManifest(value: unknown, runId: string): InstructionManifest {
   const input = object(value, 'Manifest');
+  fields(input, ['schema_version', 'coverage', 'recorder', 'run', 'environment', 'policy', 'resources', 'dependencies', 'operations', 'observations', 'loading', 'budget', 'composition_sha256', 'accounting'], 'Manifest');
+  const coverage = object(input.coverage, 'Coverage');
+  fields(coverage, ['resources', 'dependency_discovery', 'runtime_loading'], 'Coverage');
+  choice(coverage.resources, ['declared_only'], 'Resource coverage');
+  choice(coverage.dependency_discovery, ['unknown'], 'Dependency discovery');
+  choice(coverage.runtime_loading, ['caller_supplied'], 'Runtime loading');
+  const recorder = object(input.recorder, 'Recorder');
+  fields(recorder, ['name', 'version'], 'Recorder');
+  choice(recorder.name, ['ai-factory'], 'Recorder name'); string(recorder.version, 'Recorder version');
   const run = object(input.run, 'Manifest run');
+  fields(run, ['id', 'skill', 'task', 'stage', 'previous_run_id', 'status', 'initialization', 'started_at', 'finalized_at', 'capture_error'], 'Manifest run');
   if (input.schema_version !== 1 || run.id !== runId) throw new Error('Invalid or unsupported instruction manifest.');
   identifier(run.id, 'Run id'); identifier(run.skill, 'Skill');
   choice(run.status, ['open', 'complete'], 'Run status');
@@ -339,6 +349,7 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
   if (run.finalized_at !== undefined) string(run.finalized_at, 'Finalized time');
   if (run.capture_error !== undefined) {
     const failure = object(run.capture_error, 'Capture error');
+    fields(failure, ['resource_id', 'reason'], 'Capture error');
     identifier(failure.resource_id, 'Failed resource id'); string(failure.reason, 'Capture reason');
   }
   const ref = (value: unknown) => {
@@ -353,6 +364,7 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
   const revisions = new Set<string>();
   for (const value of input.resources as unknown[]) {
     const resource = object(value, 'Resource');
+    fields(resource, ['ref', 'id', 'revision', 'role', 'locator', 'required', 'in_composition', 'addition', 'output_path', 'captured_at', 'status', 'sha256', 'bytes', 'snapshot', 'preservation'], 'Resource');
     const id = identifier(resource.id, 'Resource id');
     const revision = integer(resource.revision, 'Resource revision');
     const reference = ref(resource.ref);
@@ -369,18 +381,33 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
     if (resource.bytes !== undefined) integer(resource.bytes, 'Resource bytes');
     if (resource.sha256 !== undefined && (typeof resource.sha256 !== 'string' || !SHA256.test(resource.sha256))) throw new Error('Invalid resource hash.');
     if (resource.snapshot !== undefined && (typeof resource.snapshot !== 'string' || resource.snapshot !== `snapshots/${resource.sha256}`)) throw new Error('Invalid snapshot locator.');
+    // A preservation promise is a complete state, not just an optional locator.
+    // A missing promised field must fail before verify's metadata-only warning.
+    if (resource.status === 'captured') {
+      if (resource.sha256 === undefined || resource.bytes === undefined) throw new Error('Captured resources require a hash and byte count.');
+      choice(resource.preservation, ['snapshot', 'not_preserved'], 'Captured preservation');
+      if (resource.preservation === 'snapshot' && resource.snapshot === undefined) throw new Error('Promised snapshot locator is missing.');
+      if (resource.preservation === 'not_preserved' && resource.snapshot !== undefined) throw new Error('Unpreserved resources cannot have a snapshot locator.');
+    } else {
+      if (resource.sha256 !== undefined || resource.bytes !== undefined || resource.snapshot !== undefined) throw new Error('Uncaptured resources cannot declare preserved bytes.');
+      choice(resource.preservation, resource.status === 'excluded' ? ['excluded'] : ['unavailable'], 'Uncaptured preservation');
+    }
   }
   for (const value of input.operations as unknown[]) {
     const operation = object(value, 'Operation');
+    fields(operation, ['kind', 'inputs', 'output', 'implementation', 'sequence', 'provenance'], 'Operation');
     choice(operation.kind, OPERATIONS, 'Operation kind');
     if (!Array.isArray(operation.inputs) || !operation.inputs.length) throw new Error('Operation inputs must be a non-empty array.');
     operation.inputs.forEach(ref); ref(operation.output);
-    string(operation.implementation, 'Operation implementation'); integer(operation.sequence, 'Operation sequence');
+    string(operation.implementation, 'Operation implementation');
+    if (integer(operation.sequence, 'Operation sequence') < 1) throw new Error('Operation sequence must be positive.');
     choice(operation.provenance, ['declared'], 'Operation provenance');
   }
   for (const value of input.observations as unknown[]) {
     const observation = object(value, 'Observation');
-    ref(observation.resource); integer(observation.sequence, 'Observation sequence');
+    fields(observation, ['sequence', 'resource', 'kind', 'source', 'reported_at', 'recorded_at', 'reported_status', 'range', 'truncated', 'evidence', 'delivered', 'provenance'], 'Observation');
+    ref(observation.resource);
+    if (integer(observation.sequence, 'Observation sequence') < 1) throw new Error('Observation sequence must be positive.');
     choice(observation.kind, ['agent_report', 'tool_event', 'runtime_event'], 'Observation kind');
     choice(observation.reported_status, ['complete', 'partial', 'unknown'], 'Reported status');
     choice(observation.provenance, ['caller_supplied'], 'Observation provenance');
@@ -389,6 +416,7 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
     for (const key of ['evidence', 'delivered']) if (observation[key] !== undefined) ref(observation[key]);
     if (observation.range !== undefined) {
       const range = object(observation.range, 'Range');
+      fields(range, ['unit', 'start', 'end'], 'Range');
       const unit = choice(range.unit, ['bytes', 'lines'], 'Range unit');
       const start = integer(range.start, 'Range start'); const end = integer(range.end, 'Range end');
       if (end < start || (unit === 'lines' && start < 1)) throw new Error('Invalid loaded range.');
@@ -396,6 +424,7 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
   }
   for (const value of input.dependencies as unknown[]) {
     const dependency = object(value, 'Dependency');
+    fields(dependency, ['from', 'to', 'required', 'condition', 'declaration', 'resolution'], 'Dependency');
     identifier(dependency.from, 'Dependency from'); identifier(dependency.to, 'Dependency to');
     if (typeof dependency.required !== 'boolean') throw new Error('Dependency required must be a boolean.');
     string(dependency.condition, 'Dependency condition'); string(dependency.declaration, 'Dependency declaration');
@@ -403,16 +432,39 @@ function validateManifest(value: unknown, runId: string): InstructionManifest {
   }
   for (const value of input.loading as unknown[]) {
     const load = object(value, 'Load status');
+    fields(load, ['resource', 'status', 'agent_reports', 'authenticated_runtime_load'], 'Load status');
     ref(load.resource); choice(load.status, ['unknown', 'evidence_provided'], 'Load status');
     integer(load.agent_reports, 'Agent reports'); choice(load.authenticated_runtime_load, ['unknown'], 'Runtime load authentication');
   }
   const policy = object(input.policy, 'Policy');
+  fields(policy, ['snapshot_roots', 'exclude', 'settings_allowlist', 'retention', 'sensitivity'], 'Policy');
   for (const key of ['snapshot_roots', 'exclude', 'settings_allowlist']) if (!Array.isArray(policy[key])) throw new Error(`Policy ${key} must be an array.`);
   parsePolicy({ snapshot_roots: policy.snapshot_roots, exclude: policy.exclude, settings_allowlist: policy.settings_allowlist });
-  object(input.environment, 'Environment'); object(input.accounting, 'Accounting');
+  choice(policy.retention, ['manual_no_automatic_deletion'], 'Retention');
+  choice(policy.sensitivity, ['local_sensitive'], 'Sensitivity');
+  const environment = object(input.environment, 'Environment');
+  fields(environment, ['ai_factory_version', 'runtime', 'settings', 'hidden_instructions'], 'Environment');
+  string(environment.ai_factory_version, 'AI Factory version'); string(environment.runtime, 'Runtime');
+  choice(environment.hidden_instructions, ['unknown'], 'Hidden instructions');
+  const settings = object(environment.settings, 'Settings');
+  fields(settings, [...SETTING_KEYS], 'Settings');
+  for (const setting of Object.values(settings)) {
+    if (!['string', 'number', 'boolean'].includes(typeof setting) || (typeof setting === 'number' && !Number.isFinite(setting))) throw new Error('Invalid recorded setting.');
+  }
+  const accounting = object(input.accounting, 'Accounting');
+  fields(accounting, ['bytes', 'estimated_tokens', 'token_method', 'known_unique_resource_bytes', 'model_context_bytes', 'budget_result'], 'Accounting');
+  for (const key of ['bytes', 'estimated_tokens']) {
+    const sizes = object(accounting[key], 'Sizes');
+    fields(sizes, ['composition', 'additions', 'observed_load'], 'Sizes');
+    for (const scope of ['composition', 'additions', 'observed_load']) if (sizes[scope] !== 'unknown') integer(sizes[scope], 'Size');
+  }
+  string(accounting.token_method, 'Token method'); integer(accounting.known_unique_resource_bytes, 'Unique bytes');
+  choice(accounting.model_context_bytes, ['unknown'], 'Model context bytes');
+  choice(accounting.budget_result, ['not_applicable', 'unknown', 'overrun', 'within'], 'Budget result');
   if (typeof input.composition_sha256 !== 'string' || !SHA256.test(input.composition_sha256)) throw new Error('Invalid composition hash.');
   if (input.budget !== undefined) {
     const budget = object(input.budget, 'Budget');
+    fields(budget, ['source', 'unit', 'scope', 'value'], 'Budget');
     string(budget.source, 'Budget source'); integer(budget.value, 'Budget value');
     choice(budget.unit, ['bytes', 'estimated_tokens'], 'Budget unit');
     choice(budget.scope, ['composition', 'additions', 'observed_load'], 'Budget scope');

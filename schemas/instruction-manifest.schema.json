@@ -138,7 +138,23 @@
         "output_path": { "type": "string" }, "captured_at": { "type": "string" }, "status": { "enum": ["captured", "missing", "excluded", "unavailable"] },
         "sha256": { "$ref": "#/$defs/hash" }, "bytes": { "type": "integer", "minimum": 0 }, "snapshot": { "type": "string", "pattern": "^snapshots/[a-f0-9]{64}$" },
         "preservation": { "enum": ["snapshot", "not_preserved", "excluded", "unavailable"] }
-      }
+      },
+      "oneOf": [
+        {
+          "properties": { "status": { "const": "captured" }, "preservation": { "const": "snapshot" }, "sha256": true, "bytes": true, "snapshot": true },
+          "required": ["sha256", "bytes", "snapshot"]
+        },
+        {
+          "properties": { "status": { "const": "captured" }, "preservation": { "const": "not_preserved" }, "sha256": true, "bytes": true, "snapshot": false },
+          "required": ["sha256", "bytes"]
+        },
+        {
+          "properties": { "status": { "const": "excluded" }, "preservation": { "const": "excluded" }, "sha256": false, "bytes": false, "snapshot": false }
+        },
+        {
+          "properties": { "status": { "enum": ["missing", "unavailable"] }, "preservation": { "const": "unavailable" }, "sha256": false, "bytes": false, "snapshot": false }
+        }
+      ]
     }
   }
 }
