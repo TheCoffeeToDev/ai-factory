@@ -100,6 +100,8 @@ Plan prompts and summaries use `language.ui`; saved plan artifacts use `language
 /aif-plan --cleanup feature/stripe-checkout # Remove worktree and branch
 ```
 
+All `/aif-plan` modes apply a mandatory [meaning-preservation gate](plan-files.md#meaning-preservation-in-requirement-rewrites) when turning requirements into tasks, including requirements from the user request without existing requirement artifacts. The verdict precedes presentation of the plan and any readability assessment.
+
 ### `/aif-roadmap [check | vision or requirements]`
 Creates or updates a strategic project roadmap:
 ```
@@ -139,6 +141,11 @@ Refine an existing plan with a second iteration:
 - Surfaces useful-but-out-of-scope tasks in a separate "💡 Out of scope" report section (the skill does not save them anywhere — the user decides what to do with the idea)
 - Shows improvement report and asks for approval before applying
 - If no plan found — suggests running `/aif-plan` (feature/task) or `/aif-fix` (bugfix) first
+
+**Mandatory meaning preservation**
+
+- Before proposing editorial requirement rewrites and again before saving them, compare modality, conditions, negations, numbers, identifiers, links, and uncertainty with the source.
+- Report the fixed `Meaning preservation:` label with `PASS`, `FAIL`, or `N/A` before readability results; localize explanations only. This gate also runs without `+check`; `--list` still only lists plans. See [requirement rewrites](plan-files.md#meaning-preservation-in-requirement-rewrites).
 
 **Optional validation (`+check`)**
 - `workflow.improve_check: true` enables validation by default; `--no-check` disables it for one invocation. Explicit flags override config; if both flags are supplied, the last one wins.
@@ -385,6 +392,7 @@ without blocking the flow.
 
 **Quality checks:**
 - Every doc page in `paths.docs` gets prev/next navigation header + "See Also" cross-links
+- Meaning preservation — mandatory source comparison for requirement rewrites, with a fixed `Meaning preservation: PASS` / `FAIL` verdict before readability; `N/A` only when no requirements were rewritten
 - Technical review — verifies links, structure, code examples, no content loss
 - Readability review — "new user eyes" checklist: is it clear, scannable, jargon-free?
 

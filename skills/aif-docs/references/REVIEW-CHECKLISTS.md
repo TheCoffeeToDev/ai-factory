@@ -8,9 +8,9 @@ requirement with its source passage, keeping surrounding qualifiers in scope.
 This check preserves the contract; it does not authorize changing it.
 
 - [ ] Modal verbs keep their meaning and level: possibility, recommendation,
-      obligation, and permission remain distinct. Preserve RFC 2119 keywords
+      obligation, and permission remain distinct. Preserve [RFC 2119](https://www.rfc-editor.org/info/rfc2119/) keywords
       verbatim, including MUST, MUST NOT, SHOULD, SHOULD NOT, REQUIRED, SHALL, SHALL NOT,
-      RECOMMENDED, MAY, and OPTIONAL. Never delete them as redundant wording.
+      RECOMMENDED, NOT RECOMMENDED, MAY, and OPTIONAL. Never delete them as redundant wording.
 - [ ] Conditions, exceptions, negations, actors, and action order keep their
       original scope. Preserve numbers, units, thresholds, identifiers, and link
       targets exactly; keep each attached to the same requirement.
@@ -36,6 +36,9 @@ This check preserves the contract; it does not authorize changing it.
 | Operators MAY clear the cache. | Clearing the cache is an action operators MAY take. | Operators cleared the cache. |
 | Check the config only while the service is stopped. | Only check the config while the service is stopped. | Stop the service and check the config. |
 | Do not retry unless `retry_enabled=true`; see `[policy](retry.md)`. | Unless `retry_enabled=true`, do not retry; see `[policy](retry.md)`. | Retry; see `[policy](retry.md)`. |
+
+The label `Meaning preservation:` and verdicts `PASS`, `FAIL`, and `N/A` are
+fixed output tokens; localize explanations only.
 
 Report `Meaning preservation: PASS` only when every rewritten requirement has
 been compared and all applicable checks pass. On `FAIL`, cite the source and

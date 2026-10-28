@@ -270,7 +270,10 @@ recommendation does not become mandatory, and an unknown cause stays unknown.
 Clearer wording cannot increase confidence or change the contract.
 
 The rewrite gets an explicit `Meaning preservation: PASS` or `FAIL` before
-readability results. Failed comparisons must be repaired or restored before
+presentation of the plan or readability results. The `Meaning preservation:`
+label and `PASS` / `FAIL` / `N/A` verdict tokens stay fixed across languages;
+explanations follow the configured output language. Failed comparisons must be
+repaired or restored before
 the rewrite is presented as ready; missing source or unresolved ambiguity
 fails the gate. `/aif-improve` checks proposed edits even without `+check` and
 rechecks before saving. Explicitly approved behavioral changes remain separate
