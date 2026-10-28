@@ -269,15 +269,18 @@ Bug fix with optional plan-first mode:
 ```
 - After successful execution, `/aif-fix` deletes only the default `.ai-factory/FIX_PLAN.md`; custom/non-default fix plan files are preserved.
 
-### `/aif-evolve [skill-name|"all"]`
+### `/aif-evolve [skill-name|"all"] [--global]`
 Self-improve skills based on project experience:
 ```
-/aif-evolve          # Evolve all skills
+/aif-evolve          # Evolve project skills only
 /aif-evolve fix      # Evolve only /aif-fix skill
-/aif-evolve all      # Evolve all skills
+/aif-evolve all      # Evolve project skills
+/aif-evolve all --global # Only existing user-global skills
 ```
 - Reads patches incrementally from `paths.patches` using `paths.evolutions/patch-cursor.json` (first run reads all)
 - Reads `.ai-factory/config.yaml` for description, architecture, rules, patches, and evolution-log paths plus language settings; `.ai-factory/skill-context/` remains fixed
+- Resolves canonical skill paths and ownership before analysis; names do not establish ownership. Extension-managed skills are warned and skipped; unknown ownership permits no writes
+- Defaults to project scope; `--global` explicitly selects existing user-global skills without installation. Global built-ins are skipped; approved user-owned global edits affect all projects using that skill
 - Analyzes project tech stack, conventions, and codebase patterns
 - Identifies gaps in existing skills (missing guards, tech-specific pitfalls)
 - Builds candidate cards with the original case, exact applicability, instruction diff, and a counterexample where the rule must not apply

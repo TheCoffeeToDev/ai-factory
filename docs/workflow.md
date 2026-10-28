@@ -214,7 +214,7 @@ Ownership is command-scoped to avoid conflicting writers:
 | `/aif-reference`                          | `paths.references/*`, `paths.references/INDEX.md`                                             | knowledge references from external sources                |
 | `/aif-distillation`                       | current agent skills directory by default, or `--path <directory>` as an output root (`<root>/<skill-name>/`, or prefixed child dirs in `--split` mode) | distilled skills from explicit source material            |
 | `/aif-fix`                                | `paths.fix_plan`, `paths.patches/*.md`                                                        | bug-fix learning loop artifacts                           |
-| `/aif-evolve`                             | `paths.evolutions/*.md`, `paths.evolutions/patch-cursor.json`, `.ai-factory/skill-context/*`  | skill-context overrides + evolution logs + cursor state   |
+| `/aif-evolve`                             | `paths.evolutions/*.md`, `paths.evolutions/patch-cursor.json`, `.ai-factory/skill-context/*`  | skill-context overrides + evolution logs + cursor state; verified user-owned target files after approval   |
 | `/aif-transfer`                           | delegates approved writes to `/aif-evolve`; no source or patch ownership                     | source read-only; current patches and cursor untouched    |
 | `/aif-qa`                                 | `paths.qa/<branch-slug>/change-summary.md`, `test-plan.md`, `test-cases.md`                   | derived branch slug as subdirectory (see aif-qa SKILL.md) |
 | `/aif-qa-check`                           | `paths.qa/<branch-slug>/qa-check.md`, `paths.qa/<branch-slug>/browser-replay/`, `paths.qa/agent-context.md`, `paths.qa/agent-history.md` | executes `/aif-qa` test cases; canonical and preserved replay scripts provide target/content-bound evidence; source QA artifacts stay read-only |
@@ -434,9 +434,16 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 ### `/aif-evolve` — improve skills from experience
 
 ```
-/aif-evolve          # Evolve all skills
+/aif-evolve          # Evolve project skills only
 /aif-evolve fix      # Evolve only the fix skill
+/aif-evolve all --global # Only existing user-global skills
 ```
+
+First resolves canonical skill targets and installation ownership. Project built-ins
+use skill-context; verified user-owned skills use their exact approved paths.
+Extension-managed and unknown targets are skipped. Global user-owned edits require
+`--global` and approval stating their cross-project reach; global built-ins are skipped.
+See [Skill Ownership and Write Destinations](evolve.md#skill-ownership-and-write-destinations).
 
 Reads patches incrementally using an evolve cursor, analyzes project patterns, and creates
 rule candidates. Each candidate is compared with the current effective instructions on
