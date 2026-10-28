@@ -60,6 +60,12 @@ ai-factory/
 
 ## Key Concepts
 
+### Instruction composition records
+
+`ai-factory instructions` is an opt-in recorder for explicitly registered invocations. Core logic is in `src/core/instruction-manifest.ts` and installed-package inventory in `src/core/instruction-inventory.ts`; CLI wiring is in `src/cli/commands/instructions.ts`. The output contract is `schemas/instruction-manifest.schema.json`, documented in `docs/instruction-manifests.md`.
+
+Default artifacts are `.ai-factory/instruction-runs/<run-id>/manifest.json` and per-run content-addressed snapshots. The `instructions` command owns these artifacts; other commands do not mutate them. Capture policies default to no snapshots, no settings, and local-only manual retention. `--runs-dir` relocates storage within the project without introducing `config.yaml` keys. Resource declarations and caller-supplied load evidence must never be described as complete runtime visibility. References, revisions, mandatory missing dependencies, and incomplete invocations remain explicit; budget accounting never trims instructions.
+
 ### Skills Location
 
 - **Package skills**: `skills/` — source of truth, copied during install

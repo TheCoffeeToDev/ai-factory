@@ -4,6 +4,8 @@
 
 AI Factory has two phases: **configuration** (one-time project setup) and the **development workflow** (repeatable loop of explore → plan → improve → implement → verify → commit → evolve).
 
+Extensions and runtime adapters can explicitly register an invocation with `ai-factory instructions` to preserve its instruction composition and load reports. This is opt-in and does not alter ordinary skill execution. See [Instruction Manifests](instruction-manifests.md) for capture policy, provenance limits, and verification.
+
 ## Project Configuration
 
 Run once per project. Sets up context files that all workflow skills depend on.
