@@ -433,11 +433,17 @@ Analyzes recurring patterns and tech-specific pitfalls
     ↓
 Reads current skills → identifies gaps
     ↓
-Proposes targeted improvements → user approves
+Builds rule-candidate cards with original problem, exact applicability, instruction diff, and a control where the rule must NOT apply
     ↓
-Applies improvements to skills
+Compares current effective instructions and each exact candidate on the same frozen cases; records output evidence, extra cost, and regressions
     ↓
-Saves evolution log to configured `paths.evolutions/`
+Outcomes: accept / narrow / refine / keep_old / postpone; narrowed or refined text requires another comparison
+    ↓
+Offers only validated accept revisions for user approval; unavailable execution means postpone
+    ↓
+Applies exact approved revisions; multiple rules also require a passing combined comparison
+    ↓
+Saves all outcomes, including "the new rule did not improve behavior", to configured `paths.evolutions/` after apply/report-save approval
 
 /aif-transfer <source-project-path> [skill-name|"all"]
     ↓

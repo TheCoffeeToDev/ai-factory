@@ -242,8 +242,9 @@ Use the current evolve workflow loaded in Step 0 from `{{skills_dir}}/aif-evolve
 or the AI Factory development fallback `skills/aif-evolve/SKILL.md`.
 
 Run its current workflow in this invocation so the user does not need to invoke a second
-command. Reuse its stale-rule checks, gap analysis, proposal format, explicit approval,
-skill-context updates, and evolution logging. Apply these narrow overrides:
+command. Reuse its stale-rule checks, gap analysis, rule-candidate comparison, proposal
+format, explicit approval, skill-context updates, and evolution logging. Apply these
+narrow overrides:
 
 1. The sanitized in-memory registry replaces `/aif-evolve` Step 1 patch collection.
 2. Do not read or write the current `paths.patches` for transferred evidence.
@@ -251,13 +252,16 @@ skill-context updates, and evolution logging. Apply these narrow overrides:
 4. Use only `experience-NNN` source labels in proposals and persisted artifacts.
 5. In skill-context metadata, use `Based on: N analyzed prevention candidates` rather
    than claiming the candidates are current-project patches.
-6. Preserve `/aif-evolve` user approval: no skill-context or evolution-log write occurs
-   before the user approves at least one improvement.
+6. Preserve `/aif-evolve` user approval: skill-context writes require approval of an
+   exact validated `accept` revision. An evolution log containing only negative or
+   postponed outcomes requires explicit report-save approval; it applies no rules.
 7. Write only to current-project paths owned by `/aif-evolve`.
+8. Apply the privacy preflight to all candidate cards and comparison evidence, including
+   rejected revisions and report-only logs. Use current-project or neutral cases only.
 
 ### Step 7: Post-Write Privacy Verification
 
-After `/aif-evolve` applies approved changes:
+After `/aif-evolve` applies approved changes or saves an approved report-only log:
 
 1. Re-read every changed skill-context and evolution-log file.
 2. Run the Step 5 denylist scan again on their complete contents.
@@ -271,8 +275,8 @@ Never print the source identity in the completion summary.
 
 - Direct source ownership: none; the source project is always read-only.
 - Direct current-project ownership: none beyond transient in-memory analysis.
-- Delegated writer: `/aif-evolve` may update `.ai-factory/skill-context/*` and write one
-  log under resolved `paths.evolutions` after user approval.
+- Delegated writer: `/aif-evolve` may update `.ai-factory/skill-context/*` with approved,
+  validated rules and save outcomes under resolved `paths.evolutions` after user approval.
 - `paths.patches`, the evolve patch cursor, description, architecture, rules, roadmap,
   research, plans, source code, and documentation remain read-only.
 

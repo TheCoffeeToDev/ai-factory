@@ -163,7 +163,7 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
                                              │ Patches/experience  │
                                              │ + current context   │
                                              │       ↓             │
-                                             │ Improves skills     │
+                                             │ Compare rule cases  │
                                              │                     │
                                              └─────────────────────┘
 
@@ -425,7 +425,14 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 /aif-evolve fix      # Evolve only the fix skill
 ```
 
-Reads patches incrementally using an evolve cursor, analyzes project patterns, and proposes targeted skill improvements. Closes the learning loop: **fix → patch → evolve → better skills → fewer bugs**.
+Reads patches incrementally using an evolve cursor, analyzes project patterns, and creates
+rule candidates. Each candidate is compared with the current effective instructions on
+the same original case, counterexample, and relevant regressions, with extra cost recorded.
+Only an exact revision with demonstrated benefit and no detected regression is offered
+for user approval. Narrowed/refined rules require another comparison; missing execution
+evidence means postpone. Logs preserve negative results, including "the new rule did
+not improve behavior", without adding those instructions to active skill-context.
+See [Comparing Rule Candidates](evolve.md#comparing-rule-candidates).
 
 ### `/aif-transfer` — reuse anonymized experience
 
