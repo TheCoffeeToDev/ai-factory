@@ -273,10 +273,13 @@ Self-improve skills based on project experience:
 - Reads `.ai-factory/config.yaml` for description, architecture, rules, patches, and evolution-log paths plus language settings; `.ai-factory/skill-context/` remains fixed
 - Analyzes project tech stack, conventions, and codebase patterns
 - Identifies gaps in existing skills (missing guards, tech-specific pitfalls)
-- Proposes targeted improvements with user approval
-- Writes project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
-- Saves evolution log to `paths.evolutions` (default: `.ai-factory/evolutions/`)
-- The more `/aif-fix` patches you accumulate, the smarter `/aif-evolve` becomes
+- Builds candidate cards with the original case, exact applicability, instruction diff, and a counterexample where the rule must not apply
+- Compares current effective instructions and each candidate on the same frozen cases, retaining output evidence, extra cost, and regressions
+- Records accept / narrow / refine / keep old / postpone outcomes; missing execution evidence means postpone
+- Offers only exact validated `accept` revisions for user approval; checks their combination when applying several rules
+- Writes approved project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
+- Saves all outcomes, including "the new rule did not improve behavior", to `paths.evolutions` (default: `.ai-factory/evolutions/`) after apply/report-save approval
+- See [Skill Evolution](evolve.md#comparing-rule-candidates) for the comparison contract and evidence requirements
 
 ### `/aif-transfer <source-project-path> [skill-name|"all"]`
 Reuse relevant fix experience from another AI Factory project without identifying it:
