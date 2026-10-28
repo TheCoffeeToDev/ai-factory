@@ -18,6 +18,8 @@ When a non-URL argument is also present (like `my-skill-name`), use it as the sk
 
 ## Learn Mode Workflow
 
+Run the Install Preflight in `SKILL.md` before Phase 1. A supported Python 3 command and both readable security helpers are required. If unavailable, STOP before fetching sources or generating a skill; Level 2-only review of an existing local path does not authorize Learn Mode.
+
 ### Phase 1: Collect & Study
 
 For EACH URL provided:

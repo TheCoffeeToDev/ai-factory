@@ -14,7 +14,7 @@ This script:
      via `safe_remove_installed()` after strict safety validation.
      This is the authoritative cleanup step — the helper is the
      guarantor of physical removal, not the upstream CLI.
-  3. Patches <root>/skills-lock.json to drop the "skills.<skill>" key
+  3. Patches <root>/skills-lock.json to drop the skill's known identity keys
      atomically (tmp + os.replace). No-op if the entry is absent.
   4. Verifies the patched lock file no longer contains the skill entry.
 
@@ -100,8 +100,8 @@ def validate_skill_name(name: str):
     return None
 
 
-def patch_lock(lock_path: Path, skill: str, dry_run: bool = False):
-    """Remove skills[<skill>] from skills-lock.json.
+def patch_lock(lock_path: Path, skill_names: set, dry_run: bool = False):
+    """Remove known identity keys from skills-lock.json.
 
     Returns (changed: bool, message: str). Raises RuntimeError on invalid JSON.
     Atomic write: writes to <lock>.tmp then os.replace. Preserves 2-space
@@ -124,16 +124,18 @@ def patch_lock(lock_path: Path, skill: str, dry_run: bool = False):
     if not isinstance(skills_section, dict):
         return (False, "no 'skills' object in lock file (nothing to clean)")
 
-    if skill not in skills_section:
+    matched = sorted(skill_names.intersection(skills_section))
+    if not matched:
         available = sorted(skills_section.keys())
         if not available:
-            return (False, f"skill '{skill}' not present; lock file has no skill entries")
-        return (False, f"skill '{skill}' not present in lock file; available keys: {available}")
+            return (False, "skill not present; lock file has no skill entries")
+        return (False, f"skill not present in lock file; available keys: {available}")
 
     if dry_run:
-        return (True, f"would remove '{skill}' from {lock_path}")
+        return (True, f"would remove {matched} from {lock_path}")
 
-    del skills_section[skill]
+    for name in matched:
+        del skills_section[name]
 
     new_text = json.dumps(data, indent=2, ensure_ascii=False)
     if raw.endswith('\n'):
@@ -142,7 +144,7 @@ def patch_lock(lock_path: Path, skill: str, dry_run: bool = False):
     tmp_path = lock_path.with_name(lock_path.name + '.tmp')
     tmp_path.write_text(new_text, encoding='utf-8')
     os.replace(tmp_path, lock_path)
-    return (True, f"removed '{skill}' from {lock_path}")
+    return (True, f"removed {matched} from {lock_path}")
 
 
 def _resolve_npx():
@@ -180,7 +182,7 @@ def run_skills_remove(skill: str, root: Path, dry_run: bool = False) -> int:
     return result.returncode
 
 
-def verify_lock_clean(lock_path: Path, skill: str) -> bool:
+def verify_lock_clean(lock_path: Path, skill_names: set) -> bool:
     """Confirm the skill is absent from skills-lock.json after patching.
 
     Deterministic: re-reads the lock file and inspects the in-memory
@@ -197,7 +199,7 @@ def verify_lock_clean(lock_path: Path, skill: str) -> bool:
     skills_section = data.get('skills')
     if not isinstance(skills_section, dict):
         return True
-    return skill not in skills_section
+    return skill_names.isdisjoint(skills_section)
 
 
 # Reparse-point bit on Windows. NTFS junctions (created via `mklink /J`)
@@ -541,6 +543,17 @@ def main() -> int:
             print(f"error: {e}", file=sys.stderr)
             return 1
 
+    # Capture identity before npx can delete the installed frontmatter.
+    skill_names = {skill, _sanitize_skill_name(skill)} - {''}
+    if validated_installed is not None:
+        skill_names.add(validated_installed.resolved.name)
+        canonical = _read_skill_frontmatter_name(validated_installed.resolved / 'SKILL.md')
+        # A downloaded skill cannot nominate an unrelated lock entry for deletion.
+        if canonical and _sanitize_skill_name(canonical) in {
+            _sanitize_skill_name(skill), validated_installed.resolved.name.lower()
+        }:
+            skill_names.add(canonical)
+
     lock_path = root / 'skills-lock.json'
 
     # Step 1: ask the CLI to remove (deletes files; may leave lock stale on project scope).
@@ -592,15 +605,15 @@ def main() -> int:
     # cleanup so a failed deletion cannot leave a stale blocked skill
     # installed with its lock entry already cleared.
     try:
-        _, msg = patch_lock(lock_path, skill, dry_run=args.dry_run)
+        _, msg = patch_lock(lock_path, skill_names, dry_run=args.dry_run)
     except RuntimeError as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
     print(msg)
 
     # Step 4: verify by re-reading the lock file.
-    if not args.dry_run and not verify_lock_clean(lock_path, skill):
-        print(f"error: '{skill}' is still present in {lock_path} after patch",
+    if not args.dry_run and not verify_lock_clean(lock_path, skill_names):
+        print(f"error: skill identity keys are still present in {lock_path} after patch",
               file=sys.stderr)
         return 1
 

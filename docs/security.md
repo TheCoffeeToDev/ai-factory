@@ -100,7 +100,11 @@ else
 fi
 ```
 
-If `PYTHON_CMD` is empty, the Python scanner cannot run. AI Factory then skips the automated Level 1 scan with an explicit warning and still requires manual Level 2 semantic review.
+If `PYTHON_CMD` is empty, external-skill installation and Learn Mode stop before downloading or generating skills. Both the scanner and cleanup helper must be available before acquisition; use one of the supported Python launchers above. Arbitrary interpreter paths require a separately authorized tool contract.
+
+For scan-only review of an already-existing local path, the user may explicitly accept Level 2-only review. Level 1 is reported as skipped, not passed; this exception does not authorize installation.
+
+Blocked-skill cleanup removes the scanned directory and its known lock identities (logical name, sanitized name, validated directory name, and matching frontmatter name). Success requires both physical removal and a clean lock file; failures remain incomplete cleanup. Unrelated skill entries are preserved.
 
 ## Internal Self-Scan (AI Factory repo)
 

@@ -994,6 +994,59 @@ else
     fail "prompt-contract violation" "$(printf '%s\n' "${BAD_LINES[@]}")"
 fi
 
+# Lock aliases must be captured before npx or physical cleanup removes SKILL.md.
+if "$PYTHON" - "$HELPER" <<'PY'
+import json
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+
+helper = sys.argv[1]
+for requested, directory, canonical, removed in [
+    ('Convex Best Practices', 'convex-best-practices', 'Convex Best Practices',
+     {'Convex Best Practices', 'convex-best-practices'}),
+    ('convex-best-practices', 'convex-best-practices', 'Convex Best Practices',
+     {'Convex Best Practices', 'convex-best-practices'}),
+    ('Convex Best Practices', 'installed-alias', 'Convex Best Practices',
+     {'Convex Best Practices', 'convex-best-practices', 'installed-alias'}),
+    ('convex-best-practices', 'convex-best-practices', 'safe-one',
+     {'convex-best-practices'}),
+]:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        installed = root / '.claude/skills' / directory
+        installed.mkdir(parents=True)
+        (installed / 'SKILL.md').write_text(f'---\nname: {canonical}\n---\n')
+        sibling = installed.parent / 'safe-one'
+        sibling.mkdir()
+        (sibling / 'SKILL.md').write_text('---\nname: safe-one\n---\n')
+        lock = root / 'skills-lock.json'
+        original = json.dumps({'version': 1, 'skills': {
+            key: {'source': 'fixture/repo'} for key in removed | {'safe-one'}
+        }})
+        lock.write_text(original)
+        command = [sys.executable, helper, '--root', tmp, '--skill', requested,
+                   '--installed-path', str(installed)]
+        dry = subprocess.run(command + ['--dry-run'], capture_output=True, text=True)
+        assert dry.returncode == 0, dry.stderr
+        assert lock.read_text() == original and installed.exists(), 'dry-run mutated state'
+        result = subprocess.run(command, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+        assert not installed.exists(), 'blocked files remain'
+        assert set(json.loads(lock.read_text())['skills']) == {'safe-one'}, result.stdout
+        assert (sibling / 'SKILL.md').exists(), 'sibling files were removed'
+        # Canonical metadata is unavailable on retries; ordinary sanitized paths stay idempotent.
+        if directory == 'convex-best-practices':
+            retry = subprocess.run(command, capture_output=True, text=True)
+            assert retry.returncode == 0, retry.stderr
+PY
+then
+    pass "lock aliases: display/canonical/directory names cleaned; siblings and dry-run preserved"
+else
+    fail "lock aliases cleanup regression"
+fi
+
 # Restore PATH for any post-suite work
 export PATH="$ORIGINAL_PATH"
 if [[ -n "$ORIGINAL_PATHEXT" ]]; then

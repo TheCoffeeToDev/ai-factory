@@ -36,15 +36,13 @@ py --version
   - `py --version` → `PYTHON_CMD=(py)`
 - Do not use Python `-c` one-liners for this detection path. The pre-approved tool contract only covers version probes, `security-scan.py`, and `cleanup-blocked-skill.py` execution.
 - If `PYTHON_CMD` is set — use that selected command for all Python scanner and cleanup helper commands below
-- If not found — ask the user via `AskUserQuestion`:
-  1. Provide path to Python (e.g., `/usr/local/bin/python3.11`)
-  2. Skip security scan (at your own risk — external skills won't be scanned for prompt injection)
-  3. Install Python first and re-run `/aif`
+- If none works, STOP external-skill installation and Learn Mode before any download or generation. Ask the user to install Python 3 or make it available through one of the four supported launchers, then retry. Context setup may continue without acquiring external skills.
+- Do not execute an arbitrary user-provided interpreter path: it is outside the default tool allowlist. A custom path requires a separately authorized tool contract.
 
-**Based on choice:**
-- "Provide path to Python" → verify it is Python 3, then use the provided path for scanner commands below
-- "Skip security scan" → show a clear warning: "External skills will NOT be scanned. Malicious prompt injections may go undetected." Then skip all Level 1 automated scans, but still perform Level 2 (manual semantic review).
-- "Install Python first" → **STOP**, user will re-run `/aif` after installing
+**Install preflight (mandatory before every external install or Learn Mode):**
+- Require a supported Python 3 command and readable `~/{{skills_dir}}/aif-skill-generator/scripts/security-scan.py` and `cleanup-blocked-skill.py` files. Use `Read` to verify both helpers exist; if either is missing, STOP acquisition and report how to restore it.
+- Do not run `npx skills install` or generate a Learn Mode skill until scanner and verified cleanup are available. Manual Level 2 review does not replace this preflight.
+- When BLOCKED, require cleanup exit 0 and verified removal of both the scanned directory and its known lock identities before reporting successful cleanup. If cleanup fails, report incomplete cleanup and STOP; never use the blocked skill.
 
 **Two-level check for every external skill:**
 
