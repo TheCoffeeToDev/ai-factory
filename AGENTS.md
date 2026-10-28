@@ -162,6 +162,7 @@ Current config keys in active use:
 - `paths.*` - artifact discovery for description, architecture, roadmap, research, RULES.md, plan files, fix plans, QA artifacts,
   references, security state, patches, evolutions, loop state, rules, and archive
 - `language.ui` / `language.artifacts` / `language.technical_terms` - prompt/report language, generated artifact language, and terminology handling while preserving commands, paths, identifiers, config keys, and raw errors where required
+- `writing.profile` / `writing.targets` / `writing.dictionary` - user-owned, disabled-by-default `/aif-docs` editorial profile for exact authorized documentation/runbook paths; choose RU/EN rules after artifact language, preserve meaning and project terminology, and never use style as requirements validation
 - `git.enabled` / `git.base_branch` / `git.create_branches` / `git.branch_prefix` / `git.skip_push_after_commit` - planning, verification, and commit push behavior
 - `workflow.verify_mode` - default verification strictness
 - `workflow.explore_mode` / `workflow.plan_mode` / `workflow.improve_check` - command defaults (`regular` / `ask` / `false`); explicit arguments win, `/aif` reruns preserve values
