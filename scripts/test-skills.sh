@@ -2041,6 +2041,14 @@ else
     echo "$LOOP_BUDGET_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== API compatibility examples and reference installation ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-api-compatibility.mjs"; then
+    pass "API compatibility example data and standalone reference installation"
+else
+    fail "API compatibility examples or reference installation"
+fi
+
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
 
 set +e
