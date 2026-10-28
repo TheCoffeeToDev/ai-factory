@@ -961,6 +961,13 @@ export async function installSkills(options: InstallOptions): Promise<string[]> 
   return installedSkills;
 }
 
+export function includeRequiredSkills(skills: string[]): string[] {
+  // /aif calls scanner and cleanup scripts shipped by aif-skill-generator.
+  return skills.includes('aif') && !skills.includes('aif-skill-generator')
+    ? [...skills, 'aif-skill-generator']
+    : skills;
+}
+
 export async function installSubagents(options: InstallSubagentsOptions): Promise<string[]> {
   const { projectDir } = options;
   const agentId = options.agentId ?? 'claude';
@@ -1312,7 +1319,7 @@ export async function updateSkills(
   const availableSkills = await getAvailableSkills();
   const availableSet = new Set(availableSkills);
   const excludeSet = new Set(excludeSkills);
-  const installNewSet = new Set(installNewSkills);
+  const installNewSet = new Set(includeRequiredSkills([...agentInstallation.installedSkills, ...installNewSkills]));
 
   const entries: SkillUpdateEntry[] = [];
 
@@ -1360,7 +1367,9 @@ export async function updateSkills(
     entries.push({
       skill,
       status: installedNewSet.has(skill) ? 'changed' : 'skipped',
-      reason: installedNewSet.has(skill) ? 'new-in-package' : 'install-failed',
+      reason: installedNewSet.has(skill)
+        ? (skill === 'aif-skill-generator' && !installNewSkills.includes(skill) ? 'required-by-aif' : 'new-in-package')
+        : 'install-failed',
     });
   }
 

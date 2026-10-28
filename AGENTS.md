@@ -63,6 +63,7 @@ ai-factory/
 ### Skills Location
 
 - **Package skills**: `skills/` — source of truth, copied during install
+- Selecting `aif` also selects `aif-skill-generator`, which supplies setup's security scanner and blocked-skill cleanup helpers. `init` records this managed dependency; `update` heals older selections missing it. Other skill selections remain independent.
 - **User skills**: `<agent-config-dir>/skills/` (e.g. `.claude/skills/`, `.opencode/skills/`, `.agents/skills/`)
 - **Agent transformer system**: `src/core/transformers/` adapts skill format per agent (e.g. Codex rewrites invocation prefixes to `$`, Antigravity 2.0 uses `.agents/` with triggered rules and subagents, KiloCode sanitizes dotted names)
 

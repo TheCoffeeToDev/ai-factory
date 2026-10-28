@@ -131,7 +131,7 @@ test('core', 'shared CLI/App renders identically and receipts track profile chan
 });
 
 test('core', 'shared custom targets have one home profile and survive lifecycle transitions', async project => {
-  const agents = [installation('codex', '.team/skills'), installation('codex-app', '.team/skills')];
+  const agents = [installation('codex', '.team/skills', ['aif', 'aif-skill-generator']), installation('codex-app', '.team/skills', ['aif', 'aif-skill-generator'])];
   const [group] = await resolveSkillTargets(project, agents);
   const [reversed] = await resolveSkillTargets(project, [...agents].reverse());
   assert.equal(group.context.hash, reversed.context.hash);
@@ -145,8 +145,8 @@ test('core', 'shared custom targets have one home profile and survive lifecycle 
     const content = await fs.readFile(path.join(project, '.team/skills/demo/references/helper.md'), 'utf8');
     assert.equal(content, '.team/skills ~/.codex/skills ~/.codex/skills .codex --agent codex Codex');
   }
-  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: ['aif'], renderContext: group.context });
-  for (const agent of agents) agent.managedSkills = await buildManagedSkillsState(project, agent, ['aif'], group.context);
+  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: agents[0].installedSkills, renderContext: group.context });
+  for (const agent of agents) agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills, group.context);
   await saveConfig(project, { version: '2.19.0', agents }, { hydrateAgentFileSources: false });
   const before = await snapshot(path.join(project, '.team/skills'));
   runUpdate(project);
@@ -190,16 +190,16 @@ test('cli', 'empty CLI/App init migrates on update and stays stable on repeated 
 });
 
 test('cli', 'shared update preserves different per-runtime selections and their union', async project => {
-  const agents = [installation('codex', '.agents/skills', ['aif']), installation('codex-app', '.agents/skills', ['aif-plan'])];
+  const agents = [installation('codex', '.agents/skills', ['aif', 'aif-skill-generator']), installation('codex-app', '.agents/skills', ['aif-plan'])];
   const [group] = await resolveSkillTargets(project, agents, { select: false });
-  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: ['aif', 'aif-plan'], renderContext: group.context });
+  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: ['aif', 'aif-plan', 'aif-skill-generator'], renderContext: group.context });
   for (const agent of agents) agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills, group.context);
   for (const order of [agents, [...agents].reverse()]) {
     await saveConfig(project, { version: '2.19.0', agents: order }, { hydrateAgentFileSources: false });
     const before = await snapshot(path.join(project, '.agents/skills'));
     runUpdate(project);
     const saved = await loadConfig(project);
-    assert.deepEqual(saved.agents.find(agent => agent.id === 'codex').installedSkills, ['aif']);
+    assert.deepEqual(saved.agents.find(agent => agent.id === 'codex').installedSkills, ['aif', 'aif-skill-generator']);
     assert.deepEqual(saved.agents.find(agent => agent.id === 'codex-app').installedSkills, ['aif-plan']);
     assert.deepEqual(await snapshot(path.join(project, '.agents/skills')), before);
   }
@@ -560,10 +560,10 @@ for (const scenario of ['unchanged', 'force', 'partial-failure']) {
 }
 
 test('extensions', 'shared replacements project outcomes and apply one injection', async project => {
-  const agents = [installation('codex', '.agents/skills'), installation('codex-app', '.agents/skills')];
+  const agents = [installation('codex', '.agents/skills', ['aif', 'aif-skill-generator']), installation('codex-app', '.agents/skills', ['aif', 'aif-skill-generator'])];
   const [group] = await resolveSkillTargets(project, agents, { select: false });
-  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: ['aif'], renderContext: group.context });
-  for (const agent of agents) agent.managedSkills = await buildManagedSkillsState(project, agent, ['aif'], group.context);
+  await installSkills({ projectDir: project, agentId: 'codex', skillsDir: group.skillsDir, skills: agents[0].installedSkills, renderContext: group.context });
+  for (const agent of agents) agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills, group.context);
   const config = { version: '2.19.0', agents, extensions: [] };
   await saveConfig(project, config, { hydrateAgentFileSources: false });
   const source = path.join(project, 'extension-source');

@@ -9,6 +9,7 @@ import {
   hashManagedFile,
   installConfigFiles,
   installSkills,
+  includeRequiredSkills,
   installSubagents,
   getAvailableSkills,
   rebuildManagedAgentFilesForAgents,
@@ -233,6 +234,12 @@ async function initLocked(options: InitOptions): Promise<void> {
     } else {
       answers = await runWizard(existingAgentIds);
     }
+
+    const resolvedSkills = includeRequiredSkills(answers.selectedSkills);
+    if (resolvedSkills.length !== answers.selectedSkills.length) {
+      console.log(chalk.dim('Including aif-skill-generator: required by /aif for security scanning and blocked-skill cleanup.'));
+    }
+    answers.selectedSkills = resolvedSkills;
 
     const groups = await resolveSkillTargets(projectDir,
       answers.agents.map(agent => ({

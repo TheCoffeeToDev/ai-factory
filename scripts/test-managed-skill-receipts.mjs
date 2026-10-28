@@ -137,7 +137,7 @@ for (const [id, skill, installedFile] of [
         assert.match(output, /Preserving unproven or modified skill/);
       }
       const saved = await loadConfig(project);
-      assert.deepEqual(saved.agents[0].installedSkills, ['aif']);
+      assert.deepEqual(saved.agents[0].installedSkills, ['aif', 'aif-skill-generator']);
       assert.equal(saved.agents[0].managedSkills[skill], undefined, 'preserved files must not remain managed');
     });
   }

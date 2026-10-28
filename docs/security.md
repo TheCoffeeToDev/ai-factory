@@ -53,6 +53,8 @@ External skill downloaded
 
 ## Why Two Levels?
 
+Selecting `/aif` during `init` also installs `aif-skill-generator`, which owns the scanner and blocked-skill cleanup scripts. Both interactive and flag-based selections record this dependency as a managed skill. `update` also repairs older `/aif` installations that omitted it; projects without `/aif` keep their existing skill selection.
+
 | Level | Catches | Misses |
 |-------|---------|--------|
 | **Python scanner** | Known patterns, encoded payloads, invisible characters, HTML comment injections | Rephrased attacks, novel techniques |
