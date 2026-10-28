@@ -1,3 +1,4 @@
+import { captureToolPermissionBases, restoreToolPermissionBases } from '../../core/tool-permissions.js';
 import chalk from 'chalk';
 import path from 'path';
 import {realpathSync} from 'fs';
@@ -231,6 +232,7 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
   });
 
   await prepareSkillTargets(projectDir, config);
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents);
 
   const currentVersion = getCurrentVersion();
 
@@ -463,6 +465,8 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
         console.log(chalk.green(`✓ Re-applied ${totalInjections} extension injection(s)`));
       }
     }
+
+    await restoreToolPermissionBases(projectDir, config.agents, permissionBases);
 
     // Rebuild managed state after final update + replacement + injection pipeline.
     const finalReplacedSkills = collectReplacedSkills(extensions);

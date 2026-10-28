@@ -2077,6 +2077,14 @@ else
     echo "$AUDIT_ARTIFACTS_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== Extension tool permission lifecycle ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-extension-tool-permissions.mjs"; then
+    pass "extension tool permission ownership and lifecycle"
+else
+    fail "extension tool permission ownership or lifecycle"
+fi
+
 echo -e "\n${BOLD}=== Installed skill audit packaging and docs ===${NC}\n"
 
 if node "$ROOT_DIR/scripts/test-skills-audit.mjs"; then
