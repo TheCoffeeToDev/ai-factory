@@ -552,6 +552,7 @@ Reviews staged changes or PR diffs:
 /aif-review 123 +check
 ```
 - Checks correctness, security, performance, and maintainability
+- For API contract or producer/consumer changes, uses the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md): pins old/new supported contracts and inspected consumers, checks schema and semantics separately, and records coverage gaps. Findings retain the existing severity/validation/gate contract; the reference does not authorize commands or production access.
 - **Coverage-first finding stage** — the review reports every issue it finds, including uncertain and low-severity ones, instead of pre-filtering to "only important" issues; ranking and filtering happen downstream
 - **Confidence markers** — an uncertain finding ends with `(confidence: low)` or `(confidence: medium)`; high confidence is the default and carries no marker. Confidence is independent of severity: the section still follows impact, so a potential merge-blocker you are unsure about is reported in "Critical Issues" with a marker
 - **Markers are resolved before the gate** — a review that produced any marker runs the `+check` validation automatically, even without the flag, so the published gate never carries an unresolved finding (confirmed → ordinary blocker driving `fail`, refuted → dropped). Marker-free reviews dispatch nothing, keeping `+check` opt-in everywhere else
