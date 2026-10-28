@@ -272,7 +272,7 @@ export async function runReview(request, call) {
   if (source.mode === 'pr') {
     assert(typeof drafted.project_context === 'string', 'PR reviewer project_context must be a string (empty when no pinned excerpt is used)');
     const completed = drafted.source;
-    assert(completed && ['repository', 'pr', 'base_sha', 'head_sha', 'merge_base_sha'].every(key => completed[key] === source[key])
+    assert(completed && ['mode', 'schema_version', 'repository', 'pr', 'base_sha', 'head_sha', 'merge_base_sha'].every(key => completed[key] === source[key])
       && isDeepStrictEqual(completed.diff, source.diff), 'Reviewer changed pinned PR identity/diff');
     source = { ...completed, stale: source.stale || completed.stale,
       unavailable_context: [...new Map([...(source.unavailable_context ?? []), ...(completed.unavailable_context ?? [])]

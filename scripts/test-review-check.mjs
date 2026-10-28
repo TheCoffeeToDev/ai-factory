@@ -199,6 +199,29 @@ await check('PR reviewer must explicitly return pinned context or an empty excer
     assert.equal(validatorCalls, 0);
   }
 });
+// Completed PR packages must retain the captured discriminator and format.
+// A different valid mode used to bypass PR context/freshness/provenance checks.
+for (const [field, values] of [['mode', ['staged', 'commits', undefined]], ['schema_version', [2, '1', undefined]]]) {
+  for (const value of values) {
+    await check(`PR reviewer cannot change ${field} to ${JSON.stringify(value) ?? 'missing'}`, async () => {
+      const test = fixture.cases.find(test => test.id === 'pr-drop-all-unconfirmed');
+      const records = structuredClone(test.records.slice(0, 2));
+      if (value === undefined) delete records[1].response.source[field];
+      else records[1].response.source[field] = value;
+      const replay = new ToolReplay(records, { normalize });
+      const journal = { request: test.request, responses: [] };
+      for (let turn = 0; turn < 2; turn += 1) {
+        const step = await advanceReview(journal);
+        assert.equal(step.done, false);
+        journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
+      }
+      replay.assertConsumed();
+      // No validator or freshness call, and no gate may follow an invalid package.
+      await assert.rejects(advanceReview(journal), new RegExp('Reviewer changed pinned PR identity/diff'));
+      assert.deepEqual(replay.calls.map(call => call.tool), ['Bash', 'Reviewer']);
+    });
+  }
+}
 await check('CLI executes the same complete journal and returns the same gate', async () => {
   const test = fixture.cases[0];
   const replay = new ToolReplay(test.records, { normalize });
