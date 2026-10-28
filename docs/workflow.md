@@ -366,6 +366,13 @@ phase file before executing a task and updates progress only in `index.md`.
 `Original Request` supplies original scope; committed Research Context supplies
 revisioned requirements. `--list` is read-only. Docs policy remains
 `Docs: yes` → mandatory `/aif-docs` checkpoint; `no`/unset → `WARN [docs]`.
+
+Within an authorized `/aif-docs` task, the optional
+[technical writing profile](config-reference.md#writing) can edit selected
+documentation/runbooks after their language is fixed. It is disabled by default
+and preserves meaning and project terminology before improving readability.
+It adds no requirements-validation or quality gate to this workflow.
+
 When executing through the Claude top-level `implement-coordinator`, the quality-gate sidecars include `review-sidecar`, `security-sidecar`, and `rules-sidecar` (`aif-rules-check`) after code changes, plus `best-practices-sidecar` for maintainability checks. In Handoff automation, `HANDOFF_SKIP_REVIEW=1` intentionally skips the review-family gates: `review-sidecar`, `security-sidecar`, and `rules-sidecar`.
 
 ### `/aif-verify [--strict]` — check completeness

@@ -383,6 +383,14 @@ without blocking the flow.
 
 **Documentation website** — `--web` flag generates a complete static HTML site in `docs-html/` with navigation bar, dark mode support, and clean typography. Ready to host on GitHub Pages or any static hosting.
 
+**Optional technical writing profile** — `writing.profile: simple-technical`
+applies adapted RU/EN SimpleEn-RU rules only to exact files in `writing.targets`
+that are already in the authorized docs scope, including runbooks. It is off by
+default. Resolve artifact language first; preserve project dictionary terms,
+code, commands, and quoted errors. Meaning preservation precedes readability;
+this does not validate requirement correctness or certify standards compliance.
+See [Writing settings](config-reference.md#writing).
+
 **Quality checks:**
 - Every doc page in `paths.docs` gets prev/next navigation header + "See Also" cross-links
 - Technical review — verifies links, structure, code examples, no content loss
