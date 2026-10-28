@@ -144,6 +144,7 @@ npx skills add lee-to/ai-factory --skill '*'
 | [Extensions](docs/extensions.md) | Writing and installing extensions — commands, injections, MCP, agents |
 | [Configuration](docs/configuration.md) | `.ai-factory.json`, MCP servers, project structure, best practices |
 | [Config Reference](docs/config-reference.md) | Full `config.yaml` key reference and skill read/write matrix |
+| [Instruction Manifests](docs/instruction-manifests.md) | Explicit invocation records, exact instruction bytes, load evidence, and local restoration |
 
 ## Links
 - [Official Website](https://aif.cutcode.dev) - AI Factory website
