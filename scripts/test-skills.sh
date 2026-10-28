@@ -2077,6 +2077,14 @@ else
     echo "$AUDIT_ARTIFACTS_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== Installed skill audit packaging and docs ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-skills-audit.mjs"; then
+    pass "skills audit installation and documentation tests"
+else
+    fail "skills audit installation and documentation tests"
+fi
+
 echo -e "\n${BOLD}=== Results ===${NC}"
 echo -e "  Total:    $TOTAL"
 echo -e "  Passed:   ${GREEN}$PASSED${NC}"

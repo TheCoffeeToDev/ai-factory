@@ -2,7 +2,7 @@
 
 # Core Skills
 
-**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy. The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
+**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy. The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
 
 `/aif` is also the primary writer for `config.yaml`: the initial file comes from the commented template, and setup reruns update only managed keys while preserving comments, unrelated manual edits, and `rules.<area>` entries owned by `/aif-rules`.
 
@@ -287,6 +287,27 @@ Self-improve skills based on project experience:
 - Writes approved project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
 - Saves all outcomes, including "the new rule did not improve behavior", to `paths.evolutions` (default: `.ai-factory/evolutions/`) after apply/report-save approval
 - See [Skill Evolution](evolve.md#comparing-rule-candidates) for the comparison contract and evidence requirements
+
+### `/aif-skills-audit`
+
+Audit the installed library before deciding what to keep, revise, or consolidate:
+
+```text
+/aif-skills-audit
+/aif-skills-audit --root "/path/to/custom skills" --online
+/aif-skills-audit --output ".ai-factory/skills-audit.md"
+```
+
+- Explicit opt-in; inventories built-in, extension/replacement and third-party skills across known project/user/plugin roots. Repeat `--root "<skills-dir>"` to add installed roots; unread or inaccessible entries remain coverage gaps.
+- Starts with **final composition**: deployed text including injections, project overrides, applicable rules and conditional references. Distinguishes observed loads from reconstructed composition and estimates.
+- Explains overlapping triggers, repeated/conflicting rules, stale links/commands and excess context with concrete source evidence.
+- Every merge/removal candidate maps duties to surviving owners and explains incoming/outgoing dependencies; uncovered duties block the recommendation.
+- Without usage observations, usefulness/outcomes are **not measured**, never **useless**.
+- Reports in chat by default and applies no recommendations. `--output "<new-report.md>"` writes only a new report; existing files, audited roots and reserved context/config paths are protected.
+- External checks are **not checked** by default. `--online` enables read-only public-link/official-documentation checks; auth failures, timeouts and rate limits mean **unknown**, not broken.
+- Reads config for context paths, rules and language; works without AI Factory context and adds no config keys. Audited skills, scripts and documented commands are never executed.
+
+Unlike `/aif-evolve`, this audits the whole installed set and produces recommendations; it neither writes overrides nor advances the evolve cursor. The [report contract](../skills/aif-skills-audit/references/aif-skills-audit/REPORT.md) defines the evidence and duty-coverage tables.
 
 ### `/aif-transfer <source-project-path> [skill-name|"all"]`
 Reuse relevant fix experience from another AI Factory project without identifying it:

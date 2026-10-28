@@ -447,6 +447,18 @@ evidence means postpone. Logs preserve negative results, including "the new rule
 not improve behavior", without adding those instructions to active skill-context.
 See [Comparing Rule Candidates](evolve.md#comparing-rule-candidates).
 
+### `/aif-skills-audit` — inspect the installed library
+
+Run `/aif-skills-audit` explicitly to review overlaps, stale instructions and context
+growth across built-in, extension and third-party skills. Its report starts with
+final composition and explains the dependencies and surviving duty owners for any
+merge/removal candidate. Missing usage observations mean **not measured**, never
+**useless**.
+
+The audit applies no recommendations and executes no audited skills or commands.
+Output stays in chat unless `--output "<new-report.md>"` is supplied; `--online`
+enables read-only external checks. See [the audit reference](skills.md#aif-skills-audit).
+
 ### `/aif-transfer` — reuse anonymized experience
 
 ```
