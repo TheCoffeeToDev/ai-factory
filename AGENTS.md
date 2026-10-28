@@ -536,6 +536,8 @@ ai-factory upgrade
 
 ## Documentation Structure
 
+PR review evidence is defined in `skills/aif-review/references/PR-SOURCE.md`: `/aif-review` pins base/head/merge-base SHAs and the reviewed diff hash, retrieves verification context from the same tree, and records file versions and unavailable context in **Review Sources**. `+check` consumes that package without local PR context reads. User-facing behavior is documented in `docs/skills.md` and `docs/workflow.md`.
+
 User-facing documentation is split between a lean README and detailed `docs/` pages:
 
 ```
