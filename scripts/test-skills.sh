@@ -1998,6 +1998,20 @@ else
     echo "$GATE_RESULT_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== Review +check recorded workflow scenarios ===${NC}\n"
+
+set +e
+REVIEW_REPLAY_OUTPUT=$(node "$ROOT_DIR/scripts/test-review-check.mjs" 2>&1)
+REVIEW_REPLAY_EXIT=$?
+set -e
+
+if [[ $REVIEW_REPLAY_EXIT -eq 0 ]]; then
+    pass "review +check recorded workflow scenarios"
+else
+    fail "review +check recorded workflow scenarios"
+    echo "$REVIEW_REPLAY_OUTPUT" | sed 's/^/      /'
+fi
+
 echo -e "\n${BOLD}=== Loop budget contract smoke tests ===${NC}\n"
 
 set +e

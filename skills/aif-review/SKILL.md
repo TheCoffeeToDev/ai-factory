@@ -26,6 +26,8 @@ If config.yaml doesn't exist, use defaults:
 
 ## Behavior
 
+For explicit `+check`, use the executable host protocol in `references/CHECK-MODE.md`: `check-workflow.mjs run` for staged/PR mode, or `prepare`/`finish` after the normal per-commit collection in commits mode. The internal reviewer draft, validator dispatch, response handling and final gate use this shared workflow. Do not independently simulate its parser or gate in prose. Automatic marker-triggered validation continues to follow the procedure below with its enforced-boundary requirement.
+
 ### Argument flags
 
 Before routing the argument string into one of the modes below, extract any standalone tokens that flag optional behavior. Strip them from the argument string and route the remainder normally.

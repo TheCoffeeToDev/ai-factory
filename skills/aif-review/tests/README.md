@@ -1,0 +1,31 @@
+# Replay-проверки `/aif-review +check`
+
+```sh
+npm run test:review-check
+npm run test:review-check -- --report /tmp/review-check-report.json
+```
+
+Набор включён в `npm test`. Требуются установленные devDependencies, Node.js 18+ и Git. Авторизация Claude, Codex и GitHub не нужна.
+
+Три файла `*.spec.yaml` теперь исполняются. Runner использует schema loader, подготовку временного Git sandbox и assertions из установленного `@cutcode/ai-tester`. `files_staged` действительно записываются и добавляются в индекс временного репозитория; записанный diff сверяется с полученным `git diff --cached`.
+
+Далее runner вызывает тот же `check-workflow.mjs run` / `advanceReview`, который указан в skill: источник → внутренний Reviewer → один validator Task → разбор ответа → финальный gate. Reviewer означает шаг составления review основным агентом. В тесте и он, и validator получают фиксированные ответы; модель не запускается. Проверяется работа исполняемого workflow, а не способность модели следовать произвольному тексту skill.
+
+`_replay/cases.json` содержит управляемые записи Git/PR, draft review, ответы validator, ожидаемые статусы и содержимое отчёта. Отказы, timeout и пустые ответы сохраняют исходные findings; частичный ответ обрабатывается по каждому item. Проверяются confidence markers, многострочный `Modified-text`, переносы severity, сохранение context gates, отсутствие pinned evidence, freshness и пустой список findings.
+
+PR-запрос явно задаёт `working_directory`. Reviewer возвращает отдельный `project_context`: pinned excerpt либо пустую строку. Версия workflow 2 сохраняет каталог в обоих случаях и добавляет непустой excerpt без замены локальным описанием. Положительный replay-кейс проверяет точный блок контекста и его связь с `DESCRIPTION.md` на pinned head; отрицательные проверки сохраняют запрет локального контекста и отклоняют пропущенные/некорректные поля до source/validator-вызовов.
+
+Replay-ключ имеет вид `call_id:tool:sha256(canonical_args)`. `call_id` последовательно растёт в пределах сценария. Поэтому два идентичных `TaskStatus` с ответами `pending` и `success` имеют разные ключи. Ключи содержат весь набор аргументов, включая validator prompt; только абсолютный путь установленного `pr-source.mjs` заменяется стабильным `<references>`.
+
+При отсутствии записи, несовпадении аргументов, дублирующемся ключе или неиспользованной записи прогон падает. Replay transport не имеет callback для живых инструментов и не импортирует SDK. Локальный Git используется только для подготовки и проверки fixtures. Исходный checkout не меняется.
+
+JSON-отчёт содержит итоговый review, gate, полный trace вызовов, результаты assertions, SHA-256 skill/references, scenario и recordings, версии package, Node.js, `ai-tester`, workflow и хеши исполняемых runner-файлов. Путь отчёта печатается в конце прогона. `AIF_REVIEW_DEBUG=1` включает stderr-диагностику workflow.
+
+После осознанного изменения prompt или протокола можно пересоздать записи:
+
+```sh
+node scripts/capture-review-check.mjs --write
+npm run test:review-check
+```
+
+Это отдельная команда обслуживания, которую тесты и CI никогда не вызывают. Она воспроизводит явно заданные ответы из capture-скрипта и сохраняет новые хеши запросов; ожидаемые результаты заданы отдельно и не вычисляются из output workflow. Перед принятием записей проверьте diff. Никакие записи из живой модели не создаются, её вариативность остаётся вне scope.
