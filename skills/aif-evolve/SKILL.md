@@ -286,6 +286,12 @@ Present all stale rule findings using the stale rules report format
 Never propose editing, deleting, or reverting base `skills/aif-*/` files —
 they are outside of evolve's scope.
 
+Before collecting decisions, explain that Rewrite/Narrow queues a candidate for
+Step 6.5 and may be postponed when execution or evidence is unavailable. The existing
+rule remains active until the exact replacement reaches `accept` and is approved.
+For a conflicting rule, explicitly state that the conflict remains active while the
+replacement is pending. Keep/Remove retain their existing behavior.
+
 #### Stale Rules Report Format
 
 For each stale rule, present:
@@ -319,17 +325,18 @@ Use `AskUserQuestion` to collect stale rule decisions. Process in batches
 of up to 3 decisions per `AskUserQuestion` call:
 
 - Present first batch (up to 3 stale rules) → `AskUserQuestion`
-- Get answers → apply decisions
+- Get answers → apply keep/remove decisions; queue rewrites/narrowing as exact candidates for Step 6.5
 - If more stale rules remain → present next batch → `AskUserQuestion`
 - Repeat until all stale rules are resolved
 
-**Do NOT proceed to Step 5 until all stale rule decisions are collected
-and applied.** This determines the actual skill-context state for gap analysis.
+**Do NOT proceed to Step 5 until all stale rule decisions are collected.**
+Apply keep/remove decisions first. Rewrites remain unapplied until comparison in
+Step 6.5 and approval in Step 7; track them so gap analysis does not duplicate them.
 
 ### Step 5: Analyze Gaps
 
 **Before analyzing gaps:** re-read skill-context files for target skills that were
-modified in Step 4 (stale rule removals/rewrites). Do NOT use the version loaded
+modified in Step 4 (stale rule removals; rewrites are still queued). Do NOT use the version loaded
 in Step 0.2 — it is outdated after Step 4 changes.
 
 For each skill, consider the base SKILL.md AND its **current** skill-context file
@@ -391,11 +398,38 @@ For each gap found, create a concrete improvement:
 - Improvements must be minimal and focused — don't rewrite entire skills
 - Preserve existing skill structure — add, don't replace
 
+### Step 6.5: Validate Rule Candidates
+
+Before presenting changes for approval, read
+[references/CANDIDATE-VALIDATION.md](references/CANDIDATE-VALIDATION.md).
+Use its card and comparison procedure for every added, rewritten, or merged rule,
+including queued stale-rule rewrites. A candidate is a hypothesis, not an improvement yet.
+
+- Freeze the current effective instructions (base + current skill-context) and the exact
+  candidate change. Compare both versions on the same original problem and an explicit
+  counterexample where the proposed rule must NOT apply.
+- Reuse the project's scenario mechanism when available. Without a runnable evaluator
+  or sufficient evidence, record `postpone` and the missing data; never substitute a
+  predicted result for an observed run.
+- Record per-case results, output evidence, extra cost, and regressions. Preserve
+  `the new rule did not improve behavior` when observed, even if no rule is applied.
+- Outcomes: `accept`, `narrow`, `refine`, `keep_old`, or `postpone`. Narrowed/refined
+  text needs a new comparison before it can become `accept`.
+
+Only `accept` candidates with demonstrated benefit and no detected regressions are
+eligible for Step 7 approval. Validation does not authorize changing live instructions.
+Evaluator commands may need execution permission beyond this skill's allowlist.
+Reuse existing authorization; if required permission is unavailable, record `NOTRUN`
+and `postpone` rather than widening the allowlist.
+
 ### Step 7: Present & Apply
 
 **7.1: Present improvements to user**
 
 Each improvement MUST explicitly state the target file path.
+Include each candidate card, its comparison evidence, and its outcome in the report,
+including non-accepted candidates. Separate validation outcome from the user's decision.
+"Apply all" means only validated `accept` candidates, never untested proposals.
 Use the following target labels:
 
 - **`skill-context`** → `.ai-factory/skill-context/<skill-name>/SKILL.md`
@@ -413,36 +447,21 @@ Based on:
 - Y recurring patterns found
 - Z tech-stack specific insights
 
-### Proposed Improvements
+### Candidate Results
 
-#### /aif-fix (N rules)
-**Target:** `.ai-factory/skill-context/aif-fix/SKILL.md`
+[One complete card per candidate/revision from references/CANDIDATE-VALIDATION.md,
+including exact applicability, instruction diff, shared cases, comparison evidence,
+cost, regressions, and outcome. Include negative and postponed results.]
 
-1. **Add null-check guard**
-   - **Source:** patch-2026-02-10.md, patch-2026-02-12.md (5 patches involved null references)
-   - **Why:** Recurring null-reference errors on optional DB relations
-   - **Rule:** "Check for optional/nullable fields before accessing nested properties"
+### Eligible for Approval
 
-2. **Add async/await pattern**
-   - **Source:** patch-2026-02-11.md (3 patches involved unhandled promises)
-   - **Why:** Unhandled promise rejections in API layer
-   - **Rule:** "Always use try/catch with async/await"
+| Candidate / revision | Target file | Demonstrated benefit | Extra cost |
+|----------------------|-------------|----------------------|------------|
+| <accepted revision> | <exact path> | <observed change> | <delta/units or UNKNOWN> |
 
-#### /aif-implement (N rules)
-**Target:** `.ai-factory/skill-context/aif-implement/SKILL.md`
+### Not Eligible
 
-1. **Add Prisma-specific warning**
-   - **Source:** patch-2026-02-13.md (2 patches from incorrect Prisma queries)
-   - **Why:** Silent data loss from wrong Prisma query methods
-   - **Rule:** "Log all Prisma queries in DEBUG mode"
-
-#### /my-custom-skill (N rules)
-**Target:** `skills/my-custom-skill/SKILL.md` (direct edit — custom skill)
-
-1. **Add pattern**
-   - **Source:** codebase convention
-   - **Why:** Missing guard in Step 2
-   - **Rule:** "..."
+[Candidate/revision, outcome, and next action; do not offer these for application.]
 ```
 
 **After presenting the full report, use `AskUserQuestion` to collect decisions:**
@@ -458,7 +477,10 @@ For improvements — ask:
   per `AskUserQuestion` call (same approach as Step 4 stale rules). For each
   improvement, options: Apply / Skip. Continue until all improvements are resolved.
   Then proceed to 7.2 with only approved improvements.
-- "No, just save report" → no changes applied, **STOP**
+- "No, just save report" → skip 7.2; save all candidate outcomes in 7.3
+
+If no candidate is eligible, present the outcomes and offer to save the report without
+changing rules. Saving evaluation evidence does not mean approving a rule change.
 
 **Do NOT apply any changes until the user answers.**
 
@@ -466,12 +488,20 @@ For improvements — ask:
 
 For each approved improvement, determine the target:
 
+Apply only the exact validated text against the recorded baseline. If instructions
+or cases changed since comparison, revalidate before applying. Updating or merging
+rules is itself a candidate change; do not invent untested wording during this step.
+For multiple approved rules, validate the exact combined change on the union of their
+cases before applying; individual comparisons do not prove that the combination works.
+On a batch regression or inconclusive run, keep active instructions unchanged and
+refine or postpone the batch.
+
 **If the skill is a built-in `aif-*` skill** (its SKILL.md is inside the package `skills/` directory):
 
 1. Create directory if needed:
    mkdir -p .ai-factory/skill-context/<skill-name>
 2. If `.ai-factory/skill-context/<skill-name>/SKILL.md` doesn't exist — create it with the header template
-3. If it exists — read it first, then for each improvement decide:
+3. If it exists — read it first and apply only the validated operation:
    - **Update existing rule** — when a rule on the same topic already exists (e.g., a null-check rule
      exists from 3 patches, and 5 new null-check patches arrived → strengthen the existing rule,
      update its Source list, adjust severity/wording based on new evidence)
@@ -512,6 +542,10 @@ For each approved improvement, determine the target:
 **7.3: Save evolution log**
 
 Create `<resolved evolutions dir>/YYYY-MM-DD-HH.mm.md`:
+Use an unused filename suffix if this name already exists; do not overwrite prior evidence.
+Save all candidate cards and outcomes, including `keep_old`, `postpone`, and observed
+no-improvement results, even when zero improvements were applied (after report-save
+approval in 7.1). Keep unaccepted instructions in the log, out of active skill-context.
 
 ```bash
 mkdir -p <resolved evolutions dir>
@@ -546,6 +580,11 @@ Cursor update rules:
 - Recurring patterns: [list]
 - Tech stack: [from DESCRIPTION.md]
 
+## Candidate Validation
+- [Full candidate cards from references/CANDIDATE-VALIDATION.md, with exact versions,
+  shared cases, observed results/evidence or NOTRUN, cost, regressions, outcome,
+  and user decision. Preserve negative and inconclusive results.]
+
 ## Improvements Applied
 
 ### [skill-name] → skill-context
@@ -568,6 +607,8 @@ Cursor update rules:
 
 Skills improved: X
 Improvements applied: Y
+Candidates: A accepted, B narrow/refine, C keep_old, D postponed
+No-improvement and postponed results: [candidate IDs and reasons]
 
 ### Recommendations
 
@@ -604,17 +645,28 @@ After completing evolution, suggest `/clear` or `/compact` — context is heavy 
     as all prevention points are preserved in the merged rule.
 12. **Installed only** — do not evolve skills not installed in the project
 13. **Ownership boundary** — this command owns `<resolved evolutions dir>/*.md`, `<resolved evolutions dir>/patch-cursor.json`, and `.ai-factory/skill-context/*`; treat roadmap/rules/research/plan artifacts as read-only context unless explicitly asked
+14. **Evidence before accumulation** — validate exact rule changes on the same cases and
+    counterexamples before approval; retain no-improvement outcomes without adding rules.
 
 ## Example
 
-```
+Condensed illustration; actual reports use the complete candidate card from
+[references/CANDIDATE-VALIDATION.md](references/CANDIDATE-VALIDATION.md).
+This example records no observed execution result.
+
+```text
 /aif-evolve fix
 
-→ Found 6/10 patches tagged #null-check
-→ Improvement for /aif-fix (2 rules):
-  Target: .ai-factory/skill-context/aif-fix/SKILL.md
-  1. "PRIORITY CHECK: Look for optional/nullable fields accessed
-      without null guards. This is the #1 source of bugs in this project."
-  2. "When fixing nullable relation errors, check ALL usages of that
-      relation in the same file — same bug often repeats nearby."
+Candidate C001 / revision 1 — Atomic related writes
+Target: .ai-factory/skill-context/aif-fix/SKILL.md
+Applicability: related database writes that must commit atomically
+Original case: the second write fails after the first has succeeded
+Control: an independent write with no multi-write atomicity requirement
+Proposed instruction change: "Use a transaction for related writes that must commit atomically."
+Comparison: NOTRUN — reproducible evaluator is unavailable
+Extra cost: UNKNOWN
+Outcome: postpone
+Active instruction changes: none; keep the current version
+Next evidence: paired original/control runs with output evidence and measured cost
+User decision: pending; offer to save this report without applying the rule
 ```

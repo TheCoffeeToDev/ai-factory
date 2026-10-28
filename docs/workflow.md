@@ -4,6 +4,8 @@
 
 AI Factory has two phases: **configuration** (one-time project setup) and the **development workflow** (repeatable loop of explore → plan → improve → implement → verify → commit → evolve).
 
+Extensions and runtime adapters can explicitly register an invocation with `ai-factory instructions` to preserve its instruction composition and load reports. This is opt-in and does not alter ordinary skill execution. See [Instruction Manifests](instruction-manifests.md) for capture policy, provenance limits, and verification.
+
 ## Project Configuration
 
 Run once per project. Sets up context files that all workflow skills depend on.
@@ -163,7 +165,7 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
                                              │ Patches/experience  │
                                              │ + current context   │
                                              │       ↓             │
-                                             │ Improves skills     │
+                                             │ Compare rule cases  │
                                              │                     │
                                              └─────────────────────┘
 
@@ -330,7 +332,7 @@ revisioned Research Context remains committed scope and drift produces
 `WARN [research-drift]`. `--list` is read-only.
 
 Optional `+check` (also enabled by `workflow.improve_check: true`, overridden
-for one invocation with `--no-check`) runs a single fresh-context `general-purpose` subagent on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation. Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
+for one invocation with `--no-check`) runs a single fresh-context `review-validator` with a runtime-enforced `Read`, `Glob`, `Grep` allowlist on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation. If that allowlist is unavailable or unenforced (including Codex), no validator is dispatched: findings stay unchanged, counters are omitted, and `WARN [+check]` explains the limitation. There is no full-tool fallback. Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
 
 ### `/aif-loop [new|resume|status|stop|list|history|clean] [task or alias]` — iterative quality loop
 
@@ -366,6 +368,13 @@ phase file before executing a task and updates progress only in `index.md`.
 `Original Request` supplies original scope; committed Research Context supplies
 revisioned requirements. `--list` is read-only. Docs policy remains
 `Docs: yes` → mandatory `/aif-docs` checkpoint; `no`/unset → `WARN [docs]`.
+
+Within an authorized `/aif-docs` task, the optional
+[technical writing profile](config-reference.md#writing) can edit selected
+documentation/runbooks after their language is fixed. It is disabled by default
+and preserves meaning and project terminology before improving readability.
+It adds no requirements-validation or quality gate to this workflow.
+
 When executing through the Claude top-level `implement-coordinator`, the quality-gate sidecars include `review-sidecar`, `security-sidecar`, and `rules-sidecar` (`aif-rules-check`) after code changes, plus `best-practices-sidecar` for maintainability checks. In Handoff automation, `HANDOFF_SKIP_REVIEW=1` intentionally skips the review-family gates: `review-sidecar`, `security-sidecar`, and `rules-sidecar`.
 
 ### `/aif-verify [--strict]` — check completeness
@@ -388,6 +397,8 @@ Checks only rules compliance for staged changes, working-tree changes, or a prov
 Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks. Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
 
 Reviews staged changes or PR diff and reports correctness/security/performance findings. Includes read-only architecture/roadmap/rules gate notes in review output (`WARN` for non-blocking inconsistencies, `ERROR` only for explicitly blocking criteria), then appends an `aif-gate-result` JSON block.
+
+For application API changes, the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md) adds a bounded comparison of supported contract revisions and actual consumers. It separates wire compatibility from semantics and preserves the existing findings, validation, source and gate contracts.
 
 In PR mode, the review and validator share one source package bound to full base/head/merge-base SHAs and the exact diff hash. Additional code and versioned context artifacts come from that tree without switching branches. **Review Sources** lists file versions, local discrepancies, unavailable context and PR freshness. Missing evidence remains a visible limitation (`warn` at minimum), including empty-item runs and validation failure; actionable hypotheses retain the existing confidence-marker lifecycle. See the [review reference](skills.md) and [source package contract](../skills/aif-review/references/PR-SOURCE.md).
 
@@ -429,7 +440,26 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 /aif-evolve fix      # Evolve only the fix skill
 ```
 
-Reads patches incrementally using an evolve cursor, analyzes project patterns, and proposes targeted skill improvements. Closes the learning loop: **fix → patch → evolve → better skills → fewer bugs**.
+Reads patches incrementally using an evolve cursor, analyzes project patterns, and creates
+rule candidates. Each candidate is compared with the current effective instructions on
+the same original case, counterexample, and relevant regressions, with extra cost recorded.
+Only an exact revision with demonstrated benefit and no detected regression is offered
+for user approval. Narrowed/refined rules require another comparison; missing execution
+evidence means postpone. Logs preserve negative results, including "the new rule did
+not improve behavior", without adding those instructions to active skill-context.
+See [Comparing Rule Candidates](evolve.md#comparing-rule-candidates).
+
+### `/aif-skills-audit` — inspect the installed library
+
+Run `/aif-skills-audit` explicitly to review overlaps, stale instructions and context
+growth across built-in, extension and third-party skills. Its report starts with
+final composition and explains the dependencies and surviving duty owners for any
+merge/removal candidate. Missing usage observations mean **not measured**, never
+**useless**.
+
+The audit applies no recommendations and executes no audited skills or commands.
+Output stays in chat unless `--output "<new-report.md>"` is supplied; `--online`
+enables read-only external checks. See [the audit reference](skills.md#aif-skills-audit).
 
 ### `/aif-transfer` — reuse anonymized experience
 

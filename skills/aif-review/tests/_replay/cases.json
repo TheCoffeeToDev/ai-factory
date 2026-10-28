@@ -25,7 +25,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -57,7 +57,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -102,7 +102,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -134,7 +134,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "refusal"
           }
@@ -175,7 +175,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -207,7 +207,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "timeout"
           }
@@ -248,7 +248,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -280,7 +280,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "exception"
           }
@@ -321,7 +321,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -353,7 +353,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": ""
@@ -395,7 +395,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -427,7 +427,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": {
@@ -474,7 +474,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -506,7 +506,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nReason: Truncated.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -556,7 +556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -588,7 +588,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -638,7 +638,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -670,7 +670,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -720,7 +720,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -752,7 +752,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason:   \t\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -802,7 +802,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -834,7 +834,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\nReason: Contradictory reason.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -884,7 +884,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -916,7 +916,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: maybe\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -966,7 +966,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -998,7 +998,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: urgent\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1048,7 +1048,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1080,7 +1080,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1130,7 +1130,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1162,7 +1162,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1212,7 +1212,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -1244,7 +1244,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "pending",
             "task_id": "validator-1"
@@ -1305,7 +1305,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1337,7 +1337,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "pending",
             "task_id": "validator-1"
@@ -1406,7 +1406,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -1438,7 +1438,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1481,7 +1481,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -1513,7 +1513,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: suggestion\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: critical\n"
@@ -1556,7 +1556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -1597,7 +1597,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1639,7 +1639,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1671,7 +1671,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
+          "args_sha256": "167d295ff1ab0537be249b952327c13a7ea127512014268a110e101b6806331a",
           "response": {
             "outcome": "refusal"
           }
@@ -1713,7 +1713,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1745,7 +1745,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
+          "args_sha256": "167d295ff1ab0537be249b952327c13a7ea127512014268a110e101b6806331a",
           "response": {
             "outcome": "timeout"
           }
@@ -1787,7 +1787,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1819,7 +1819,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
+          "args_sha256": "167d295ff1ab0537be249b952327c13a7ea127512014268a110e101b6806331a",
           "response": {
             "outcome": "exception"
           }
@@ -1861,7 +1861,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1893,7 +1893,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
+          "args_sha256": "167d295ff1ab0537be249b952327c13a7ea127512014268a110e101b6806331a",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nReason: Truncated.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1939,7 +1939,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -1971,7 +1971,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
+          "args_sha256": "167d295ff1ab0537be249b952327c13a7ea127512014268a110e101b6806331a",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -2017,7 +2017,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -2049,7 +2049,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "773c4e418079b76e124b9f5badfa1b6511b9b8e2cc48e7043501ce9547e7ed76",
+          "args_sha256": "158bf7b9773e8cc695bc81e00b8a1a4b49a5a06e167fadab6c8c207b6d14126c",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Authentication is bypassed.\n`src/handler.ts:4`.\nReturn 401 on invalid tokens.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2094,7 +2094,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "eedfbf059b2ef8cdde3a77f142a7c35d8fd3d751182fd061065d94624fa99237",
+          "args_sha256": "43326fb8cd79d039a210060e876a9e64915f9173cc6b26a0a166a673cd02e7a6",
           "response": {
             "review": {
               "items": [
@@ -2126,7 +2126,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "args_sha256": "363f3e60a8e3d97fc2785ca58376e1eca8e07958a46e0450893eb49b9253f18b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails. (confidence: medium)\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2220,7 +2220,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
+          "args_sha256": "c371c942b97a8e75a0c851fdeea2e59e50cd4ee5f578af80918df0724ec97f66",
           "response": {
             "review": {
               "items": [
@@ -2291,7 +2291,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
+          "args_sha256": "84c311f1a684205fac118003c34e645809ed514ef378de4398fdd78b2ee83b76",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2395,7 +2395,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
+          "args_sha256": "c371c942b97a8e75a0c851fdeea2e59e50cd4ee5f578af80918df0724ec97f66",
           "response": {
             "review": {
               "items": [
@@ -2466,7 +2466,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
+          "args_sha256": "84c311f1a684205fac118003c34e645809ed514ef378de4398fdd78b2ee83b76",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2565,7 +2565,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "ddfc5c41dc548b2a312d12b20c3b1bd38a556f079c3cb73cef3b0705a3c75a64",
+          "args_sha256": "b8b58b3602691717572b8a9945db0dbf2dea520ad5864c5e10eef559af4dc9ed",
           "response": {
             "review": {
               "items": [
@@ -2636,7 +2636,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "5ab6a13f4421cd5c1442c84fb376e801f38f4fb4f99fedde833d8765376c0c50",
+          "args_sha256": "2df43f9cc2d3bb537d55bcd6919bc65fc2b1050572b95629b0c2f3ca58d81d5f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2741,7 +2741,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "94ab9fe6e793d560e4f693dc921043533f0ba8c182a444b30800b106bfae2b40",
+          "args_sha256": "c0bb7b9a5af07dbe535ad54e365ec297c97909d6d03db9f725b431016133824e",
           "response": {
             "review": {
               "items": [
@@ -2816,7 +2816,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "1ed190f00e9bdc305f2df12ae0b09de31ffcbff79c77e50c8f24d5fe66bcdc1d",
+          "args_sha256": "b7c4b8e846a15f4b4bc2e805987e17056cecfaf6afd3d5ab6607ab2fed190b8f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2902,7 +2902,7 @@
         {
           "call_id": 3,
           "tool": "Reviewer",
-          "args_sha256": "6b8ed160d19d2d755a81fd79c7aa0bf54da5afa1f0349c47de32056ce43e008a",
+          "args_sha256": "d5eda8bbbbb0ff80002cb0edcf5839fd90dceea377c723fb7750cab7ee590628",
           "response": {
             "review": {
               "items": [
@@ -2967,7 +2967,7 @@
         {
           "call_id": 4,
           "tool": "Task",
-          "args_sha256": "02609fc13cbe3f2b61c9572059a1e8a9f65d4f137f8dc924a156dd7cb7cf4d83",
+          "args_sha256": "c44249662c128e83bd6cb37f148cc04ca8adfad16558152a555550df75f493da",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -3057,7 +3057,7 @@
         {
           "call_id": 3,
           "tool": "Reviewer",
-          "args_sha256": "604e56a3d3e4077cfb1d2a226f3f0cc1b36cdfdabcda0183e1c1f36ebf9dda6f",
+          "args_sha256": "c19122a30d669a9947ee766009774cf13fcafddb37fcf1cc8e9a65f32280cf23",
           "response": {
             "review": {
               "items": [
@@ -3126,7 +3126,7 @@
         {
           "call_id": 4,
           "tool": "Task",
-          "args_sha256": "77be5ad456ff5847a1d7c2cb5339657f8f5f08bc3631c17590496a5bbc75322a",
+          "args_sha256": "bc3737d7fd8061f926a398411aaf53e56c647f3c6e0fbf904765760a1bb10802",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -3231,7 +3231,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "8776e95a4bf25eeb3fab0e7a1ba253c869fd8567a009dfa386d254b4d79ef0f4",
+          "args_sha256": "9a9cfcbe229f432badeab79be5d6b70f43a2f683d01d23dcacf8299bd1c1994d",
           "response": {
             "review": {
               "items": [],
@@ -3386,7 +3386,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "8776e95a4bf25eeb3fab0e7a1ba253c869fd8567a009dfa386d254b4d79ef0f4",
+          "args_sha256": "9a9cfcbe229f432badeab79be5d6b70f43a2f683d01d23dcacf8299bd1c1994d",
           "response": {
             "review": {
               "items": [
@@ -3459,7 +3459,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "2ace7ca8cfe8edaa6c58c9a594846855d41c4d050e88e71d2ef8275e4b685015",
+          "args_sha256": "0f2f99f2de7b9f7d41ccbd6ad861633d20fb83aa7c53e9ba68dc133a3dbcc8e3",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -3569,7 +3569,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "ebe99db3be11dfbcc087178bbb17cfc82d403f37d3a97c42d56e24e145b018d4",
+          "args_sha256": "f5540771226323cf3c0e1b9d3d72832d78632b45eef4b542347d61c42d2bfe91",
           "response": {
             "review": {
               "items": [
@@ -3645,7 +3645,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "2a743886ac68b4bedd06dcc0cb12974945a8cc3e972458d67c460fffcee0d46a",
+          "args_sha256": "2b568c0eaf5eeaa5d0ee9b1799acd323dccecf45af366d9e318ebf9aa23e4fa7",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -3749,7 +3749,7 @@
         {
           "call_id": 4,
           "tool": "Reviewer",
-          "args_sha256": "0b49819e00754131b0750bbfbc89500115f1de28fd87349a471c0ef6b1065f02",
+          "args_sha256": "c371c942b97a8e75a0c851fdeea2e59e50cd4ee5f578af80918df0724ec97f66",
           "response": {
             "review": {
               "items": [
@@ -3820,7 +3820,7 @@
         {
           "call_id": 5,
           "tool": "Task",
-          "args_sha256": "972fee1a089ceaec7e5f463ec790267a3020c029e6cbcab1d823b82f770f6bc4",
+          "args_sha256": "84c311f1a684205fac118003c34e645809ed514ef378de4398fdd78b2ee83b76",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Unverified due to missing pinned context: src/dependency.ts.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -3876,7 +3876,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -3908,7 +3908,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "00e6bc97987a2ff63cecd663facd9307524ca7acaacc95d3ddde58522b019401",
+          "args_sha256": "0bac6264eb52348b1631e2d14f80a6d084751cf174c557b87ef5b539ee27bf8f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -3950,7 +3950,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [
@@ -3982,7 +3982,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
+          "args_sha256": "539adac5252a7952528fb5626f5f5edd39b7a011c3491a9adff842b75bd6cacd",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -4024,7 +4024,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "43a66335e37118e6f882dd69e87d45f2bcaa597ba2056ff5ecc2a58addc0709e",
+          "args_sha256": "e6237541bcb72ad04640ec829809e80d962fefc9fb64219a5560ca35b53d6af6",
           "response": {
             "review": {
               "items": [],

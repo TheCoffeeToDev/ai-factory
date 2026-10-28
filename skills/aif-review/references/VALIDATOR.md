@@ -113,8 +113,8 @@ Rules:
   ```
   ### Item 2 (section: critical)
   Verdict: modify
-  Reason: verified against the diff — the retry path does reuse the key (question 1, 3)
-  Modified-text: Retries reuse the same idempotency key after a 5xx, so a duplicate charge is possible when the provider did commit the first attempt. `src/payments/retry.ts:88`. Generate a fresh key per attempt.
+  Reason: verified against the diff — the retry path creates a new key after each failure while the provider deduplicates by key (question 1, 3)
+  Modified-text: Retries generate a fresh idempotency key after a 5xx, so a duplicate job is possible when the provider committed the first attempt. `src/jobs/retry.ts:88`. Reuse the key for retries of the same logical operation.
   ```
 
   The severity did not change here, so no `Severity` line is written — the item stays critical and becomes an ordinary blocker.

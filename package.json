@@ -1,6 +1,6 @@
 {
   "name": "ai-factory",
-  "version": "2.19.0",
+  "version": "2.20.0",
   "type": "module",
   "description": "CLI tool for automating AI agent context setup in projects",
   "main": "dist/cli/index.js",
@@ -12,8 +12,10 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "node scripts/run-bash-test.mjs scripts/test-skills.sh",
+    "test:skills-audit": "node scripts/test-skills-audit.mjs",
     "test:init": "node scripts/run-bash-test.mjs scripts/test-init.sh",
     "test:aif-explore-installation": "node scripts/test-aif-explore-installation.mjs",
+    "test:api-compatibility": "node scripts/test-api-compatibility.mjs",
     "test:shared-skills": "npm run build && node scripts/test-shared-skill-targets.mjs",
     "test:loop-subagents": "node scripts/test-loop-subagents.mjs",
     "test:codex-targets": "node scripts/test-codex-skill-targets.mjs --group=control,targets,core,preflight,migration,extensions,ownership,cli,upgrade && node scripts/test-managed-skill-receipts.mjs && node scripts/test-skill-migration-modes.mjs",
@@ -77,7 +79,8 @@
     ],
     "ignore": [
       "examples/**",
-      "skills/aif/references/update-config.mjs"
+      "skills/aif/references/update-config.mjs",
+      "skills/aif-review/references/pr-source.mjs"
     ],
     "ignoreDependencies": [
       "@cutcode/ai-tester"
