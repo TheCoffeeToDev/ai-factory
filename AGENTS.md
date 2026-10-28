@@ -7,7 +7,7 @@
 **AI Factory** (v2) is an npm package + skill system that automates AI agent context setup for projects. It provides:
 
 1. **CLI tool** (`ai-factory init/update/upgrade`) — installs skills and configures MCP
-2. **Built-in skills** (30 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
+2. **Built-in skills** (31 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
 3. **Spec-driven workflow** — structured approach: plan → implement → commit
 4. **Multi-agent support** — 16 agents (Claude Code, Cursor, Windsurf, Roo Code, Kilo Code, Antigravity, OpenCode, Warp,
    Zencoder, Codex CLI, Codex app, GitHub Copilot, Gemini CLI, Junie, Qwen Code, Universal)
@@ -33,6 +33,7 @@ ai-factory/
 │   ├── aif-distillation/       # Distill books/docs/files into skills
 │   ├── aif-dockerize/          # Docker/compose generator
 │   ├── aif-docs/               # Documentation generation & maintenance
+│   ├── aif-skills-audit/             # Audit installed skills and final composition
 │   ├── aif-evolve/             # Self-improve skills based on context
 │   ├── aif-transfer/           # Reuse anonymized patch experience from another project
 │   ├── aif-warmup/             # Load startup context for a session or fork
@@ -121,6 +122,7 @@ Artifact writers are command-scoped to prevent ownership conflicts:
 | `paths.plan`, `paths.plans/<id>.md`, `paths.plans/<id>/index.md` + phase files                | `/aif-plan`            | fast/full/ultra artifacts; `/aif-improve` refines existing plans and bundles                     |
 | `paths.fix_plan` and `paths.patches/*.md`                                                     | `/aif-fix`             | fix workflow ownership; context artifacts (including `DESCRIPTION.md`) stay read-only by default |
 | `README.md` and `paths.docs/*`                                                                | `/aif-docs`            | README stays the landing page; detailed docs directory is configurable via `paths.docs`          |
+| Explicit new audit report (`--output` only) | `/aif-skills-audit` | Chat by default; installed skills, injections, overrides and settings stay read-only |
 | `.ai-factory/skill-context/*`                                                                 | `/aif-evolve`          | skill-context overrides for built-in skills; `/aif-transfer` delegates approved writes here       |
 | `paths.evolutions/*.md` and `paths.evolutions/patch-cursor.json`                              | `/aif-evolve`          | evolution logs and incremental patch cursor; `/aif-transfer` delegates logs but never the cursor  |
 | `.ai-factory/evolution/*` artifacts                                                           | `/aif-loop`            | loop state ownership                                                                             |
@@ -148,7 +150,7 @@ Context gate policy for quality commands:
 
 - Core workflow and quality: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`,
   `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
-- Additional utility: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`,
+- Additional utility: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`,
   `/aif-distillation`,
   `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
 

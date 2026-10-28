@@ -136,7 +136,7 @@ npx skills add lee-to/ai-factory --skill '*'
 | [Research and System Analysis](docs/research.md) | Adaptive ultra research bundles with C4, ADR, dependency, and traceability views |
 | [Reflex Loop](docs/loop.md) | Iterative generate → evaluate → critique → refine workflow |
 | [Subagents](docs/subagents.md) | Bundled Claude, Codex, and Google Antigravity 2.0 native subagent bundles |
-| [Core Skills](docs/skills.md) | All slash commands — explore, grounded, plan, fix, implement, evolve, docs, and more |
+| [Core Skills](docs/skills.md) | All slash commands — explore, grounded, plan, fix, implement, evolve, skills-audit, docs, and more |
 | [Quality Gates](docs/quality-gates.md) | Machine-readable `aif-gate-result` summaries for verify, review, security, and rules gates |
 | [Skill Evolution](docs/evolve.md) | How /aif-fix patches feed into /aif-evolve to generate smarter skill rules |
 | [Plan Files](docs/plan-files.md) | Plan files, self-improvement patches, skill acquisition |

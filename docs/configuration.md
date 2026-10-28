@@ -326,9 +326,13 @@ arguments override these defaults; absent settings preserve existing behavior.
 See [Command defaults](config-reference.md#command-defaults) for precedence and
 one-invocation overrides.
 
+`/aif-skills-audit` is a read-only config consumer for context paths, scoped rules
+and language. It works without config, introduces no keys, and reports in chat
+unless `--output` names a new report file. See [installed-library auditing](skills.md#aif-skills-audit).
+
 **Current config-aware skills** read `config.yaml` at Step 0. This currently includes:
 - Core workflow and quality commands: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
-- Additional utility commands: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
+- Additional utility commands: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
 
 Other skills are config-agnostic for now and rely on repository context, explicit arguments, or fixed non-configurable paths such as `skill-context`.
 
