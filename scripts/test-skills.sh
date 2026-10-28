@@ -709,6 +709,40 @@ else
     pass "aif-distillation helper tests skipped ${YELLOW}(Python 3 not found)${NC}"
 fi
 
+# Portable question instructions must survive every built-in rendering profile.
+if ROOT_DIR="$ROOT_DIR" node --input-type=module - <<'EOF'
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import { pathToFileURL } from 'node:url';
+const root = process.env.ROOT_DIR;
+const load = file => import(pathToFileURL(path.join(root, 'dist/core', file)));
+const { renderSkillFiles } = await load('installer.js');
+const { getBuiltinAgentConfigs } = await load('agents.js');
+const { createSkillRenderContext } = await load('skill-targets.js');
+const authoring = await fs.readFile(path.join(root, 'skills/aif-skill-generator/references/BEST-PRACTICES.md'), 'utf8');
+const contract = authoring.match(/```markdown\n(## Runtime-aware questions\n[\s\S]*?)\n```/)?.[1];
+assert.ok(contract, 'Reusable question contract is missing');
+assert.match(contract, /plain text with numbered options/);
+assert.match(contract, /preselected option/);
+assert.match(contract, /do not prompt the user directly/);
+assert.match(contract, /required decision, approval, or material scope\/behavior choice/);
+for (const skill of ['aif-plan', 'aif-review', 'aif-verify']) {
+  for (const agent of getBuiltinAgentConfigs()) {
+    const files = await renderSkillFiles(path.join(root, 'skills', skill), skill, agent.id, createSkillRenderContext(agent.id, agent.skillsDir));
+    assert.ok(files.get('SKILL.md').toString().includes(contract), `${agent.id}/${skill}: question contract drifted or disappeared`);
+  }
+}
+const docs = await fs.readFile(path.join(root, 'docs/skills.md'), 'utf8');
+assert.match(docs, /^## Questions Across Runtimes$/m);
+assert.match(docs, /BEST-PRACTICES\.md#runtime-aware-questions/);
+EOF
+then
+    pass "runtime-aware question contract is self-contained across built-in renderers"
+else
+    fail "runtime-aware question contract rendering"
+fi
+
 # /aif localization contract regression checks
 AIF_SKILL="$ROOT_DIR/skills/aif/SKILL.md"
 AIF_EXPLORE_SKILL="$ROOT_DIR/skills/aif-explore/SKILL.md"

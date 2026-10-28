@@ -316,6 +316,8 @@ If NO URLs and no special command detected — proceed with the standard workflo
 
 ### Step 1: Understand the Request
 
+Before asking questions, read and follow the Runtime-Aware Questions contract in `references/BEST-PRACTICES.md`. Include that self-contained section in generated interactive skills.
+
 Ask clarifying questions:
 1. What problem does this skill solve?
 2. Who is the target user?
