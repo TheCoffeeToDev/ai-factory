@@ -43,6 +43,9 @@ const specs = [
   ...[
     ['missing-verdict', '### Item 1 (section: critical)\nReason: Truncated.\n'],
     ['missing-heading', ''],
+    ['missing-reason', '### Item 1 (section: critical)\nVerdict: drop\n'],
+    ['empty-reason', '### Item 1 (section: critical)\nVerdict: drop\nReason:   \t\n'],
+    ['duplicate-reason', block(1, 'critical', 'drop', 'Reason: Contradictory reason.\n')],
     ['unknown-verdict', block(1, 'critical', 'maybe')],
     ['unknown-severity', block(1, 'critical', 'keep', 'Severity: urgent\n')],
     ['missing-modified-text', block(1, 'critical', 'modify')],
@@ -84,6 +87,13 @@ const specs = [
   { id: 'pr-pinned-project-context', file: happyFile, pr: true, fresh: true, pinned_context: pinnedDescription,
     response: success(drop), expected: { status: 'pass', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 },
       validator_context: '/sandbox\n' + pinnedDescription, pinned_context: pinnedDescription } },
+  { id: 'pr-custom-pinned-project-context', file: happyFile, pr: true, fresh: true, pinned_context: pinnedDescription,
+    description_path: 'docs/product.md', response: success(drop),
+    expected: { status: 'pass', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 },
+      validator_context: '/sandbox\n' + pinnedDescription, pinned_context: pinnedDescription, description_path: 'docs/product.md' } },
+  { id: 'pr-description-unavailable', file: happyFile, pr: true, fresh: true, missing_description: true, response: success(drop),
+    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 },
+      contains: ['Review Sources', '.ai-factory/DESCRIPTION.md', 'description unavailable'] } },
   { id: 'pr-missing-evidence', file: happyFile, pr: true, fresh: true, missing: true, response: success(drop),
     expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['Review Sources', 'src/dependency.ts'] } },
   { id: 'pr-validator-unavailable-evidence', file: happyFile, pr: true, fresh: true,
@@ -111,7 +121,9 @@ for (const spec of specs) {
   const source = { schema_version: 1, mode: 'pr', repository: 'fixture/demo', pr: 123,
     base_sha: 'a'.repeat(40), head_sha: 'b'.repeat(40), merge_base_sha: 'c'.repeat(40),
     diff: { text: diff, sha256: createHash('sha256').update(diff).digest('hex'), bytes: Buffer.byteLength(diff), source: 'git-objects' },
-    files: [], unavailable_context: spec.missing ? [{ path: 'src/dependency.ts', reason: 'unavailable' }] : [], stale: false };
+    files: [], unavailable_context: spec.missing_description
+      ? [{ path: '.ai-factory/DESCRIPTION.md', commit_sha: 'b'.repeat(40), reason: 'description unavailable' }]
+      : spec.missing ? [{ path: 'src/dependency.ts', reason: 'unavailable' }] : [], stale: false };
   const review = structuredClone(baseReview);
   if (spec.marked) review.items[0].text = markedCritical;
   if (spec.empty) review.items = [];
@@ -124,7 +136,7 @@ for (const spec of specs) {
   if (spec.pinned_context) {
     const bytes = Buffer.from(spec.pinned_context);
     completedSource.files.push({ repository: source.repository, commit_sha: source.head_sha,
-      path: '.ai-factory/DESCRIPTION.md', status: 'available', source: 'git-objects',
+      path: spec.description_path ?? '.ai-factory/DESCRIPTION.md', status: 'available', source: 'git-objects',
       blob_sha: createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex'),
       sha256: createHash('sha256').update(bytes).digest('hex'), bytes: bytes.length, content: spec.pinned_context });
   }
@@ -135,7 +147,8 @@ for (const spec of specs) {
     if (tool === 'Bash') {
       response = args.command === 'git diff --cached' ? diff : args.command.startsWith('node ')
         ? source : spec.fresh ? { base: { sha: source.base_sha }, head: { sha: source.head_sha } } : { error: 'freshness unavailable' };
-    } else if (tool === 'Reviewer') response = { review, ...(spec.pr ? { source: completedSource, project_context: spec.pinned_context ?? '' } : {}) };
+    } else if (tool === 'Reviewer') response = { review, ...(spec.pr ? { source: completedSource, project_context: spec.pinned_context ?? '',
+      ...(spec.description_path ? { project_context_path: spec.description_path } : {}) } : {}) };
     else if (tool === 'Task') response = spec.response;
     else if (tool === 'TaskStatus') response = spec.polls[polls++];
     else throw new Error('Unscripted tool: ' + tool);

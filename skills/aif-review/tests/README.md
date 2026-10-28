@@ -15,6 +15,8 @@ npm run test:review-check -- --report /tmp/review-check-report.json
 
 PR-запрос явно задаёт `working_directory`. Reviewer возвращает отдельный `project_context`: pinned excerpt либо пустую строку. Версия workflow 2 сохраняет каталог в обоих случаях и добавляет непустой excerpt без замены локальным описанием. Положительный replay-кейс проверяет точный блок контекста и его связь с `DESCRIPTION.md` на pinned head; отрицательные проверки сохраняют запрет локального контекста и отклоняют пропущенные/некорректные поля до source/validator-вызовов.
 
+Непустой PR excerpt принимается только из полного доступного description на pinned head: проверяются repository, path, commit, bytes, SHA-256, Git blob и совпадение текста. Для перенесённого description Reviewer задаёт `project_context_path` из pinned config; недоступный файл записывается в `unavailable_context` при пустом excerpt. Missing/blank/duplicate `Reason` сохраняет исходный finding с WARN; проверяются все verdict и marked items.
+
 Replay-ключ имеет вид `call_id:tool:sha256(canonical_args)`. `call_id` последовательно растёт в пределах сценария. Поэтому два идентичных `TaskStatus` с ответами `pending` и `success` имеют разные ключи. Ключи содержат весь набор аргументов, включая validator prompt; только абсолютный путь установленного `pr-source.mjs` заменяется стабильным `<references>`.
 
 При отсутствии записи, несовпадении аргументов, дублирующемся ключе или неиспользованной записи прогон падает. Replay transport не имеет callback для живых инструментов и не импортирует SDK. Локальный Git используется только для подготовки и проверки fixtures. Исходный checkout не меняется.

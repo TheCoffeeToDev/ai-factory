@@ -25,7 +25,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -57,7 +57,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -102,7 +102,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -134,7 +134,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "refusal"
           }
@@ -175,7 +175,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -207,7 +207,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "timeout"
           }
@@ -248,7 +248,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -280,7 +280,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "exception"
           }
@@ -321,7 +321,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -353,7 +353,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": ""
@@ -395,7 +395,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -427,7 +427,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": {
@@ -474,7 +474,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -506,7 +506,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nReason: Truncated.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -556,7 +556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -588,10 +588,256 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        }
+      ],
+      "expected": {
+        "status": "fail",
+        "command": "/aif-fix",
+        "counters": {
+          "hidden": 1,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "preserved": [
+          "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails."
+        ],
+        "absent": [
+          "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+          "Filtered:",
+          "validator failed"
+        ],
+        "contains": [
+          "item 1 was malformed"
+        ]
+      }
+    },
+    {
+      "id": "partial-missing-reason",
+      "scenario_file": "check-mode-validator-malformed.spec.yaml",
+      "original_assertions": true,
+      "request": {
+        "argument": "+check",
+        "project_context": "/sandbox\nDemo authentication service.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        }
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "c9608c6cb4388cfca03d01711de9f44d03ac49c800b95ca0008b514db3d3254e",
+          "response": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..d0c2319 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,4 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d499681\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,6 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n"
+        },
+        {
+          "call_id": 2,
+          "tool": "Reviewer",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            }
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Task",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        }
+      ],
+      "expected": {
+        "status": "fail",
+        "command": "/aif-fix",
+        "counters": {
+          "hidden": 1,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "preserved": [
+          "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails."
+        ],
+        "absent": [
+          "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+          "Filtered:",
+          "validator failed"
+        ],
+        "contains": [
+          "item 1 was malformed"
+        ]
+      }
+    },
+    {
+      "id": "partial-empty-reason",
+      "scenario_file": "check-mode-validator-malformed.spec.yaml",
+      "original_assertions": true,
+      "request": {
+        "argument": "+check",
+        "project_context": "/sandbox\nDemo authentication service.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        }
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "c9608c6cb4388cfca03d01711de9f44d03ac49c800b95ca0008b514db3d3254e",
+          "response": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..d0c2319 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,4 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d499681\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,6 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n"
+        },
+        {
+          "call_id": 2,
+          "tool": "Reviewer",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            }
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Task",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason:   \t\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        }
+      ],
+      "expected": {
+        "status": "fail",
+        "command": "/aif-fix",
+        "counters": {
+          "hidden": 1,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "preserved": [
+          "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails."
+        ],
+        "absent": [
+          "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+          "Filtered:",
+          "validator failed"
+        ],
+        "contains": [
+          "item 1 was malformed"
+        ]
+      }
+    },
+    {
+      "id": "partial-duplicate-reason",
+      "scenario_file": "check-mode-validator-malformed.spec.yaml",
+      "original_assertions": true,
+      "request": {
+        "argument": "+check",
+        "project_context": "/sandbox\nDemo authentication service.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        }
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "c9608c6cb4388cfca03d01711de9f44d03ac49c800b95ca0008b514db3d3254e",
+          "response": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..d0c2319 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,4 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d499681\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,6 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n"
+        },
+        {
+          "call_id": 2,
+          "tool": "Reviewer",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            }
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Task",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\nReason: Contradictory reason.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
           }
         }
       ],
@@ -638,7 +884,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -670,7 +916,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: maybe\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -720,7 +966,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -752,7 +998,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: urgent\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -802,7 +1048,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -834,7 +1080,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -884,7 +1130,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -916,7 +1162,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -966,7 +1212,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -998,7 +1244,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "pending",
             "task_id": "validator-1"
@@ -1059,7 +1305,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1091,7 +1337,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "pending",
             "task_id": "validator-1"
@@ -1160,7 +1406,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -1192,7 +1438,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1235,7 +1481,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -1267,7 +1513,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: suggestion\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\nSeverity: critical\n"
@@ -1310,7 +1556,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -1351,7 +1597,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1393,7 +1639,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1425,7 +1671,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "1ca0af69d6ba8ac912a28e94ebcfc98628b1c244163289d12220c3e611058f74",
+          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
           "response": {
             "outcome": "refusal"
           }
@@ -1467,7 +1713,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1499,7 +1745,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "1ca0af69d6ba8ac912a28e94ebcfc98628b1c244163289d12220c3e611058f74",
+          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
           "response": {
             "outcome": "timeout"
           }
@@ -1541,7 +1787,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1573,7 +1819,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "1ca0af69d6ba8ac912a28e94ebcfc98628b1c244163289d12220c3e611058f74",
+          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
           "response": {
             "outcome": "exception"
           }
@@ -1615,7 +1861,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1647,7 +1893,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "1ca0af69d6ba8ac912a28e94ebcfc98628b1c244163289d12220c3e611058f74",
+          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nReason: Truncated.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1693,7 +1939,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1725,7 +1971,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "1ca0af69d6ba8ac912a28e94ebcfc98628b1c244163289d12220c3e611058f74",
+          "args_sha256": "cf0ad9ac74ffa1294b7ffed1729d76acf05cd35814609a0ddd8f87370f0c2cb3",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -1771,7 +2017,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -1803,7 +2049,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "2ed9adf56a8857a8f004546e3fbdf4b200f0f895cc801e21f0312222213b4cc9",
+          "args_sha256": "773c4e418079b76e124b9f5badfa1b6511b9b8e2cc48e7043501ce9547e7ed76",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Authentication is bypassed.\n`src/handler.ts:4`.\nReturn 401 on invalid tokens.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1848,7 +2094,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "d850802c6c36aca5248d67c0901dc9ec5f7c123c9d66b664e194cb0515c52a74",
+          "args_sha256": "33d9a428ee6736e47fcd93705e6b54337a7b1402141cbc700def98fc11178076",
           "response": {
             "review": {
               "items": [
@@ -1880,7 +2126,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "e71e3c32c646583b7aaa1bb26e1c1e37f319de72b84030c1901be3e022f40e09",
+          "args_sha256": "467bfe0da0cb57f4e2f7563d61b13f4f0c0f109a22a35b01158990faa07f8556",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: modify\nReason: Verified against the recorded diff.\nModified-text: Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails. (confidence: medium)\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -1945,7 +2191,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "a42152dee5bf4951054a745f3831bc6bfd02a8de225837ed8a274960264955c8",
+          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
           "response": {
             "review": {
               "items": [
@@ -1996,7 +2242,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "24ee021a089f5fa0e5c03fd9d83bd0bb09dfd89f09f33650dd83f4e9626d619b",
+          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2071,7 +2317,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "a42152dee5bf4951054a745f3831bc6bfd02a8de225837ed8a274960264955c8",
+          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
           "response": {
             "review": {
               "items": [
@@ -2122,7 +2368,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "24ee021a089f5fa0e5c03fd9d83bd0bb09dfd89f09f33650dd83f4e9626d619b",
+          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2192,7 +2438,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "a42152dee5bf4951054a745f3831bc6bfd02a8de225837ed8a274960264955c8",
+          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
           "response": {
             "review": {
               "items": [
@@ -2255,7 +2501,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "5f426ca6e0ab849a6ebfa264175eac894a6534d5b2f94486d37395f859020b67",
+          "args_sha256": "93afd80def1a40ad62596f9d8d423539d349049cdd821fe1dec1bab186447a7b",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2285,6 +2531,283 @@
         },
         "validator_context": "/sandbox\n# Pinned authentication service\nThis description belongs to the recorded PR head.",
         "pinned_context": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+      }
+    },
+    {
+      "id": "pr-custom-pinned-project-context",
+      "scenario_file": "check-mode-happy-path.spec.yaml",
+      "original_assertions": false,
+      "request": {
+        "argument": "123 +check",
+        "project_context": "LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        },
+        "repository": "fixture/demo",
+        "working_directory": "/sandbox"
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "bd1c6d2900f07a83c2020be479bcfd0b68eeb419344e0a6f5ccce94f72f2a68c",
+          "response": {
+            "schema_version": 1,
+            "mode": "pr",
+            "repository": "fixture/demo",
+            "pr": 123,
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "diff": {
+              "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+              "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+              "bytes": 818,
+              "source": "git-objects"
+            },
+            "files": [],
+            "unavailable_context": [],
+            "stale": false
+          }
+        },
+        {
+          "call_id": 2,
+          "tool": "Reviewer",
+          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            },
+            "source": {
+              "schema_version": 1,
+              "mode": "pr",
+              "repository": "fixture/demo",
+              "pr": 123,
+              "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+              "diff": {
+                "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+                "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+                "bytes": 818,
+                "source": "git-objects"
+              },
+              "files": [
+                {
+                  "repository": "fixture/demo",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "path": "docs/product.md",
+                  "status": "available",
+                  "source": "git-objects",
+                  "blob_sha": "8fe059501dddecd3933a65e274d08969f323e8eb",
+                  "sha256": "a56a32bec1779196f541855d71bb9347452ed72fa9799957f87fbe74d29dcf61",
+                  "bytes": 81,
+                  "content": "# Pinned authentication service\nThis description belongs to the recorded PR head."
+                }
+              ],
+              "unavailable_context": [],
+              "stale": false
+            },
+            "project_context": "# Pinned authentication service\nThis description belongs to the recorded PR head.",
+            "project_context_path": "docs/product.md"
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Task",
+          "args_sha256": "f67d56216ea9ed60282b11d74847c150eeabba611197436e4531c60dcf028769",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        },
+        {
+          "call_id": 4,
+          "tool": "Bash",
+          "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
+          "response": {
+            "base": {
+              "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "head": {
+              "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "status": "pass",
+        "command": "/aif-commit",
+        "counters": {
+          "hidden": 2,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "validator_context": "/sandbox\n# Pinned authentication service\nThis description belongs to the recorded PR head.",
+        "pinned_context": "# Pinned authentication service\nThis description belongs to the recorded PR head.",
+        "description_path": "docs/product.md"
+      }
+    },
+    {
+      "id": "pr-description-unavailable",
+      "scenario_file": "check-mode-happy-path.spec.yaml",
+      "original_assertions": false,
+      "request": {
+        "argument": "123 +check",
+        "project_context": "LOCAL_CONTEXT_SENTINEL: this local description must never reach the PR review.",
+        "validator": {
+          "available": true,
+          "read_only_enforced": true
+        },
+        "repository": "fixture/demo",
+        "working_directory": "/sandbox"
+      },
+      "records": [
+        {
+          "call_id": 1,
+          "tool": "Bash",
+          "args_sha256": "bd1c6d2900f07a83c2020be479bcfd0b68eeb419344e0a6f5ccce94f72f2a68c",
+          "response": {
+            "schema_version": 1,
+            "mode": "pr",
+            "repository": "fixture/demo",
+            "pr": 123,
+            "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+            "diff": {
+              "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+              "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+              "bytes": 818,
+              "source": "git-objects"
+            },
+            "files": [],
+            "unavailable_context": [
+              {
+                "path": ".ai-factory/DESCRIPTION.md",
+                "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                "reason": "description unavailable"
+              }
+            ],
+            "stale": false
+          }
+        },
+        {
+          "call_id": 2,
+          "tool": "Reviewer",
+          "args_sha256": "15a0af16278633dc23c202731a3a0b5ae766a3006e75e2f89c2f5adcf671f572",
+          "response": {
+            "review": {
+              "items": [
+                {
+                  "section": "critical",
+                  "text": "Unauthenticated requests return 200 because verifyToken is ignored. `src/handler.ts:4`. Return 401 when verification fails.",
+                  "files": [
+                    "src/handler.ts"
+                  ]
+                },
+                {
+                  "section": "suggestion",
+                  "text": "Token comparison deserves a documented timing policy. `src/auth.ts:2`. Document the comparison contract.",
+                  "files": [
+                    "src/auth.ts"
+                  ]
+                }
+              ],
+              "questions": [
+                "Which clients consume this handler?"
+              ],
+              "positive_notes": [
+                "The verifier is isolated."
+              ],
+              "context_gates": []
+            },
+            "source": {
+              "schema_version": 1,
+              "mode": "pr",
+              "repository": "fixture/demo",
+              "pr": 123,
+              "base_sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "head_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "merge_base_sha": "cccccccccccccccccccccccccccccccccccccccc",
+              "diff": {
+                "text": "diff --git a/src/auth.ts b/src/auth.ts\nindex e3308a0..3d47a1b 100644\n--- a/src/auth.ts\n+++ b/src/auth.ts\n@@ -1,3 +1,6 @@\n export function verifyToken(token: string): boolean {\n-  return token === 'expected-token';\n+  // direct equality leaks timing information — a reasonable\n+  // Suggestion-level finding the validator can keep or reword.\n+  if (token === 'expected-token') return true;\n+  return false;\n }\ndiff --git a/src/handler.ts b/src/handler.ts\nnew file mode 100644\nindex 0000000..d19c215\n--- /dev/null\n+++ b/src/handler.ts\n@@ -0,0 +1,8 @@\n+import { verifyToken } from './auth';\n+\n+export function handle(req: { token: string }) {\n+  // verifier return value is ignored: every unauthenticated\n+  // request silently 200s — Critical Issue material.\n+  verifyToken(req.token);\n+  return { status: 200 };\n+}\n",
+                "sha256": "02b86b09cb0d4d42f10999f22b2c609ee3fb21fc23c4076ed9d38940acc2d373",
+                "bytes": 818,
+                "source": "git-objects"
+              },
+              "files": [],
+              "unavailable_context": [
+                {
+                  "path": ".ai-factory/DESCRIPTION.md",
+                  "commit_sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                  "reason": "description unavailable"
+                }
+              ],
+              "stale": false
+            },
+            "project_context": ""
+          }
+        },
+        {
+          "call_id": 3,
+          "tool": "Task",
+          "args_sha256": "4e2f19d446d53849344f2bbf4a53b26e266e9bc27f5afa6f579984d0f808cd17",
+          "response": {
+            "outcome": "success",
+            "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
+          }
+        },
+        {
+          "call_id": 4,
+          "tool": "Bash",
+          "args_sha256": "d2197038ba5353c2f9df8b86a80d9c729faf65b30a52f66a2ec0a455920d1ef0",
+          "response": {
+            "base": {
+              "sha": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "head": {
+              "sha": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+            }
+          }
+        }
+      ],
+      "expected": {
+        "status": "warn",
+        "command": "/aif-commit",
+        "counters": {
+          "hidden": 2,
+          "adjusted": 0,
+          "reclassified": 0
+        },
+        "contains": [
+          "Review Sources",
+          ".ai-factory/DESCRIPTION.md",
+          "description unavailable"
+        ]
       }
     },
     {
@@ -2333,7 +2856,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "245ce38831b5a64d5156135b0251c97342ce26d0ab52f4fc5551a0f20283d201",
+          "args_sha256": "121f6117a826f73f571730be301c26920bdede8fdb04fc42ae12529e8caadd33",
           "response": {
             "review": {
               "items": [
@@ -2389,7 +2912,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "9fdd903f4fff9b35294962b4c402ac587a81978936dc7b49837b7a020603d5df",
+          "args_sha256": "9f93b20f00dab74c25c86a0e308d79276cedfd30b5955adb9e678b120e06fc80",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2464,7 +2987,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "a42152dee5bf4951054a745f3831bc6bfd02a8de225837ed8a274960264955c8",
+          "args_sha256": "de2c1db0a542a05219c853ad6ca4a5df23f2bdc8c40955508f137c5ca3442f57",
           "response": {
             "review": {
               "items": [
@@ -2515,7 +3038,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "24ee021a089f5fa0e5c03fd9d83bd0bb09dfd89f09f33650dd83f4e9626d619b",
+          "args_sha256": "798e07312e7a7ff05da20c7fa26a41d3b118b4614e19a18eb67c37c5111d8c16",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: drop\nReason: Unverified due to missing pinned context: src/dependency.ts.\n### Item 2 (section: suggestion)\nVerdict: drop\nReason: Verified against the recorded diff.\n"
@@ -2571,7 +3094,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -2603,7 +3126,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "179a9d3b802e83bee3b273b27c7f7fb087bfcc838a146aa2a9a58eecd247eccf",
+          "args_sha256": "00e6bc97987a2ff63cecd663facd9307524ca7acaacc95d3ddde58522b019401",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -2645,7 +3168,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [
@@ -2677,7 +3200,7 @@
         {
           "call_id": 3,
           "tool": "Task",
-          "args_sha256": "b25cd94fd614f7d971934ec30e63f181f01b2181c54f316c0122d191b42ba579",
+          "args_sha256": "e8e636683c533a27d2d50c3efb79c897873a8539c7b74dff6e4fc265132ec52f",
           "response": {
             "outcome": "success",
             "text": "### Item 1 (section: critical)\nVerdict: keep\nReason: Verified against the recorded diff.\n### Item 2 (section: suggestion)\nVerdict: keep\nReason: Verified against the recorded diff.\n"
@@ -2719,7 +3242,7 @@
         {
           "call_id": 2,
           "tool": "Reviewer",
-          "args_sha256": "387b9a14e25cf8063fe042fad972a8ff9a948a1d7e711775b43cdbbbd70cc11b",
+          "args_sha256": "874fa6275eca7ff2f2a7ed325690a6e3e4ade109041579fa42c296a4854ce240",
           "response": {
             "review": {
               "items": [],

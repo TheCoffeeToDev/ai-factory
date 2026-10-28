@@ -86,16 +86,19 @@ function parseItems(text) {
     const fields = name => [...prefix.matchAll(new RegExp(`^${name}:[ \\t]*(.*)$`, 'gm'))];
     const verdicts = fields('Verdict');
     const severities = fields('Severity');
+    const reasons = fields('Reason');
+    const reason = reasons[0]?.[1].trim() ?? '';
     const modified = modifiedStart ? body.slice(modifiedStart.index + modifiedStart[0].length).trim() : '';
     const verdict = verdicts[0]?.[1].trim();
     const severity = severities[0]?.[1].trim() ?? 'unchanged';
     const valid = verdicts.length === 1 && ['keep', 'modify', 'drop'].includes(verdict)
       && severities.length <= 1 && ['unchanged', 'critical', 'suggestion'].includes(severity)
+      && reasons.length === 1 && reason.length > 0
       && (verdict !== 'modify' || modified.length > 0);
     // A duplicate heading is ambiguous even if one copy is valid.
     const duplicate = blocks.has(id);
     blocks.set(id, { valid: valid && !duplicate, section: heading[2], verdict, severity,
-      text: modified, reason: fields('Reason')[0]?.[1] ?? '' });
+      text: modified, reason });
   }
   return blocks;
 }
@@ -232,6 +235,29 @@ export async function runCheck(input, call) {
   return finishCheck({ prepared, result, freshness });
 }
 
+function pinnedProjectContext(drafted, source) {
+  const excerpt = drafted.project_context;
+  if (!excerpt) return '';
+  // The parent resolves relocated paths from pinned config, never local config.
+  const path = drafted.project_context_path ?? '.ai-factory/DESCRIPTION.md';
+  const error = 'PR project context requires verified pinned description content; retrieve it or record unavailable evidence and return an empty excerpt';
+  assert(typeof path === 'string' && path.length && !path.startsWith('/') && !/^[A-Za-z]:/.test(path)
+    && !path.includes('\\') && !path.includes('\0') && path.split('/').every(part => part && part !== '.' && part !== '..'), error);
+  assert(Array.isArray(source.files), error);
+  const files = source.files.filter(file => file?.path === path);
+  assert(files.length === 1, error);
+  const file = files[0];
+  debug(`checking pinned project context: ${path}`);
+  assert(file.status === 'available' && file.repository === source.repository && file.commit_sha === source.head_sha
+    && ['git-objects', 'github-git-blob'].includes(file.source) && typeof file.content === 'string', error);
+  const bytes = Buffer.from(file.content, 'utf8');
+  assert(bytes.length <= 1024 * 1024 && !file.content.includes('\0') && bytes.toString('utf8') === file.content
+    && bytes.length === file.bytes && createHash('sha256').update(bytes).digest('hex') === file.sha256
+    && createHash('sha1').update(`blob ${bytes.length}\0`).update(bytes).digest('hex') === file.blob_sha
+    && file.content.includes(excerpt), error);
+  return excerpt;
+}
+
 export async function runReview(request, call) {
   const tokens = (request.argument ?? '').trim().split(/\s+/).filter(Boolean);
   assert(tokens.includes('+check'), 'Replay workflow requires the explicit +check flag');
@@ -283,7 +309,7 @@ export async function runReview(request, call) {
   // Runtime location and versioned description have different provenance. Keep
   // the directory even when no excerpt is used; never fall back to local prose.
   const projectContext = source.mode === 'pr'
-    ? request.working_directory + (drafted.project_context ? '\n' + drafted.project_context : '')
+    ? request.working_directory + (drafted.project_context ? '\n' + pinnedProjectContext(drafted, source) : '')
     : request.project_context ?? '';
   return runCheck({ review: drafted.review, source: metadata, diff,
     project_context: projectContext, validator: request.validator }, call);

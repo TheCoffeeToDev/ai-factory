@@ -121,7 +121,7 @@ for (const test of fixture.cases) {
           'PR validator did not receive the working directory and exact pinned context');
         if (test.expected.pinned_context) {
           assert.equal(reviewerCall.response.project_context, test.expected.pinned_context);
-          const description = reviewerCall.response.source.files.find(file => file.path === '.ai-factory/DESCRIPTION.md');
+          const description = reviewerCall.response.source.files.find(file => file.path === (test.expected.description_path ?? '.ai-factory/DESCRIPTION.md'));
           assert.equal(description.commit_sha, reviewerCall.args.source.head_sha);
           assert.equal(description.content, test.expected.pinned_context, 'Pinned description differs from its recorded source');
         }
@@ -220,6 +220,86 @@ for (const [field, values] of [['mode', ['staged', 'commits', undefined]], ['sch
       await assert.rejects(advanceReview(journal), new RegExp('Reviewer changed pinned PR identity/diff'));
       assert.deepEqual(replay.calls.map(call => call.tool), ['Bash', 'Reviewer']);
     });
+  }
+}
+// A Reviewer cannot introduce prose not backed by a complete pinned description.
+for (const mutation of ['missing-file', 'unrelated-file', 'wrong-repository', 'wrong-commit', 'unavailable',
+  'wrong-blob', 'wrong-hash', 'wrong-size', 'different-excerpt', 'missing-content', 'duplicate-file', 'unsafe-path']) {
+  await check(`PR context rejects ${mutation}`, async () => {
+    const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
+    const records = structuredClone(test.records.slice(0, 2));
+    const draft = records[1].response;
+    const file = draft.source.files[0];
+    if (mutation === 'missing-file') draft.source.files = [];
+    if (mutation === 'unrelated-file') file.path = 'src/unrelated.ts';
+    if (mutation === 'wrong-repository') file.repository = 'other/repository';
+    if (mutation === 'wrong-commit') file.commit_sha = draft.source.merge_base_sha;
+    if (mutation === 'unavailable') file.status = 'unavailable';
+    if (mutation === 'wrong-blob') file.blob_sha = '0'.repeat(40);
+    if (mutation === 'wrong-hash') file.sha256 = '0'.repeat(64);
+    if (mutation === 'wrong-size') file.bytes += 1;
+    if (mutation === 'different-excerpt') draft.project_context = 'LOCAL_DESCRIPTION_SENTINEL';
+    if (mutation === 'missing-content') delete file.content;
+    if (mutation === 'duplicate-file') draft.source.files.push(structuredClone(file));
+    if (mutation === 'unsafe-path') draft.project_context_path = '../DESCRIPTION.md';
+    const replay = new ToolReplay(records, { normalize });
+    const journal = { request: test.request, responses: [] };
+    for (let turn = 0; turn < 2; turn += 1) {
+      const step = await advanceReview(journal);
+      assert.equal(step.done, false);
+      journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
+    }
+    replay.assertConsumed();
+    await assert.rejects(advanceReview(journal), /PR project context requires verified pinned description/);
+  });
+}
+await check('PR description permits a verbatim excerpt from a verified full file', async () => {
+  const test = fixture.cases.find(test => test.id === 'pr-pinned-project-context');
+  const records = structuredClone(test.records.slice(0, 2));
+  const draft = records[1].response;
+  const excerpt = draft.source.files[0].content.split('\n').at(-1);
+  draft.project_context = excerpt;
+  const replay = new ToolReplay(records, { normalize });
+  const journal = { request: test.request, responses: [] };
+  for (let turn = 0; turn < 2; turn += 1) {
+    const step = await advanceReview(journal);
+    journal.responses.push({ ...step.next, response: await replay.call(step.next.tool, step.next.args) });
+  }
+  const step = await advanceReview(journal);
+  assert.equal(step.next.tool, 'Task');
+  const context = step.next.args.prompt.match(/^## Project context\r?\n([\s\S]*?)^## Reviewed diff\r?\n/m)?.[1].trim();
+  assert.equal(context, test.request.working_directory + '\n' + excerpt);
+  replay.assertConsumed();
+});
+// Exercise every verdict with malformed Reason fields, including marked items.
+for (const verdict of ['keep', 'modify', 'drop']) {
+  for (const reason of ['', 'Reason:   \t\n', 'Reason: First.\nReason: Second.\n']) {
+    for (const marked of [false, true]) {
+      await check(`invalid Reason preserves ${marked ? 'marked' : 'plain'} ${verdict}: ${JSON.stringify(reason)}`, async () => {
+        const test = fixture.cases.find(test => test.id === 'happy-path');
+        const records = structuredClone(test.records);
+        const draft = records.find(record => record.tool === 'Reviewer').response.review;
+        if (marked) draft.items[0].text += ' (confidence: medium)';
+        const text = `### Item 1 (section: critical)\nVerdict: ${verdict}\n${reason}`
+          + (verdict === 'modify' ? 'Modified-text: Replaced finding.\n' : '')
+          + '### Item 2 (section: suggestion)\nVerdict: drop\nReason: Refuted by the diff.\n';
+        // Bind the modified Task arguments explicitly; all responses stay offline.
+        const journal = { request: test.request, responses: [] };
+        let result;
+        for (let turn = 0; turn < records.length + 1; turn += 1) {
+          const step = await advanceReview(journal);
+          if (step.done) { result = step.result; break; }
+          const record = records[journal.responses.length];
+          assert.equal(step.next.tool, record.tool);
+          journal.responses.push({ ...step.next, response: step.next.tool === 'Task' ? { outcome: 'success', text } : record.response });
+        }
+        assert.equal(result.gate.status, 'fail');
+        assert.deepEqual(result.review.items, [draft.items[0]]);
+        assert(result.warnings.some(warning => warning.includes('item 1 was malformed')));
+        assert(!result.output.includes('Filtered:'));
+        assert.equal(result.gate.blockers.some(blocker => blocker.id === 'review-validation-failed'), marked);
+      });
+    }
   }
 }
 await check('CLI executes the same complete journal and returns the same gate', async () => {
