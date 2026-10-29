@@ -55,6 +55,8 @@ External skill downloaded
 
 Selecting `/aif` during `init` also installs `aif-skill-generator`, which owns the scanner and blocked-skill cleanup scripts. Both interactive and flag-based selections record this dependency as a managed skill. `update` also repairs older `/aif` installations that omitted it; projects without `/aif` keep their existing skill selection.
 
+Automatic dependency installation preserves existing untracked or modified skill targets. If such a target conflicts with `aif-skill-generator`, setup stops with its path before replacing files or recording managed ownership. Move or back up the conflicting target and rerun the command; `update --force` also respects this dependency conflict.
+
 | Level | Catches | Misses |
 |-------|---------|--------|
 | **Python scanner** | Known patterns, encoded payloads, invisible characters, HTML comment injections | Rephrased attacks, novel techniques |

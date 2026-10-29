@@ -4,6 +4,8 @@
 
 Selecting `aif` also installs `aif-skill-generator`: the setup skill requires its security scanner and blocked-skill cleanup helpers. You can still select the generator independently. Existing installations missing this dependency are repaired by `ai-factory update`.
 
+If automatic installation finds an untracked or modified generator at the target path, it preserves the files and reports a conflict. Move or back up that target before retrying, including when using `update --force`.
+
 ## What is AI Factory?
 
 AI Factory is a **stack-agnostic** CLI tool and skill system that works with any language, framework, or platform:

@@ -463,7 +463,7 @@ import path from 'node:path';
 const project = process.argv[2];
 const file = path.join(project, '.ai-factory.json');
 const config = JSON.parse(fs.readFileSync(file, 'utf8'));
-config.agents[0].installedSkills = ['aif'];
+config.agents[0].installedSkills = config.agents[0].installedSkills.filter(skill => skill !== 'aif-loop');
 fs.writeFileSync(file, JSON.stringify(config));
 fs.writeFileSync(path.join(project, '.claude/agents/loop-custom.md'), 'user-owned loop role\n');
 EOF

@@ -126,6 +126,8 @@ test('core', 'shared CLI/App renders identically and receipts track profile chan
   assert.equal(loaded.agents[0].managedAgentFiles['demo.toml'].renderContextHash, undefined);
   const stable = await updateSkills(agent, project, { renderContext: group.context });
   assert.equal(stable.entries.find(entry => entry.skill === 'aif').status, 'unchanged');
+  agent.installedSkills = stable.installedSkills;
+  agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills, group.context);
   const singleton = await updateSkills(agent, project);
   assert.equal(singleton.entries.find(entry => entry.skill === 'aif').reason, 'render-context-changed');
 });
