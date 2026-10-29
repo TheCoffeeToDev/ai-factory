@@ -658,6 +658,26 @@ implementation:
 4. Do not edit source requirements while creating the plan. Report stale or
    contradictory artifacts and route them to their owner command or the user.
 
+**Meaning-preservation gate (all planning inputs):** Apply in every mode,
+including requirements from the user request (`## Original Request`) when no
+pre-existing requirement artifact exists. When rephrasing requirements into tasks,
+compare each candidate with its source before readability review. Preserve modal
+meaning and obligation levels; keep RFC 2119 keywords verbatim. Preserve conditions,
+exceptions, negations, numbers/units, identifiers, links, and uncertainty. Keep
+check/verify/confirm/validate distinct unless the source defines equivalence.
+Possibility is not a command, recommendation is not obligation, permission is
+not completion, and a suspected cause is not established fact. State a cause
+only when known and supported. An applicability condition ("check only while
+the service is stopped") never authorizes stopping a service to satisfy it.
+Keep the label `Meaning preservation:` and verdicts `PASS`, `FAIL`, and `N/A`
+fixed; localize explanations only. Report `Meaning preservation: PASS` or `FAIL`
+before presenting the plan or any readability assessment;
+use `N/A — no requirements rewritten` only when applicable. On failure, repair
+or retain the source wording and repeat the comparison before presenting the
+plan as ready. Missing source or unresolved ambiguity fails the gate and follows
+the requirement-conflict handling above. Editorial clarity grants no extra
+authority or confidence and cannot strengthen or weaken the contract.
+
 When behavior depends on two or more independent selectors, states, modes, or
 input shapes, enumerate the supported combinations before writing tasks. Cover
 only combinations allowed by the requirements, not a speculative Cartesian

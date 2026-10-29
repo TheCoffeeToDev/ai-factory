@@ -6,6 +6,8 @@ AI Factory has two phases: **configuration** (one-time project setup) and the **
 
 User decisions follow the [runtime-aware question contract](skills.md#questions-across-runtimes): use the current session's supported tool/schema, fall back to plain text when needed, and return unresolved required decisions from autonomous workers to their caller.
 
+Extensions and runtime adapters can explicitly register an invocation with `ai-factory instructions` to preserve its instruction composition and load reports. This is opt-in and does not alter ordinary skill execution. See [Instruction Manifests](instruction-manifests.md) for capture policy, provenance limits, and verification.
+
 ## Project Configuration
 
 Run once per project. Sets up context files that all workflow skills depend on.
@@ -165,7 +167,7 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
                                              │ Patches/experience  │
                                              │ + current context   │
                                              │       ↓             │
-                                             │ Improves skills     │
+                                             │ Compare rule cases  │
                                              │                     │
                                              └─────────────────────┘
 
@@ -231,6 +233,8 @@ Context-gate defaults for `/aif-commit`, `/aif-review`, `/aif-verify`:
 - `/aif-verify`, `/aif-review`, `/aif-security-checklist`, and `/aif-rules-check` append a final machine-readable `aif-gate-result` JSON block with lowercase `pass` / `warn` / `fail` status values. See [Quality Gates](quality-gates.md).
 
 ## Workflow Skills
+
+The setup, implement, verify, and fix entrypoints select their detailed references by mode. Load the selected procedure before its step; do not read every reference at startup. Mode boundaries, artifact ownership, ultra marker checks, regression-first fallbacks, and exact handoffs remain mandatory. Missing selected references stop the dependent step. See [selective workflow references](skills.md#workflow-skills) for installation details and reproducible footprint measurements.
 
 These skills form the development pipeline. Each one feeds into the next.
 
@@ -394,7 +398,11 @@ Checks only rules compliance for staged changes, working-tree changes, or a prov
 
 ### `/aif-review [PR number or URL] [+check]` — code review with read-only context gates
 
+Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks. Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
+
 Reviews staged changes or PR diff and reports correctness/security/performance findings. Includes read-only architecture/roadmap/rules gate notes in review output (`WARN` for non-blocking inconsistencies, `ERROR` only for explicitly blocking criteria), then appends an `aif-gate-result` JSON block.
+
+For application API changes, the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md) adds a bounded comparison of supported contract revisions and actual consumers. It separates wire compatibility from semantics and preserves the existing findings, validation, source and gate contracts.
 
 In PR mode, the review and validator share one source package bound to full base/head/merge-base SHAs and the exact diff hash. Additional code and versioned context artifacts come from that tree without switching branches. **Review Sources** lists file versions, local discrepancies, unavailable context and PR freshness. Missing evidence remains a visible limitation (`warn` at minimum), including empty-item runs and validation failure; actionable hypotheses retain the existing confidence-marker lifecycle. See the [review reference](skills.md) and [source package contract](../skills/aif-review/references/PR-SOURCE.md).
 
@@ -436,7 +444,26 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 /aif-evolve fix      # Evolve only the fix skill
 ```
 
-Reads patches incrementally using an evolve cursor, analyzes project patterns, and proposes targeted skill improvements. Closes the learning loop: **fix → patch → evolve → better skills → fewer bugs**.
+Reads patches incrementally using an evolve cursor, analyzes project patterns, and creates
+rule candidates. Each candidate is compared with the current effective instructions on
+the same original case, counterexample, and relevant regressions, with extra cost recorded.
+Only an exact revision with demonstrated benefit and no detected regression is offered
+for user approval. Narrowed/refined rules require another comparison; missing execution
+evidence means postpone. Logs preserve negative results, including "the new rule did
+not improve behavior", without adding those instructions to active skill-context.
+See [Comparing Rule Candidates](evolve.md#comparing-rule-candidates).
+
+### `/aif-skills-audit` — inspect the installed library
+
+Run `/aif-skills-audit` explicitly to review overlaps, stale instructions and context
+growth across built-in, extension and third-party skills. Its report starts with
+final composition and explains the dependencies and surviving duty owners for any
+merge/removal candidate. Missing usage observations mean **not measured**, never
+**useless**.
+
+The audit applies no recommendations and executes no audited skills or commands.
+Output stays in chat unless `--output "<new-report.md>"` is supplied; `--online`
+enables read-only external checks. See [the audit reference](skills.md#aif-skills-audit).
 
 ### `/aif-transfer` — reuse anonymized experience
 

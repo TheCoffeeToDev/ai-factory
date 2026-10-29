@@ -2,7 +2,7 @@
 
 # Core Skills
 
-**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy. The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
+**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy. The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
 
 `/aif` is also the primary writer for `config.yaml`: the initial file comes from the commented template, and setup reruns update only managed keys while preserving comments, unrelated manual edits, and `rules.<area>` entries owned by `/aif-rules`.
 
@@ -46,6 +46,12 @@ session's tool definitions.
 ## Workflow Skills
 
 These skills form the core development loop. See [Development Workflow](workflow.md) for the full diagram and how they connect.
+
+`/aif`, `/aif-implement`, `/aif-verify`, and `/aif-fix` keep mode dispatch, ownership, integrity checks, and stop conditions in their entrypoints. Detailed procedures and templates live in their `references/` directories. Read each reference in full only for its stated route, before the dependent step; missing required references stop that step. Listing/status, inline implementation, recovery, completion, and plan-first fixes do not preload unrelated procedures. Managed extension overrides remain in the entrypoint and retain their precedence; project skill-context overrides still apply to all outputs.
+
+Reference names are distinct across these skills so flat workflow installs can share a references directory. Codex, KiloCode workflow, and Qwen installations render command invocation prefixes in Markdown references as well as the entrypoint. The shared machine-readable gate contract and `aif-gate-result` JSON blocks retain canonical command identifiers. Helpers and data files retain their original bytes; template variables in Markdown still use the selected runtime's paths.
+
+From the AI Factory source checkout, run `node scripts/measure-skill-entrypoints.mjs --baseline <pre-refactor-commit>` for a reproducible package instruction footprint (add `--json` for per-file evidence). It counts UTF-8 bytes/lines for each entrypoint and the full declared reference set of each route. It excludes extension injections, project/source context, executable helpers, tokenization, and actual model behavior. Full sessions may combine routes; shorter entrypoints alone do not prove lower total context usage. Run `npm run test:selective-references` in that checkout for installation/update and route-boundary checks.
 
 ### `/aif-warmup`
 Load the essential project context before starting work:
@@ -133,6 +139,8 @@ Plan prompts and summaries use `language.ui`; saved plan artifacts use `language
 /aif-plan --cleanup feature/stripe-checkout # Remove worktree and branch
 ```
 
+All `/aif-plan` modes apply a mandatory [meaning-preservation gate](plan-files.md#meaning-preservation-in-requirement-rewrites) when turning requirements into tasks, including requirements from the user request without existing requirement artifacts. The verdict precedes presentation of the plan and any readability assessment.
+
 ### `/aif-roadmap [check | vision or requirements]`
 Creates or updates a strategic project roadmap:
 ```
@@ -173,6 +181,11 @@ Refine an existing plan with a second iteration:
 - Shows improvement report and asks for approval before applying
 - Validation uses the bundled `review-validator` only on runtimes enforcing its `Read`, `Glob`, `Grep` tool allowlist (currently Claude Code). If unavailable or unenforced, including Codex's sandbox-only boundary, it keeps all findings and reports `WARN [+check]`; it never falls back to a full-tool agent. This also applies to `workflow.improve_check: true`.
 - If no plan found — suggests running `/aif-plan` (feature/task) or `/aif-fix` (bugfix) first
+
+**Mandatory meaning preservation**
+
+- Before proposing editorial requirement rewrites and again before saving them, compare modality, conditions, negations, numbers, identifiers, links, and uncertainty with the source.
+- Report the fixed `Meaning preservation:` label with `PASS`, `FAIL`, or `N/A` before readability results; localize explanations only. This gate also runs without `+check`; `--list` still only lists plans. See [requirement rewrites](plan-files.md#meaning-preservation-in-requirement-rewrites).
 
 **Optional validation (`+check`)**
 - `workflow.improve_check: true` enables validation by default; `--no-check` disables it for one invocation. Explicit flags override config; if both flags are supplied, the last one wins.
@@ -306,10 +319,34 @@ Self-improve skills based on project experience:
 - Reads `.ai-factory/config.yaml` for description, architecture, rules, patches, and evolution-log paths plus language settings; `.ai-factory/skill-context/` remains fixed
 - Analyzes project tech stack, conventions, and codebase patterns
 - Identifies gaps in existing skills (missing guards, tech-specific pitfalls)
-- Proposes targeted improvements with user approval
-- Writes project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
-- Saves evolution log to `paths.evolutions` (default: `.ai-factory/evolutions/`)
-- The more `/aif-fix` patches you accumulate, the smarter `/aif-evolve` becomes
+- Builds candidate cards with the original case, exact applicability, instruction diff, and a counterexample where the rule must not apply
+- Compares current effective instructions and each candidate on the same frozen cases, retaining output evidence, extra cost, and regressions
+- Records accept / narrow / refine / keep old / postpone outcomes; missing execution evidence means postpone
+- Offers only exact validated `accept` revisions for user approval; checks their combination when applying several rules
+- Writes approved project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
+- Saves all outcomes, including "the new rule did not improve behavior", to `paths.evolutions` (default: `.ai-factory/evolutions/`) after apply/report-save approval
+- See [Skill Evolution](evolve.md#comparing-rule-candidates) for the comparison contract and evidence requirements
+
+### `/aif-skills-audit`
+
+Audit the installed library before deciding what to keep, revise, or consolidate:
+
+```text
+/aif-skills-audit
+/aif-skills-audit --root "/path/to/custom skills" --online
+/aif-skills-audit --output ".ai-factory/skills-audit.md"
+```
+
+- Explicit opt-in; inventories built-in, extension/replacement and third-party skills across known project/user/plugin roots. Repeat `--root "<skills-dir>"` to add installed roots; unread or inaccessible entries remain coverage gaps.
+- Starts with **final composition**: deployed text including injections, project overrides, applicable rules and conditional references. Distinguishes observed loads from reconstructed composition and estimates.
+- Explains overlapping triggers, repeated/conflicting rules, stale links/commands and excess context with concrete source evidence.
+- Every merge/removal candidate maps duties to surviving owners and explains incoming/outgoing dependencies; uncovered duties block the recommendation.
+- Without usage observations, usefulness/outcomes are **not measured**, never **useless**.
+- Reports in chat by default and applies no recommendations. `--output "<new-report.md>"` writes only a new report; existing files, audited roots and reserved context/config paths are protected.
+- External checks are **not checked** by default. `--online` enables read-only public-link/official-documentation checks; auth failures, timeouts and rate limits mean **unknown**, not broken.
+- Reads config for context paths, rules and language; works without AI Factory context and adds no config keys. Audited skills, scripts and documented commands are never executed.
+
+Unlike `/aif-evolve`, this audits the whole installed set and produces recommendations; it neither writes overrides nor advances the evolve cursor. The [report contract](../skills/aif-skills-audit/references/aif-skills-audit/REPORT.md) defines the evidence and duty-coverage tables.
 
 ### `/aif-transfer <source-project-path> [skill-name|"all"]`
 Reuse relevant fix experience from another AI Factory project without identifying it:
@@ -427,6 +464,7 @@ See [Writing settings](config-reference.md#writing).
 
 **Quality checks:**
 - Every doc page in `paths.docs` gets prev/next navigation header + "See Also" cross-links
+- Meaning preservation — mandatory source comparison for requirement rewrites, with a fixed `Meaning preservation: PASS` / `FAIL` verdict before readability; `N/A` only when no requirements were rewritten
 - Technical review — verifies links, structure, code examples, no content loss
 - Readability review — "new user eyes" checklist: is it clear, scannable, jargon-free?
 
@@ -574,6 +612,7 @@ Reviews staged changes or PR diffs:
 /aif-review 123 +check
 ```
 - Checks correctness, security, performance, and maintainability
+- For API contract or producer/consumer changes, uses the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md): pins old/new supported contracts and inspected consumers, checks schema and semantics separately, and records coverage gaps. Findings retain the existing severity/validation/gate contract; the reference does not authorize commands or production access.
 - **Coverage-first finding stage** — the review reports every issue it finds, including uncertain and low-severity ones, instead of pre-filtering to "only important" issues; ranking and filtering happen downstream
 - **Confidence markers** — an uncertain finding ends with `(confidence: low)` or `(confidence: medium)`; high confidence is the default and carries no marker. Confidence is independent of severity: the section still follows impact, so a potential merge-blocker you are unsure about is reported in "Critical Issues" with a marker
 - **Markers are resolved before the gate** — a review that produced any marker runs the `+check` validation automatically, even without the flag, so the published gate never carries an unresolved finding (confirmed → ordinary blocker driving `fail`, refuted → dropped). Marker-free reviews dispatch nothing, keeping `+check` opt-in everywhere else
@@ -590,6 +629,8 @@ Reviews staged changes or PR diffs:
 
 **Optional validation (`+check`)**
 - After the review is drafted the skill dispatches a single fresh-context `review-validator` subagent — allowlisted to `Read`, `Glob`, `Grep` on Claude Code — that judges each item from "Critical Issues" and "Suggestions". In PR mode it receives the same pinned diff and source package and cannot supplement them from disk; other modes retain local read-only context. The prompt embeds the reviewed diff verbatim, so the automatic pass requires a runtime-enforced tool restriction, not a prompt instruction; when markers made the pass automatic and that agent is unavailable or its allowlist is not enforced (Codex agents have a read-only sandbox but no tool allowlist), nothing is dispatched and the gate reports the validation failure
+- Explicit `+check` uses the shared executable `check-workflow.mjs` host protocol for response handling and gate rendering. `npm run test:review-check` executes controlled source/reviewer/validator recordings through that same workflow without inference or live tool fallback; see [replay tests and reports](../skills/aif-review/tests/README.md).
+- Before drafting a PR review, the host independently retrieves pinned config and description through `pr-source.mjs context`. Description excerpts and their source records must match that independent result, including the path resolved from pinned config; recomputed Reviewer hashes cannot substitute for tree evidence. Unsupported excerpts stop the workflow. Each validator item needs exactly one nonempty `Reason`; malformed reasons preserve the original finding and emit a warning.
 - Invented findings are dropped, partially-correct ones are rewritten in place, real findings stay untouched — except confirmed marked findings, which come back through `modify` with the confidence marker removed
 - Only actionable code findings are validated: context-gate findings, commit-structure findings, "Questions", and "Positive Notes" are not — the validator judges items against the reviewed diff, which is not evidence for those classes
 - The subagent can also reclassify items between the two severity levels — promote a suggestion to "Critical Issues" if the underlying behavior is actually merge-blocking, or demote a critical finding to "Suggestions" if the framing was too harsh. The two levels and the promotion/demotion rules live in `references/SEVERITY.md`

@@ -1,5 +1,3 @@
-import path from 'path';
-import fs from 'fs/promises';
 import { getAgentConfig, type AgentConfig } from './agents.js';
 
 export interface TemplateVars {
@@ -27,31 +25,4 @@ export function processTemplate(content: string, vars: TemplateVars): string {
   return content.replaceAll('~/{{skills_dir}}', vars.home_skills_dir).replace(/\{\{(config_dir|skills_dir|home_skills_dir|settings_file|agent_name|skills_cli_agent_flag)\}\}/g, (_, key: string) => {
     return vars[key as keyof TemplateVars];
   });
-}
-
-export async function processSkillTemplates(skillDir: string, agent: AgentConfig): Promise<void> {
-  const vars = buildTemplateVars(agent);
-  await processDirectoryTemplates(skillDir, vars);
-}
-
-async function processDirectoryTemplates(dir: string, vars: TemplateVars): Promise<void> {
-  let entries;
-  try {
-    entries = await fs.readdir(dir, { withFileTypes: true });
-  } catch {
-    return;
-  }
-
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      await processDirectoryTemplates(fullPath, vars);
-    } else if (entry.name.endsWith('.md')) {
-      const content = await fs.readFile(fullPath, 'utf-8');
-      const processed = processTemplate(content, vars);
-      if (processed !== content) {
-        await fs.writeFile(fullPath, processed, 'utf-8');
-      }
-    }
-  }
 }
