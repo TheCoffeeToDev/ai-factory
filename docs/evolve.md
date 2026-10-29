@@ -46,13 +46,26 @@ Incremental state file:
 Built-in skills ship with AI Factory and get overwritten on update. To keep project-specific rules stable, `/aif-evolve` writes them to a separate location:
 
 ```
-.ai-factory/skill-context/<skill-name>/SKILL.md
+.ai-factory/skill-context/
+├── global-skill-context.md       # All bundled skills (project-local)
+├── build-skill-context.md        # fix, implement, plan, verify, improve only
+└── <skill-name>/SKILL.md          # Individual exceptions and unique instructions
 ```
 
 Key properties:
 - **Survives `ai-factory update`** — lives in your project, not in the package
 - **Higher priority than base rules** — when a skill-context rule conflicts with a base SKILL.md rule, the skill-context rule wins (same principle as nested CLAUDE.md files)
 - **Cumulative** — each `/aif-evolve` run adds new rules, updates existing ones, and removes stale ones
+
+All files are optional. Existing individual contexts work without migration. Despite
+its name, `global-skill-context.md` belongs to this project, not the user's home
+directory; it does not install global skills. Custom/extension skills do not
+automatically consume these files. The build group is fixed to the five skills
+above and has no configurable membership.
+
+Use shared layers for learned workflow prevention instructions. Keep project coding
+conventions in the existing rules hierarchy and architecture decisions in the
+architecture artifact; reference those instead of copying them into skill-context.
 
 ### Context File Format
 
@@ -81,13 +94,47 @@ for existing records with `findUnique()`. Use upsert when appropriate.
 
 ### How Skills Use Context
 
-Every `aif-*` skill reads its own context file at startup (Step 0 in each SKILL.md):
+Every bundled skill reads applicable files once at startup, before mode routing:
 
 ```
-Read .ai-factory/skill-context/<skill-name>/SKILL.md
+1. global-skill-context.md
+2. build-skill-context.md  (only fix, implement, plan, verify, improve)
+3. <skill-name>/SKILL.md
 ```
 
-If the file exists, the skill treats its rules as project-level overrides — more specific context always wins over general instructions.
+Precedence is **individual > build > global > skill defaults** on conflicting
+instructions; retain all non-conflicting instructions and unique parts. Apply the
+result to all outputs, templates, and reports. Missing files are skipped. An existing
+unreadable file stops dependent work and reports its path. Context cannot relax
+explicit project requirements, scope/ownership, privacy/safety, validation, or approval.
+The configured rules hierarchy keeps its existing precedence.
+
+For example, a shared rule can require workflow reports to distinguish executed
+checks from proposed checks; an individual verify rule can add the exact project
+report format. A database-specific prevention rule that only helps fix should stay
+in `aif-fix/SKILL.md` rather than affect planning or documentation generation.
+
+### Shared Evolution and Consolidation
+
+Named evolve/transfer runs keep individual destinations. Only project `all` mode
+may propose shared writes, after resolving every consumer from the bundled inventory
+and freezing its ownership, base instructions and all applicable context layers.
+Missing, replaced, ambiguous or unchecked consumers prevent shared changes; keep
+the candidate individual or postpone it. `--global` never writes shared project files.
+
+Evolve checks coverage and stale rules per consumer, including shared layers. One
+skill gaining a rule upstream does not make that rule stale for every other skill.
+Before approval, each affected consumer needs the existing baseline/candidate
+comparison, original cases and controls. A missing run or regression makes the whole
+shared candidate ineligible. Approval names the exact shared file and every consumer.
+
+Moving duplicate rules is an explicit validated candidate, including deletions,
+provenance, applicability, and individual exceptions. There is no automatic migration.
+Originals remain if checks/application fail. Equivalent consolidation must demonstrate
+reduced duplicate copies as a maintenance benefit; unchanged behavior is not a claimed
+behavioral improvement. Fewer stored copies do not establish token savings. Shared
+files use the same English rule format with `Applies to:` consumers. Empty shared
+files may be removed, but their parent directory is never deleted.
 
 ## Running /aif-evolve
 
@@ -113,7 +160,7 @@ evolve asks for an absolute path. Home paths are expanded and canonicalized befo
 file tool call. Project context can inform a global change, but approval names the exact
 absolute destination and its effect on every project using that skill. Evolution logs
 and the patch cursor stay in the current project. Global built-ins are skipped because
-there is no global skill-context contract yet.
+there is no home-directory skill-context contract; the shared global layer above is project-local.
 
 ### Workflow Overview
 
@@ -147,7 +194,7 @@ unapplied replacement. Conflicting records and files leave ownership unresolved.
 
 | Skill owner | Where rules are written |
 |-------------|-------------------------|
-| Verified AI Factory built-in, project scope | `.ai-factory/skill-context/<skill-name>/SKILL.md` only |
+| Verified AI Factory built-in, project scope | Individual `.ai-factory/skill-context/<skill-name>/SKILL.md` by default; shared files only after complete consumer resolution/validation in project `all` mode |
 | Verified user-owned, project scope | Exact resolved skill entrypoint or approved nested file |
 | Verified user-owned, explicit `--global` | Exact resolved absolute skill path, with cross-project impact stated before approval |
 | Extension-managed (either scope) | Warning and skip; installed and extension source files stay unchanged |
@@ -176,8 +223,10 @@ an overly broad condition; a narrower candidate must be compared again.
 Possible outcomes are **accept**, **narrow the scope**, **refine**, **keep the old
 version**, or **postpone for lack of data**. Only an exact revision with observed benefit
 and no detected regression can be offered for application. User approval remains required.
-Equal behavior is recorded as **the new rule did not improve behavior**; no instruction
-is added for that candidate. Missing runs are `NOTRUN`, unavailable cost metrics are
+Equal behavior is recorded as **the new rule did not improve behavior**; no new instruction
+is added for that candidate. An equivalent consolidation additionally checks measured
+duplicate reduction as maintenance benefit, with every consumer preserving behavior.
+Missing runs are `NOTRUN`, unavailable cost metrics are
 `UNKNOWN`, and inconclusive comparisons are postponed.
 When several rules will be applied together, their exact combination is also checked
 on the union of their cases before application.

@@ -502,13 +502,20 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
     for (const agent of config.agents) {
       const entries = skillEntriesByAgent.get(agent.id) ?? [];
       const grouped = groupAndSortEntriesByStatus(entries, e => e.skill);
-      const changedWithContextWarnings: string[] = [];
+      const changedWithContextWarnings = new Map<string, string[]>();
 
       for (const entry of grouped.changed) {
-        const skillContextPath = path.join(projectDir, '.ai-factory', 'skill-context', entry.skill, 'SKILL.md');
-        if (await fileExists(skillContextPath)) {
-          changedWithContextWarnings.push(entry.skill);
+        const contextRoot = '.ai-factory/skill-context';
+        const candidates = [`${contextRoot}/global-skill-context.md`];
+        if (['aif-fix', 'aif-implement', 'aif-plan', 'aif-verify', 'aif-improve'].includes(entry.skill)) {
+          candidates.push(`${contextRoot}/build-skill-context.md`);
         }
+        candidates.push(`${contextRoot}/${entry.skill}/SKILL.md`);
+        const existing: string[] = [];
+        for (const candidate of candidates) {
+          if (await fileExists(path.join(projectDir, candidate))) existing.push(candidate);
+        }
+        if (existing.length > 0) changedWithContextWarnings.set(entry.skill, existing);
       }
 
       console.log(chalk.bold(`\n[${agent.id}] Status:`));
@@ -550,10 +557,10 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
         }
       }
 
-      if (changedWithContextWarnings.length > 0) {
+      if (changedWithContextWarnings.size > 0) {
         console.log(chalk.yellow('  WARN: skill-context override may need review for changed skills:'));
-        for (const skill of changedWithContextWarnings) {
-          console.log(chalk.yellow(`    - ${skill} (.ai-factory/skill-context/${skill}/SKILL.md)`));
+        for (const [skill, contexts] of changedWithContextWarnings) {
+          console.log(chalk.yellow(`    - ${skill} (${contexts.join(', ')})`));
         }
       }
 

@@ -8,6 +8,19 @@ disable-model-invocation: false
 
 # Improve - Plan Refinement (Second Iteration)
 
+## Shared project skill-context
+
+Before mode routing or work, read existing files relative to the current project root in this order (reuse them if already loaded):
+
+1. `.ai-factory/skill-context/global-skill-context.md` — all bundled skills.
+2. `.ai-factory/skill-context/build-skill-context.md` — only fix, implement, plan, verify, improve.
+3. `.ai-factory/skill-context/aif-improve/SKILL.md` — this skill.
+
+Missing files are skipped; an existing unreadable file stops dependent work with its path.
+Precedence: individual > build (when applicable) > global > skill defaults; retain non-conflicting instructions and check all outputs against the effective rules.
+These layers customize workflow; they do not replace the project's rules/architecture hierarchy or relax explicit requirements, ownership, scope, safety/privacy, validation, or approval boundaries. Report conflicts with those boundaries instead of overriding them.
+`global` is a project-local layer, not home-directory configuration. Custom/extension skills do not automatically use it.
+
 Refine an existing plan by re-analyzing it against the codebase. Finds gaps, missing tasks, wrong dependencies, and enhances task quality.
 
 ## Core Idea
@@ -195,12 +208,12 @@ Otherwise, select at most one relevant research source using the same conservati
 
 Use patches as fallback context, not the default source:
 
-- If `.ai-factory/skill-context/aif-improve/SKILL.md` does not exist and the resolved patches dir exists:
+- If `.ai-factory/skill-context/aif-improve/SKILL.md` is absent and the resolved patches dir exists (even when global/build context exists):
   - `Glob: <resolved patches dir>/*.md`
   - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
   - Read those selected patch files only
   - Focus on reusable Prevention/Root Cause patterns that affect planning quality
-- If skill-context exists, do **not** read all patches by default.
+- If the individual skill-context exists, do **not** read all patches by default.
   - Optionally inspect a small targeted subset when refining around a known recurring issue.
 
 **Read `.ai-factory/skill-context/aif-improve/SKILL.md`** — MANDATORY if the file exists.

@@ -8,6 +8,19 @@ disable-model-invocation: false
 
 # Fix - Bug Fix Workflow
 
+## Shared project skill-context
+
+Before mode routing or work, read existing files relative to the current project root in this order (reuse them if already loaded):
+
+1. `.ai-factory/skill-context/global-skill-context.md` — all bundled skills.
+2. `.ai-factory/skill-context/build-skill-context.md` — only fix, implement, plan, verify, improve.
+3. `.ai-factory/skill-context/aif-fix/SKILL.md` — this skill.
+
+Missing files are skipped; an existing unreadable file stops dependent work with its path.
+Precedence: individual > build (when applicable) > global > skill defaults; retain non-conflicting instructions and check all outputs against the effective rules.
+These layers customize workflow; they do not replace the project's rules/architecture hierarchy or relax explicit requirements, ownership, scope, safety/privacy, validation, or approval boundaries. Report conflicts with those boundaries instead of overriding them.
+`global` is a project-local layer, not home-directory configuration. Custom/extension skills do not automatically use it.
+
 Fix a specific bug or problem in the codebase. Supports two modes: immediate fix or plan-first approach. The default workflow is regression-first whenever a regression check is needed: reproduce the problem, confirm the reported behavior, implement the fix, then verify the same check passes.
 
 ## Selective reference loading
@@ -167,14 +180,14 @@ codebase conventions, and tech-stack analysis. These rules are tailored to the c
 **Enforcement:** After generating any output artifact, verify it against all skill-context rules.
 If any rule is violated — fix the output before presenting it to the user.
 
-**Patch fallback (limited, only when skill-context is missing):**
+**Patch fallback (limited, only when individual skill-context is missing):**
 
-- If `.ai-factory/skill-context/aif-fix/SKILL.md` does not exist and the resolved patches dir exists:
+- If `.ai-factory/skill-context/aif-fix/SKILL.md` is absent and the resolved patches dir exists (even when global/build context exists):
   - Use `Glob` to find `*.md` files in `<resolved patches dir>`
   - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
   - Read those selected patch files only
   - Prioritize recurring **Root Cause** and **Prevention** patterns
-- If skill-context exists, do **not** read all patches by default.
+- If the individual skill-context exists, do **not** read all patches by default.
   - Optionally inspect a small, targeted subset of recent patches when tags/files clearly match the current bug.
 
 ### Step 1: Understand the Problem & Choose Mode

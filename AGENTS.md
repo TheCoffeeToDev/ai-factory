@@ -141,6 +141,8 @@ artifacts, but the paths below remain the default layout:
 - `.ai-factory/RESEARCH.md` — regular persisted exploration context (from /aif-explore)
 - `.ai-factory/research/<english-topic-slug>/INDEX.md` — ultra research manifest with compatible `RESEARCH.md` and only justified C4/ADR/dependency files; the root is derived from the parent of `paths.research`
 - `.ai-factory/skill-context/<skill>/SKILL.md` — project-specific overrides for skills (from /aif-evolve, directly or via /aif-transfer)
+- `.ai-factory/skill-context/global-skill-context.md` — optional project-local learned workflow rules for all bundled skills
+- `.ai-factory/skill-context/build-skill-context.md` — optional shared rules for fix, implement, plan, verify, improve only
 - `.ai-factory/evolutions/*.md` — evolution logs (from /aif-evolve, directly or via /aif-transfer)
 - `.ai-factory/evolutions/patch-cursor.json` — incremental evolve cursor (latest processed patch)
 - `.ai-factory/qa/<branch-slug>/change-summary.md` — QA change summary (from /aif-qa)
@@ -179,6 +181,14 @@ Artifact writers are command-scoped to prevent ownership conflicts:
 | `paths.archive/plans/*`, `paths.archive/roadmap/*.md`                                         | `/aif-archive`         | archived completed plan files/bundles and dated roadmap snapshots                                |
 
 Quality commands (`/aif-rules-check`, `/aif-commit`, `/aif-review`, `/aif-verify`) are read-only for context artifacts by default.
+
+Bundled skills load optional context layers before routing: global → build (only the
+five consumers above) → individual. Conflict precedence is individual > build > global
+> skill defaults, while explicit requirements, rules/architecture and hard boundaries
+remain authoritative. These layers hold learned workflow prevention, not a competing
+rules hierarchy. `/aif-evolve all` may propose shared writes only after resolving and
+validating every consumer; named/global runs retain their individual destinations.
+See `skills/aif-evolve/references/SHARED-CONTEXT.md` and `docs/evolve.md`. No automatic migration.
 
 The locations shown in the ownership table are the default paths. `config.yaml` may relocate plan, fix, reference,
 documentation, security, evolution, and other AI Factory artifacts; ownership stays with the same command even when the path changes.
