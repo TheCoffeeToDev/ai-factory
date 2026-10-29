@@ -81,13 +81,21 @@ function snapshot(repo, number) {
   }
   const text = decoder.decode(diff);
   if (text && !text.startsWith('diff --git ')) throw new Error('Response is not a full diff');
-  const observed = pull(repo, number);
-  const stale = observed.base_sha !== pinned.base_sha || observed.head_sha !== pinned.head_sha;
+  let observed = null;
+  let stale = null;
+  let freshnessError = null;
+  try {
+    observed = pull(repo, number);
+    stale = observed.base_sha !== pinned.base_sha || observed.head_sha !== pinned.head_sha;
+  } catch {
+    // The pinned diff is complete; a failed freshness probe must not discard it.
+    freshnessError = 'PR metadata could not be re-read; current base/head are unknown, review is bound to the recorded SHAs';
+  }
   return {
     schema_version: 1, mode: 'pr', repository: repo, pr: Number(number), ...pinned,
     merge_base_sha: mergeBase,
     diff: { sha256: digest(diff), bytes: diff.length, source, text },
-    files: [], unavailable_context: [], observed, stale,
+    files: [], unavailable_context: [], observed, stale, freshness_error: freshnessError,
   };
 }
 
@@ -113,6 +121,8 @@ function context(repo, commit, file) {
   let source;
   try {
     const entry = command('git', ['ls-tree', '-z', commit, '--', `:(literal)${file}`]).toString('utf8');
+    if (!entry) return { ...identity, status: 'unavailable', reason_code: 'not-found',
+      reason: 'Path is absent from the pinned Git tree' };
     const match = /^(100644|100755) blob ([a-f0-9]{40})\t/.exec(entry);
     if (!match) throw new Error('Not a regular Git blob');
     blob = match[2];
@@ -130,6 +140,8 @@ function context(repo, commit, file) {
         const listing = json(api(`repos/${repo}/git/trees/${tree}`));
         if (listing.truncated) throw new Error('Incomplete tree');
         const entry = listing.tree.find(item => item.path === parts[index]);
+        if (!entry) return { ...identity, status: 'unavailable', reason_code: 'not-found',
+          reason: 'Path is absent from the pinned GitHub tree' };
         if (index < parts.length - 1) {
           if (entry?.type !== 'tree') throw new Error('Not a directory');
           tree = sha(entry.sha);
@@ -175,7 +187,8 @@ try {
   if (mode === 'snapshot' && revision && file === undefined) result = snapshot(repo, revision);
   else if (mode === 'context' && file !== undefined && !extra.length) result = context(repo, revision, file);
   else throw new Error('Usage: pr-source.mjs snapshot <owner/repo> <PR> | context <owner/repo> <commit-SHA> <path>');
-  if (result.stale) console.error('WARN [aif-review:source]: PR moved during capture; review is bound to the recorded SHAs');
+  if (result.freshness_error) console.error(`WARN [aif-review:source]: ${result.freshness_error}`);
+  else if (result.stale) console.error('WARN [aif-review:source]: PR moved during capture; review is bound to the recorded SHAs');
   if (result.status === 'unavailable') console.error(`WARN [aif-review:source]: ${result.reason}`);
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 } catch (error) {

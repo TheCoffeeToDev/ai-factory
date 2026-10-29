@@ -88,6 +88,9 @@ node <reference-dir>/update-config.mjs \
 - `warmup.paths` is user-owned optional configuration: the template includes
   `warmup.paths: []` on initial create, but reruns must not set or backfill it.
   Preserve any existing list unchanged; absence is equivalent to an empty list.
+- `writing.*` is user-owned optional configuration. Initial creation includes
+  the disabled template defaults; reruns must preserve the entire section and
+  must not set, backfill, or infer a writing preference. Missing means disabled.
 - Never normalize or overwrite `rules.<area>` entries. Those belong to `/aif-rules`.
 - The helper must preserve comments, blank lines, section order, inline comments, unknown sections, custom user values outside targeted keys, and the commented `rules.*` examples from the template.
 - If the helper reports an unsafe structure or invalid payload, STOP. Do **not** fall back to free-form YAML generation.

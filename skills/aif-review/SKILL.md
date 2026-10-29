@@ -26,6 +26,8 @@ If config.yaml doesn't exist, use defaults:
 
 ## Behavior
 
+For explicit `+check`, use the executable host protocol in `references/CHECK-MODE.md`: `check-workflow.mjs run` for staged/PR mode, or `prepare`/`finish` after the normal per-commit collection in commits mode. The internal reviewer draft, validator dispatch, response handling and final gate use this shared workflow. Do not independently simulate its parser or gate in prose. Automatic marker-triggered validation continues to follow the procedure below with its enforced-boundary requirement.
+
 ### Argument flags
 
 Before routing the argument string into one of the modes below, extract any standalone tokens that flag optional behavior. Strip them from the argument string and route the remainder normally.
@@ -228,6 +230,10 @@ A marker never survives to the published gate: its presence triggers the validat
 
 ## Review Checklist
 
+### API compatibility (when applicable)
+
+If the change affects an API contract or producer/consumer semantics, read `references/API-COMPATIBILITY.md`. Pin old/new supported contracts and inspected consumers; assess wire shape and behavioral compatibility separately. Keep missing evidence explicit and route API findings through the existing severity, confidence, validation and gate rules. This reference grants no tool execution or broader source access. Skip this lens when the change has no relevant API surface.
+
 ### Correctness
 - [ ] Logic errors or bugs
 - [ ] Edge cases handling
@@ -298,7 +304,7 @@ Example:
 In either findings section, an item you are not sure about ends with a `(confidence: low)` or `(confidence: medium)` marker — the section still follows impact, not certainty (see "Findings taxonomy and the validation boundary").
 
 Example of a marked item, sitting in Critical Issues because its impact would be merge-blocking if real:
-> Retries reuse the same idempotency key after a 5xx, so a duplicate charge is possible when the provider did commit the first attempt. `src/payments/retry.ts:88`. Generate a fresh key per attempt, or record the provider's response before retrying. (confidence: medium)
+> Retries generate a fresh idempotency key after a 5xx, so a duplicate job is possible when the provider committed the first attempt and deduplicates by key. `src/jobs/retry.ts:88`. Reuse the key for retries of the same logical operation. (confidence: medium)
 
 The marker never reaches the published gate as a finding: it is resolved by the validation pass (see "Resolving markers before the gate") — confirmed items come back without it, refuted ones are dropped, and a marker the pass failed to resolve turns the gate into a `review-validation-failed` failure.]
 

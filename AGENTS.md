@@ -7,7 +7,7 @@
 **AI Factory** (v2) is an npm package + skill system that automates AI agent context setup for projects. It provides:
 
 1. **CLI tool** (`ai-factory init/update/upgrade`) — installs skills and configures MCP
-2. **Built-in skills** (30 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
+2. **Built-in skills** (31 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
 3. **Spec-driven workflow** — structured approach: plan → implement → commit
 4. **Multi-agent support** — 16 agents (Claude Code, Cursor, Windsurf, Roo Code, Kilo Code, Antigravity, OpenCode, Warp,
    Zencoder, Codex CLI, Codex app, GitHub Copilot, Gemini CLI, Junie, Qwen Code, Universal)
@@ -33,6 +33,7 @@ ai-factory/
 │   ├── aif-distillation/       # Distill books/docs/files into skills
 │   ├── aif-dockerize/          # Docker/compose generator
 │   ├── aif-docs/               # Documentation generation & maintenance
+│   ├── aif-skills-audit/             # Audit installed skills and final composition
 │   ├── aif-evolve/             # Self-improve skills based on context
 │   ├── aif-transfer/           # Reuse anonymized patch experience from another project
 │   ├── aif-warmup/             # Load startup context for a session or fork
@@ -59,6 +60,12 @@ ai-factory/
 ```
 
 ## Key Concepts
+
+### Instruction composition records
+
+`ai-factory instructions` is an opt-in recorder for explicitly registered invocations. Core logic is in `src/core/instruction-manifest.ts` and installed-package inventory in `src/core/instruction-inventory.ts`; CLI wiring is in `src/cli/commands/instructions.ts`. The output contract is `schemas/instruction-manifest.schema.json`, documented in `docs/instruction-manifests.md`.
+
+Default artifacts are `.ai-factory/instruction-runs/<run-id>/manifest.json` and per-run content-addressed snapshots. The `instructions` command owns these artifacts; other commands do not mutate them. Capture policies default to no snapshots, no settings, and local-only manual retention. `--runs-dir` relocates storage within the project without introducing `config.yaml` keys. Resource declarations and caller-supplied load evidence must never be described as complete runtime visibility. References, revisions, mandatory missing dependencies, and incomplete invocations remain explicit; budget accounting never trims instructions.
 
 ### Skills Location
 
@@ -121,6 +128,7 @@ Artifact writers are command-scoped to prevent ownership conflicts:
 | `paths.plan`, `paths.plans/<id>.md`, `paths.plans/<id>/index.md` + phase files                | `/aif-plan`            | fast/full/ultra artifacts; `/aif-improve` refines existing plans and bundles                     |
 | `paths.fix_plan` and `paths.patches/*.md`                                                     | `/aif-fix`             | fix workflow ownership; context artifacts (including `DESCRIPTION.md`) stay read-only by default |
 | `README.md` and `paths.docs/*`                                                                | `/aif-docs`            | README stays the landing page; detailed docs directory is configurable via `paths.docs`          |
+| Explicit new audit report (`--output` only) | `/aif-skills-audit` | Chat by default; installed skills, injections, overrides and settings stay read-only |
 | `.ai-factory/skill-context/*`                                                                 | `/aif-evolve`          | skill-context overrides for built-in skills; `/aif-transfer` delegates approved writes here       |
 | `paths.evolutions/*.md` and `paths.evolutions/patch-cursor.json`                              | `/aif-evolve`          | evolution logs and incremental patch cursor; `/aif-transfer` delegates logs but never the cursor  |
 | `.ai-factory/evolution/*` artifacts                                                           | `/aif-loop`            | loop state ownership                                                                             |
@@ -148,7 +156,7 @@ Context gate policy for quality commands:
 
 - Core workflow and quality: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`,
   `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
-- Additional utility: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`,
+- Additional utility: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`,
   `/aif-distillation`,
   `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
 
@@ -162,6 +170,7 @@ Current config keys in active use:
 - `paths.*` - artifact discovery for description, architecture, roadmap, research, RULES.md, plan files, fix plans, QA artifacts,
   references, security state, patches, evolutions, loop state, rules, and archive
 - `language.ui` / `language.artifacts` / `language.technical_terms` - prompt/report language, generated artifact language, and terminology handling while preserving commands, paths, identifiers, config keys, and raw errors where required
+- `writing.profile` / `writing.targets` / `writing.dictionary` - user-owned, disabled-by-default `/aif-docs` editorial profile for exact authorized documentation/runbook paths; choose RU/EN rules after artifact language, preserve meaning and project terminology, and never use style as requirements validation
 - `git.enabled` / `git.base_branch` / `git.create_branches` / `git.branch_prefix` / `git.skip_push_after_commit` - planning, verification, and commit push behavior
 - `workflow.verify_mode` - default verification strictness
 - `workflow.explore_mode` / `workflow.plan_mode` / `workflow.improve_check` - command defaults (`regular` / `ask` / `false`); explicit arguments win, `/aif` reruns preserve values
@@ -433,11 +442,17 @@ Analyzes recurring patterns and tech-specific pitfalls
     ↓
 Reads current skills → identifies gaps
     ↓
-Proposes targeted improvements → user approves
+Builds rule-candidate cards with original problem, exact applicability, instruction diff, and a control where the rule must NOT apply
     ↓
-Applies improvements to skills
+Compares current effective instructions and each exact candidate on the same frozen cases; records output evidence, extra cost, and regressions
     ↓
-Saves evolution log to configured `paths.evolutions/`
+Outcomes: accept / narrow / refine / keep_old / postpone; narrowed or refined text requires another comparison
+    ↓
+Offers only validated accept revisions for user approval; unavailable execution means postpone
+    ↓
+Applies exact approved revisions; multiple rules also require a passing combined comparison
+    ↓
+Saves all outcomes, including "the new rule did not improve behavior", to configured `paths.evolutions/` after apply/report-save approval
 
 /aif-transfer <source-project-path> [skill-name|"all"]
     ↓
@@ -537,6 +552,8 @@ ai-factory upgrade
 ## Documentation Structure
 
 PR review evidence is defined in `skills/aif-review/references/PR-SOURCE.md`: `/aif-review` pins base/head/merge-base SHAs and the reviewed diff hash, retrieves verification context from the same tree, and records file versions and unavailable context in **Review Sources**. `+check` consumes that package without local PR context reads. User-facing behavior is documented in `docs/skills.md` and `docs/workflow.md`.
+
+For application API changes, `skills/aif-review/references/API-COMPATIBILITY.md` defines a conditional review lens: pin supported contract revisions and inspected consumers, compare wire shape and semantics, and preserve existing severity, source, validation and gate rules. This reference grants no independent command execution or production access.
 
 User-facing documentation is split between a lean README and detailed `docs/` pages:
 
@@ -655,6 +672,8 @@ Template variables (`{{config_dir}}`, `{{skills_dir}}`, etc.) in skill `.md` fil
 ```bash
 npm test
 ```
+
+The deterministic `/aif-review +check` scenarios also run via `npm run test:review-check` and are included in `npm test`. They use recorded source/reviewer/validator responses through the skill's executable host protocol, without inference or live-tool fallback. See `skills/aif-review/tests/README.md` for reports and recording maintenance.
 
 Runs `scripts/test-skills.sh` which validates:
 

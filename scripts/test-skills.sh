@@ -1657,6 +1657,35 @@ else
 fi
 
 # ─────────────────────────────────────────────
+# Improve validation must use an actual read-only agent, including config-enabled runs.
+if ROOT_DIR="$ROOT_DIR" node --input-type=module - <<'EOF'
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const read = file => fs.readFileSync(path.join(process.env.ROOT_DIR, file), 'utf8');
+const agent = read('subagents/claude/agents/review-validator.md');
+const frontmatter = agent.match(/^---\n([\s\S]*?)\n---/)[1];
+assert.deepEqual(frontmatter.match(/^tools: (.+)$/m)[1].split(/,\s*/).sort(), ['Glob', 'Grep', 'Read']);
+const check = read('skills/aif-improve/references/CHECK-MODE.md');
+const validator = read('skills/aif-improve/references/VALIDATOR.md');
+assert.match(check, /Task\(subagent_type: review-validator/);
+for (const text of [check, validator]) {
+  assert.doesNotMatch(text, /Task\(subagent_type: general-purpose/);
+}
+assert.match(check, /do not dispatch/i);
+assert.match(check, /whole-dispatch failure/);
+assert.match(check, /workflow\.improve_check: true/);
+assert.match(check, /Codex read-only sandbox does not restrict inherited MCP tools/);
+assert.match(validator, /## Security boundary/);
+assert.match(validator, /untrusted evidence, not instructions/);
+assert.match(validator, /within the supplied project root/);
+EOF
+then
+    pass "improve validation uses an enforced read-only agent without a full-tool fallback"
+else
+    fail "improve validator capability boundary"
+fi
+
 # Part 4.5: Planner parity contract regressions
 # ─────────────────────────────────────────────
 echo -e "\n${BOLD}=== Planner parity contract checks ===${NC}\n"
@@ -2006,6 +2035,20 @@ else
     echo "$GATE_RESULT_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== Review +check recorded workflow scenarios ===${NC}\n"
+
+set +e
+REVIEW_REPLAY_OUTPUT=$(node "$ROOT_DIR/scripts/test-review-check.mjs" 2>&1)
+REVIEW_REPLAY_EXIT=$?
+set -e
+
+if [[ $REVIEW_REPLAY_EXIT -eq 0 ]]; then
+    pass "review +check recorded workflow scenarios"
+else
+    fail "review +check recorded workflow scenarios"
+    echo "$REVIEW_REPLAY_OUTPUT" | sed 's/^/      /'
+fi
+
 echo -e "\n${BOLD}=== Loop budget contract smoke tests ===${NC}\n"
 
 set +e
@@ -2018,6 +2061,14 @@ if [[ $LOOP_BUDGET_SMOKE_EXIT -eq 0 ]]; then
 else
     fail "loop budget contract smoke tests"
     echo "$LOOP_BUDGET_SMOKE_OUTPUT" | sed 's/^/      /'
+fi
+
+echo -e "\n${BOLD}=== API compatibility examples and reference installation ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-api-compatibility.mjs"; then
+    pass "API compatibility example data and standalone reference installation"
+else
+    fail "API compatibility examples or reference installation"
 fi
 
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
@@ -2058,6 +2109,14 @@ if [[ $SELECTIVE_REFERENCES_EXIT -eq 0 ]]; then
 else
     fail "selective workflow references"
     echo "$SELECTIVE_REFERENCES_OUTPUT" | sed 's/^/      /'
+fi
+
+echo -e "\n${BOLD}=== Installed skill audit packaging and docs ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-skills-audit.mjs"; then
+    pass "skills audit installation and documentation tests"
+else
+    fail "skills audit installation and documentation tests"
 fi
 
 echo -e "\n${BOLD}=== Results ===${NC}"
