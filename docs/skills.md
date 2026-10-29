@@ -37,7 +37,9 @@ blocked-result and quality-gate formats are preserved.
 `/aif-plan`, `/aif-review`, and `/aif-verify` embed this contract so each can be
 installed independently. Skill authors can copy the shared [question-delivery
 snippet](../skills/aif-skill-generator/references/BEST-PRACTICES.md#runtime-aware-questions)
-into other interactive skills. Runtime-specific historical examples such as
+into other interactive skills. `/aif-skill-generator` applies this contract before
+mode selection, including URL-based Learn Mode, and embeds it in every generated
+interactive skill. Runtime-specific historical examples such as
 [#62](https://github.com/lee-to/ai-factory/issues/62) do not replace the current
 session's tool definitions.
 

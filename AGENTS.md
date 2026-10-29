@@ -179,6 +179,8 @@ Not yet configurable via the current schema:
 
 Question delivery follows `docs/skills.md#questions-across-runtimes`. `aif-plan`, `aif-review`, and `aif-verify` embed the portable contract; authors reuse the snippet in `skills/aif-skill-generator/references/BEST-PRACTICES.md`. Tool examples never imply runtime availability. Missing UI uses plain text; delegated/non-interactive runs preserve required approvals and return unresolved material decisions as blockers.
 
+`aif-skill-generator` applies this contract before mode routing, including URL-based Learn Mode, and embeds the self-contained section in every generated interactive skill. Learn Mode checks both clarification delivery and the generated section before presentation.
+
 ### Skill Naming (v2)
 
 All skills use `aif-` prefix (v1 used bare names like `commit`, `feature`):
