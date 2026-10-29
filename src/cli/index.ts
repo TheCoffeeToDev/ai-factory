@@ -4,6 +4,7 @@ import { updateCommand } from './commands/update.js';
 import { upgradeCommand } from './commands/upgrade.js';
 import { auditArtifactsCommand } from './commands/audit-artifacts.js';
 import { registerInstructionCommands } from './commands/instructions.js';
+import { commandsCommand } from './commands/commands.js';
 import { extensionAddCommand, extensionRemoveCommand, extensionListCommand, extensionUpdateCommand } from './commands/extension.js';
 import { getCurrentVersion, loadConfig } from '../core/config.js';
 import { loadAllExtensions } from '../core/extensions.js';
@@ -48,6 +49,13 @@ const ext = program
   .description('Manage extensions');
 
 registerInstructionCommands(program);
+
+program.command('commands [directories...]')
+  .description('Catalog declared project commands without executing project code')
+  .option('--json', 'Print the same catalog as machine-readable JSON')
+  .option('--mapping <file>', 'Read explicit commands from an existing project-owned JSON file')
+  .allowExcessArguments(false)
+  .action(commandsCommand);
 
 ext
   .command('add <source>')
@@ -98,5 +106,6 @@ async function loadExtensionCommands(): Promise<void> {
   }
 }
 
-await loadExtensionCommands();
+// Catalog discovery (including help) must not import project extension modules.
+if (process.argv.slice(2).find(argument => !argument.startsWith('-')) !== 'commands') await loadExtensionCommands();
 program.parse();
