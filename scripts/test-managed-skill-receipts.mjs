@@ -204,6 +204,52 @@ for (const [id, skill, installedFile] of [
   }
 }
 
+
+for (const skill of ['aif-skills-audit', 'aif-plan']) {
+  for (const selected of ['aif-docs', skill]) {
+    test('kilocode install preserves unproven legacy directories: ' + skill + '/' + selected, async project => {
+      const legacy = path.join(project, '.kilocode/skills', skill);
+      await fs.mkdir(path.join(legacy, 'notes'), { recursive: true });
+      const files = [
+        [path.join(legacy, 'SKILL.md'), '# User-maintained legacy instructions\n'],
+        [path.join(legacy, 'notes/personal.md'), 'User data outside AI Factory ownership\n'],
+      ];
+      for (const [file, content] of files) await fs.writeFile(file, content);
+      await installSkills({ projectDir: project, agentId: 'kilocode', skillsDir: '.kilocode/skills', skills: [selected] });
+      for (const [file, content] of files) assert.equal(await fs.readFile(file, 'utf8'), content);
+      assert.equal(await fs.stat(path.join(project, '.kilocode/workflows', skill + '.md')).then(() => true, () => false),
+        selected === skill, 'install must honor the selected skill set');
+    });
+  }
+
+  for (const scenario of ['clean', 'modified', 'untracked', 'missing-raw-receipt', 'missing-managed-state']) {
+    test('kilocode runtime deselection respects ownership: ' + skill + '/' + scenario, async project => {
+      runCommand(project, 'init', 'kilocode', scenario === 'untracked' ? 'aif-docs' : 'aif-docs,' + skill);
+      const target = path.join(project, '.kilocode/workflows', skill + '.md');
+      if (scenario === 'untracked') {
+        await fs.mkdir(path.dirname(target), { recursive: true });
+        await fs.writeFile(target, '# Third-party workflow with a colliding name\n');
+      } else {
+        const configPath = path.join(project, '.ai-factory.json');
+        const config = JSON.parse(await fs.readFile(configPath, 'utf8'));
+        assert.match(config.agents[0].managedSkills[skill].rawInstalledHash, /^[a-f0-9]{64}$/);
+        if (scenario === 'modified') await fs.appendFile(target, '\nUser-maintained workflow changes\n');
+        if (scenario === 'missing-raw-receipt') delete config.agents[0].managedSkills[skill].rawInstalledHash;
+        if (scenario === 'missing-managed-state') delete config.agents[0].managedSkills;
+        await fs.writeFile(configPath, JSON.stringify(config));
+      }
+      const before = await fs.readFile(target);
+      runCommand(project, 'init', 'claude', 'aif-docs');
+      if (scenario === 'clean') {
+        await assert.rejects(fs.access(target), { code: 'ENOENT' });
+      } else {
+        assert.deepEqual(await fs.readFile(target), before, 'runtime cleanup must preserve unproven or modified workflows');
+      }
+      assert.deepEqual((await loadConfig(project)).agents.map(agent => agent.id), ['claude']);
+    });
+  }
+}
+
 let failures = 0;
 const temporaryRoot = path.resolve(os.tmpdir());
 for (const { name, run } of cases) {

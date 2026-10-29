@@ -93,6 +93,10 @@ ai-factory upgrade
 # Audit artifact metadata links (frontmatter id/depends_on/affects/etc.)
 ai-factory audit-artifacts
 
+# Record an explicitly registered skill invocation and verify its instruction bytes
+ai-factory instructions start --spec composition.json
+ai-factory instructions verify RUN
+
 # Install an extension (local path, git URL, or npm package)
 ai-factory extension add ./my-extension
 
@@ -110,6 +114,8 @@ ai-factory extension remove my-extension
 ```
 
 See [Plan Files](plan-files.md) for the artifact frontmatter schema, default scan paths, `--json` output, `--strict` exit behavior, and path boundary rules.
+
+See [Instruction Manifests](instruction-manifests.md) for preparing `composition.json`, snapshot capture policy, load evidence, and restoration. Recording is opt-in; ordinary skill invocations remain unchanged.
 
 ### `ai-factory init` Flags
 

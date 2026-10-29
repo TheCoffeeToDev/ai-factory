@@ -192,9 +192,13 @@ assert_contains "$CONTRACT_REF" '/aif-commit' "contract documents commit as clea
 
 echo -e "\n${BOLD}=== Gate skill output contracts ===${NC}\n"
 
+VERIFY_CONTRACT_FILE="$(mktemp)"
+node "$ROOT_DIR/scripts/lib/skill-contract-source.mjs" "$ROOT_DIR/skills/aif-verify/SKILL.md" > "$VERIFY_CONTRACT_FILE"
+trap 'rm -f "$VERIFY_CONTRACT_FILE"' EXIT
+
 gate_skill_file() {
     case "$1" in
-        verify) printf "%s\n" "$ROOT_DIR/skills/aif-verify/SKILL.md" ;;
+        verify) printf "%s\n" "$VERIFY_CONTRACT_FILE" ;;
         review) printf "%s\n" "$ROOT_DIR/skills/aif-review/SKILL.md" ;;
         security) printf "%s\n" "$ROOT_DIR/skills/aif-security-checklist/SKILL.md" ;;
         rules) printf "%s\n" "$ROOT_DIR/skills/aif-rules-check/SKILL.md" ;;
@@ -298,7 +302,7 @@ echo -e "\n${BOLD}=== Gate result fixture validation ===${NC}\n"
 
 FIXTURE_FILE="$(mktemp)"
 FIXTURE_JSON="$(mktemp)"
-trap 'rm -f "$FIXTURE_FILE" "$FIXTURE_JSON"' EXIT
+trap 'rm -f "$VERIFY_CONTRACT_FILE" "$FIXTURE_FILE" "$FIXTURE_JSON"' EXIT
 
 cat > "$FIXTURE_FILE" <<'EOF'
 ## Human Review

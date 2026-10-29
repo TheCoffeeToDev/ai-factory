@@ -494,8 +494,8 @@ assert_exists "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" "Codex app mu
 assert_exists "$CODEX_APP_PROJECT_DIR/.agents/skills/aif-plan/SKILL.md" "Codex app must install aif-plan into repo skills"
 assert_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" '\$aif-skill-generator' "Codex app skills must use Codex $ invocation"
 assert_not_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" '(^|[^$])`/aif-skill-generator`' "Codex app skills must not keep slash invocation examples"
-assert_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" '~/.agents/skills/aif-skill-generator/scripts/security-scan\.py' "Codex app transformer must not rewrite skill directory paths"
-assert_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" '\.\./aif-skill-generator/SKILL\.md' "Codex app transformer must not rewrite relative markdown links"
+assert_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/references/SETUP-SECURITY.md" '~/.agents/skills/aif-skill-generator/scripts/security-scan\.py' "Codex app transformer must not rewrite skill directory paths in references"
+assert_contains "$CODEX_APP_PROJECT_DIR/.agents/skills/aif/SKILL.md" '\]\(references/SETUP-SECURITY\.md\)' "Codex app transformer must not rewrite relative markdown links"
 node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const a=c.agents[0];if(a.id!=='codex-app')process.exit(1);if(a.skillsDir!=='.agents/skills')process.exit(1);if(a.agentsDir)process.exit(1);" "$CODEX_APP_PROJECT_DIR/.ai-factory.json"
 
 CODEX_APP_MCP_PROJECT_DIR="$TMPDIR/init-smoke-codex-app-mcp"
