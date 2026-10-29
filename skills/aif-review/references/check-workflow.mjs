@@ -135,6 +135,58 @@ function projectGate(review, uncertainty, counters, validationFailures, warnings
   };
 }
 
+function renderReviewSources(source, freshness) {
+  const describe = value => {
+    if (value === undefined || value === null || value === '') return 'Not recorded.';
+    if (Array.isArray(value)) return value.length ? value.map(describe).join('; ') : 'None recorded.';
+    if (typeof value === 'object') return Object.entries(value)
+      .map(([key, entry]) => `${key}: ${describe(entry)}`).join('; ') || 'Not recorded.';
+    return String(value);
+  };
+  const cell = value => describe(value).replace(/[&<>|`\\\r\n]/g, character => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '|': '&#124;', '`': '&#96;', '\\': '&#92;',
+    '\r': '', '\n': '<br>',
+  })[character]);
+  const table = (headers, rows) => [headers, headers.map(() => '---'), ...rows]
+    .map(row => `| ${row.map(cell).join(' | ')} |`).join('\n');
+  const excerptRanges = excerpts => excerpts?.map(excerpt => {
+    if (!excerpt || typeof excerpt !== 'object' || Array.isArray(excerpt)) return excerpt;
+    const { content, text, ...identity } = excerpt;
+    return identity;
+  });
+  const files = source.files ?? [];
+  const sections = ['### Review Sources', table(['Source', 'Recorded value'], [
+    ['Repository', source.repository], ['PR', source.pr],
+    ['Base SHA', source.base_sha], ['Head SHA', source.head_sha], ['Merge-base SHA', source.merge_base_sha],
+    ['Diff SHA-256', source.diff?.sha256], ['Diff bytes', source.diff?.bytes], ['Diff source', source.diff?.source],
+    ['Capture freshness', source.stale === true ? 'PR moved during capture; only the recorded snapshot was reviewed.'
+      : source.stale === false ? 'No PR movement detected during capture.' : 'Not recorded.'],
+    ['Observed commits during capture', source.observed],
+  ]), '#### Additional files'];
+  sections.push(files.length ? table(
+    ['Path', 'Side / commit SHA', 'Blob SHA', 'Content SHA-256', 'File details', 'Excerpt ranges', 'Local comparison'],
+    files.map(file => {
+      const { path, side, commit_sha, blob_sha, sha256, excerpts, line_ranges, local, content, ...details } = file;
+      return [path, { side: side ?? (commit_sha === source.head_sha ? 'head'
+        : commit_sha === source.merge_base_sha ? 'before' : 'Not recorded.'), commit_sha },
+      blob_sha, sha256, details, excerptRanges(excerpts) ?? line_ranges, local];
+    }),
+  ) : 'No additional files were recorded.');
+  for (const [key, title, empty] of [
+    ['unavailable_context', 'Unavailable context', 'No unavailable context was recorded.'],
+    ['excluded_conclusions', 'Excluded conclusions', 'No excluded conclusions were recorded.'],
+  ]) {
+    sections.push(`#### ${title}`, source[key]?.length
+      ? table(['#', 'Details'], source[key].map((entry, index) => [index + 1, entry])) : empty);
+  }
+  const confirmed = freshness?.confirmed === true;
+  sections.push(`Freshness: ${confirmed ? 'confirmed' : 'unconfirmed'} — ${confirmed
+    ? 'Current base/head match the recorded snapshot.'
+    : 'Current base/head could not be confirmed; this review covers only the recorded snapshot.'}`);
+  if (freshness?.reason) sections.push(table(['Freshness limitation', 'Details'], [['Reason', freshness.reason]]));
+  return sections.join('\n\n');
+}
+
 export function finishCheck({ prepared, result, freshness }) {
   assert(prepared?.workflow_version === WORKFLOW_VERSION, 'Unsupported check workflow version');
   validateDraft(prepared.review);
@@ -202,8 +254,7 @@ export function finishCheck({ prepared, result, freshness }) {
     if (review[key]?.length) sections.push(`### ${title}\n${review[key].join('\n')}`);
   }
   if (prepared.source.mode === 'pr') {
-    const provenance = { ...prepared.source, files: prepared.source.files?.map(({ content, ...identity }) => identity) };
-    sections.push(`### Review Sources\n${JSON.stringify(provenance, null, 2)}\nFreshness: ${freshness?.confirmed === true ? 'confirmed' : 'unconfirmed'}`);
+    sections.push(renderReviewSources(prepared.source, freshness));
   }
   if (!failed && !itemWarnings) sections.push(`Filtered: ${counters.hidden} hidden, ${counters.adjusted} adjusted, ${counters.reclassified} reclassified by +check`);
   sections.push(...warnings);
