@@ -82,6 +82,11 @@ shared requests, and preservation across reinstall/update/remove. Keep its compo
 in managed receipt proof and skill migration rendering. Never infer grants from prose
 or broaden a scoped request into unrestricted shell permissions. See `docs/extensions.md`.
 
+Captured tool baselines must stay bound to their applied skill source owner and
+extension-native declaration. Replacement removal or changed source defaults use
+the current source field and recompose remaining requests; old native grants must
+never become unowned permissions on a restored bundle or a new replacement.
+
 ### Bundled loop subagents
 
 Bundled `loop-*` agent files require `aif-loop` in the selected/installed skill set for both Claude and Codex.

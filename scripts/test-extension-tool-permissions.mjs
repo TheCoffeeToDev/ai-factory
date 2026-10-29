@@ -178,6 +178,52 @@ try {
   assert.deepEqual(tools(await fs.readFile(target, 'utf8')), ['Read', shared, 'Bash(user-extra *)'], 'Manifest-less removal keeps pre-existing and user entries');
   console.log('PASS CLI add/reinstall/update/force/init/refresh/remove, shared requests, and rollback');
 
+  const replaced = path.join(temp, 'replacement-project');
+  await fs.mkdir(replaced);
+  run(replaced, ['init', '--agents', 'claude', '--skills', 'aif-plan']);
+  const replacedTarget = path.join(replaced, '.claude/skills/aif-plan/SKILL.md');
+  const bundled = await fs.readFile(replacedTarget, 'utf8');
+  const replacement = path.join(temp, 'replacement-extension');
+  const source = path.join(replacement, 'skills/custom-plan');
+  await fs.mkdir(source, { recursive: true });
+  const native = version => `Bash(replacement-native-${version} *)`;
+  const replacementBody = version => `---\nname: custom-plan\nallowed-tools: Read ${native(version)}\n---\nReplacement ${version}\n`;
+  await fs.writeFile(path.join(source, 'SKILL.md'), replacementBody('v1'));
+  const replacementManifest = await extension(replacement, 'replacement-tools', ['Bash(replacement-request *)'], {
+    replaces: { 'skills/custom-plan': 'aif-plan' },
+  });
+  run(replaced, ['extension', 'add', replacement]);
+  run(replaced, ['extension', 'add', b]);
+  await fs.writeFile(replacedTarget, editTools(await fs.readFile(replacedTarget, 'utf8'), values => [...values, 'Bash(replacement-user *)']));
+  run(replaced, ['init', '--agents', 'claude', '--skills', 'aif-plan']);
+  assert.ok(tools(await fs.readFile(replacedTarget, 'utf8')).includes('Bash(replacement-user *)'), 'Same source owner preserves local tool edits');
+
+  // A top-level update captures its own baseline before refreshing extensions.
+  // Neither that snapshot nor the inner refresh may restore v1 native grants.
+  await fs.writeFile(path.join(source, 'SKILL.md'), replacementBody('v2'));
+  await fs.writeFile(path.join(replacement, 'extension.json'), JSON.stringify({ ...replacementManifest, version: '1.0.1' }));
+  run(replaced, ['update', '--force']);
+  let replacementTools = tools(await fs.readFile(replacedTarget, 'utf8'));
+  assert.ok(replacementTools.includes(native('v2')), 'Refresh uses the new source tool field');
+  assert.ok(!replacementTools.includes(native('v1')), 'Outer update cannot restore the old replacement source field');
+  assert.ok(!replacementTools.includes('Bash(replacement-user *)'), 'Old source edits do not cross a source permission change');
+  assert.ok(replacementTools.includes(requested), 'Another extension keeps its request after refresh');
+
+  // A same-version local refresh must also notice changed native defaults.
+  await fs.writeFile(path.join(source, 'SKILL.md'), replacementBody('v3'));
+  run(replaced, ['extension', 'update', 'replacement-tools', '--force']);
+  replacementTools = tools(await fs.readFile(replacedTarget, 'utf8'));
+  assert.ok(replacementTools.includes(native('v3')));
+  assert.ok(!replacementTools.includes(native('v2')), 'Same-version refresh must not inherit old source grants');
+  run(replaced, ['extension', 'remove', 'replacement-tools']);
+  const restored = await fs.readFile(replacedTarget, 'utf8');
+  assert.deepEqual(new Set(tools(restored)), new Set(tools(applyToolPermissions(bundled, 'permissions-b', [requested]))), 'Restored bundle gets its own defaults and remaining requests');
+  assert.ok(!restored.includes('replacement-native-'), 'Removed replacement native grants must not survive as unowned base tools');
+  assert.ok(!restored.includes('replacement-request'));
+  run(replaced, ['extension', 'remove', 'permissions-b']);
+  assert.equal(await fs.readFile(replacedTarget, 'utf8'), bundled, 'Final removal restores the bundled tool declaration');
+  console.log('PASS replacement refresh/removal use current source defaults and preserve remaining request ownership');
+
   const clean = path.join(temp, 'clean');
   await fs.mkdir(clean);
   run(clean, ['init', '--agents', 'claude', '--skills', 'aif-plan']);

@@ -232,7 +232,7 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
   });
 
   await prepareSkillTargets(projectDir, config);
-  const permissionBases = await captureToolPermissionBases(projectDir, config.agents);
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents, config.extensions);
 
   const currentVersion = getCurrentVersion();
 
@@ -466,7 +466,7 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
       }
     }
 
-    await restoreToolPermissionBases(projectDir, config.agents, permissionBases);
+    await restoreToolPermissionBases(projectDir, config.agents, permissionBases, config.extensions);
 
     // Rebuild managed state after final update + replacement + injection pipeline.
     const finalReplacedSkills = collectReplacedSkills(extensions);

@@ -1,8 +1,8 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { isMap, isScalar, isSeq, parseDocument } from 'yaml';
-import type { AgentInstallation } from './config.js';
-import type { ExtensionManifest } from './extensions.js';
+import type { AgentInstallation, ExtensionRecord } from './config.js';
+import { loadAllExtensions, type ExtensionManifest } from './extensions.js';
 import { logSkillTarget, physicalProjectPath } from './skill-targets.js';
 
 const MARKER = ' # aif-ext-tools:';
@@ -10,7 +10,7 @@ const IDENTIFIER = /^[a-zA-Z0-9][\w.-]*$/;
 interface Request { extension: string; tools: string[] }
 interface Ownership { base: string; requests: Request[] }
 interface Field { start: number; end: number; raw: string; tools: string[]; newline: string }
-export interface ToolPermissionBase { agentId: string; skill: string; base: string }
+export interface ToolPermissionBase { agentId: string; skill: string; base: string; sourceOwner: string | null }
 
 export function validateToolPermission(tool: unknown): asserts tool is string {
   if (typeof tool !== 'string' || !tool || tool.length > 512 || /[\u0000-\u001f\u007f-\u009f\u2028\u2029]/.test(tool)) {
@@ -183,7 +183,39 @@ export async function applyExtensionToolPermissions(projectDir: string, agents: 
   }
 }
 
-export async function captureToolPermissionBases(projectDir: string, agents: readonly AgentInstallation[]): Promise<ToolPermissionBase[]> {
+async function toolPermissionSourceOwners(projectDir: string, extensions: readonly ExtensionRecord[], skills: ReadonlySet<string>): Promise<Map<string, string | null>> {
+  const owners = new Map<string, string | null>();
+  // An applied replacement with unavailable source evidence is never a local base.
+  for (const extension of extensions) for (const skill of extension.replacedSkills ?? []) {
+    if (skills.has(skill)) owners.set(skill, null);
+  }
+  const installed = await loadAllExtensions(projectDir, extensions.map(extension => extension.name));
+  for (const { dir, manifest } of installed) {
+    const applied = new Set(extensions.find(extension => extension.name === manifest.name)?.replacedSkills ?? []);
+    for (const relative of new Set([...(manifest.skills ?? []), ...Object.keys(manifest.replaces ?? {})])) {
+      const replacement = manifest.replaces?.[relative];
+      if (replacement && !applied.has(replacement)) continue;
+      const normalized = relative.replaceAll('\\', '/');
+      const skill = replacement ?? path.posix.basename(normalized);
+      if (!skills.has(skill)) continue;
+      const source = path.resolve(dir, normalized, 'SKILL.md');
+      if (!source.startsWith(`${path.resolve(dir)}${path.sep}`)) throw new Error(`Unsafe permission source: ${relative}`);
+      const native = field(await fs.readFile(source, 'utf8')).raw;
+      // Stable across unrelated version changes, but never carry native grants
+      // across a different owner/source path or a changed source tool declaration.
+      const owner = JSON.stringify([manifest.name, normalized, native]);
+      if (owners.get(skill) && owners.get(skill) !== owner) throw new Error(`Conflicting permission source owners: ${skill}`);
+      owners.set(skill, owner);
+    }
+  }
+  return owners;
+}
+
+function permissionSourceOwner(owners: ReadonlyMap<string, string | null>, skill: string): string | null {
+  return owners.has(skill) ? owners.get(skill)! : 'local';
+}
+
+export async function captureToolPermissionBases(projectDir: string, agents: readonly AgentInstallation[], extensions: readonly ExtensionRecord[] = []): Promise<ToolPermissionBase[]> {
   const result: ToolPermissionBase[] = [];
   for (const agent of agents.filter(candidate => candidate.id === 'claude')) {
     // Include untracked custom targets so manifest-less removal still respects ownership markers.
@@ -203,19 +235,30 @@ export async function captureToolPermissionBases(projectDir: string, agents: rea
         const file = await skillFile(projectDir, agents, agent, entry.name);
         if (file !== candidate) throw new Error('Permission target changed while reading ownership.');
         const current = field(content);
-        if (current.raw.includes(MARKER)) result.push({ agentId: agent.id, skill: entry.name, base: ownership(current).base });
+        if (current.raw.includes(MARKER)) result.push({ agentId: agent.id, skill: entry.name,
+          base: ownership(current).base, sourceOwner: null });
       } catch (error) {
         if ((error as NodeJS.ErrnoException).code !== 'ENOENT') throw error;
       }
     }
   }
+  if (result.length) {
+    const owners = await toolPermissionSourceOwners(projectDir, extensions, new Set(result.map(snapshot => snapshot.skill)));
+    for (const snapshot of result) snapshot.sourceOwner = permissionSourceOwner(owners, snapshot.skill);
+  }
   return result;
 }
 
-export async function restoreToolPermissionBases(projectDir: string, agents: readonly AgentInstallation[], bases: readonly ToolPermissionBase[]): Promise<void> {
+export async function restoreToolPermissionBases(projectDir: string, agents: readonly AgentInstallation[], bases: readonly ToolPermissionBase[], extensions: readonly ExtensionRecord[] = []): Promise<void> {
+  if (!bases.length) return;
+  const owners = await toolPermissionSourceOwners(projectDir, extensions, new Set(bases.map(snapshot => snapshot.skill)));
   for (const snapshot of bases) {
     const agent = agents.find(agent => agent.id === snapshot.agentId);
     if (!agent) continue;
+    if (snapshot.sourceOwner === null || snapshot.sourceOwner !== permissionSourceOwner(owners, snapshot.skill)) {
+      logSkillTarget('[FIX:171] permissions:source-changed', { runtime: agent.id, skill: snapshot.skill });
+      continue;
+    }
     try {
       const file = await skillFile(projectDir, agents, agent, snapshot.skill);
       const before = await fs.readFile(file, 'utf8');

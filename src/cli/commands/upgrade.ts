@@ -501,7 +501,7 @@ async function upgradeLocked(): Promise<void> {
   for (const agent of migrationConfig.agents) agent.installedSkills = agent.installedSkills.filter(skill => availableSkills.includes(skill));
   await prepareSkillTargets(projectDir, migrationConfig, groups);
   config = (await loadConfig(projectDir))!;
-  const permissionBases = await captureToolPermissionBases(projectDir, config.agents);
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents, config.extensions);
 
   // Step 1: Migrate legacy plan directories to .ai-factory/plans/
   // Also ensure newer v2 working directories exist.
@@ -741,7 +741,7 @@ async function upgradeLocked(): Promise<void> {
   }
 
   await composeInstalledExtensionSkills(projectDir, config);
-  await restoreToolPermissionBases(projectDir, config.agents, permissionBases);
+  await restoreToolPermissionBases(projectDir, config.agents, permissionBases, config.extensions);
   const replaced = collectReplacedSkills(config.extensions ?? []);
   for (const agent of config.agents) {
     agent.managedSkills = await buildManagedSkillsState(projectDir, agent,

@@ -115,7 +115,7 @@ async function extensionRemoveLocked(name: string): Promise<void> {
   await prepareSkillTargets(projectDir, config);
   await hydrateAgentFileSources(projectDir, config);
 
-  const permissionBases = await captureToolPermissionBases(projectDir, config.agents);
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents, config.extensions);
   const extensions = config.extensions ?? [];
   const index = extensions.findIndex(e => e.name === name);
 
@@ -196,7 +196,7 @@ async function extensionRemoveLocked(name: string): Promise<void> {
     await applyExtensionToolPermissions(projectDir, config.agents, remaining.map(({ manifest: other }) => ({
       ...other, toolPermissions: other.toolPermissions?.filter(permission => extRecord.replacedSkills?.includes(permission.target)),
     })));
-    await restoreToolPermissionBases(projectDir, config.agents, permissionBases);
+    await restoreToolPermissionBases(projectDir, config.agents, permissionBases, config.extensions);
     await saveConfig(projectDir, config);
 
     console.log(chalk.green(`✓ Extension "${name}" removed`));

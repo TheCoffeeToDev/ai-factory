@@ -131,7 +131,9 @@ Removing a runtime deletes its unneeded skills only when they match the saved ra
 Extensions may declare skill/runtime-scoped `toolPermissions` in their manifest.
 Claude Code skill fields carry `aif-ext-tools` ownership comments; no global permission
 settings or new `.ai-factory.json` permission map is created. Updates preserve the
-unowned field, while removal drops only extension-owned entries. Other runtimes are
+unowned field while its source owner and extension-native declaration stay unchanged.
+Replacement removal or changed replacement defaults use the current source field
+and recompose remaining requests, without retaining the previous source's grants. Other runtimes are
 reported as unsupported. See [Skill Tool Permissions](extensions.md#skill-tool-permissions)
 for syntax, native policy behavior, and the package-default reconciliation limit.
 

@@ -792,7 +792,7 @@ async function commitResolvedExtensionLocked(
     backupDir = backupCandidateDir;
   }
 
-  const permissionBases = await captureToolPermissionBases(projectDir, config.agents);
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents, config.extensions);
   for (const permission of manifest.toolPermissions ?? []) for (const [runtime, tools] of Object.entries(permission.agents)) {
     log('info', `Requested tool permissions: ${manifest.name} -> ${runtime}/${permission.target}: ${tools.join(', ')}`);
   }
@@ -821,7 +821,10 @@ async function commitResolvedExtensionLocked(
     await applyExtensionToolPermissions(projectDir, config.agents, prospectiveExtensions.map(({ manifest: other }) => ({
       ...other, toolPermissions: other.toolPermissions?.filter(permission => overwritten.has(permission.target)),
     })));
-    await restoreToolPermissionBases(projectDir, config.agents, permissionBases);
+    await restoreToolPermissionBases(projectDir, config.agents, permissionBases, [
+      ...extensions.filter(extension => extension.name !== manifest.name),
+      { name: manifest.name, source, version: manifest.version, replacedSkills: assetInstall.replacedSkills },
+    ]);
   } catch (error) {
     const partialAssetInstall = error instanceof ExtensionAssetInstallError
       ? error.partialResult

@@ -393,8 +393,15 @@ entries, and edited entries are preserved. Removing the ownership comment relinq
 automatic cleanup rather than authorizing deletion of unproven entries.
 
 Reinstall, extension refresh, `init`, `update` (including `--force`), and `upgrade`
-preserve the existing unowned field and recompose active requests. This includes user
-removals; changed package defaults for that field require manual reconciliation.
+preserve the existing unowned field while the source owner and its extension-native
+tool declaration remain unchanged, and recompose active requests. This includes user
+removals; changed bundled package defaults for that field require manual reconciliation.
+Removing a replacement uses the restored bundled skill's own declaration. Refreshing
+a replacement with a different source or native tool declaration uses the new source
+field, including on same-version local refreshes. Captured native grants and edits
+from the previous source are not carried over; remaining extensions' requests are
+recomposed with their ownership intact. Applied replacement records and installed
+extension sources establish the source identity, rather than a manifest claim alone.
 Permission targets participate in extension rollback. Managed receipts include the
 exact known permission composition; user changes are not promoted into proven package
 ownership.

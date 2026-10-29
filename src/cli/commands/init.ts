@@ -242,7 +242,7 @@ async function initLocked(options: InitOptions): Promise<void> {
       })),
     );
     if (existingConfig) await prepareSkillTargets(projectDir, existingConfig, groups);
-    const permissionBases = await captureToolPermissionBases(projectDir, existingConfig?.agents ?? []);
+    const permissionBases = await captureToolPermissionBases(projectDir, existingConfig?.agents ?? [], existingConfig?.extensions);
 
     const selectedAgentIds = new Set(answers.agents.map(agent => agent.id));
     const removedAgents = (existingConfig?.agents ?? []).filter(agent => !selectedAgentIds.has(agent.id));
@@ -388,7 +388,7 @@ async function initLocked(options: InitOptions): Promise<void> {
       }
     }
 
-    await restoreToolPermissionBases(projectDir, installedAgents, permissionBases);
+    await restoreToolPermissionBases(projectDir, installedAgents, permissionBases, existingExtensions);
 
     for (const agent of installedAgents) {
       const managedBaseSkills = agent.installedSkills.filter(skill => !replacedSkills.has(skill));
