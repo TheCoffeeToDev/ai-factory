@@ -23,6 +23,7 @@ import type { AgentFileSource, AgentInstallation, ExtensionRecord, ManagedArtifa
 import { getAgentConfig } from './agents.js';
 import { getExtensionsDir, loadAllExtensions, type ExtensionManifest, type ExtensionAgentFile } from './extensions.js';
 import { applyInjection } from './injections.js';
+import { applyManifestToolPermissions, stripToolPermissions } from './tool-permissions.js';
 import { buildTemplateVars, processTemplate } from './template.js';
 import { createSkillRenderContext, logSkillTarget, physicalProjectPath, type SkillRenderContext } from './skill-targets.js';
 import { getTransformer, extractFrontmatterName, replaceFrontmatterName } from './transformer.js';
@@ -167,7 +168,7 @@ type PreservableManagedAgentFileStatus =
   | 'missing-source-file';
 
 function normalizeMarkdownForManagedHash(content: string): string {
-  return content
+  return stripToolPermissions(content)
     .replace(/\r\n/g, '\n')
     .replace(EXTENSION_INJECTION_BLOCK_PATTERN, '')
     .trimEnd();
@@ -472,7 +473,7 @@ async function readReceiptSourceFile(projectDir: string, file: string): Promise<
 
 async function loadReceiptInjections(
   projectDir: string, registeredExtensions: readonly ExtensionRecord[],
-): Promise<ReceiptInjection[]> {
+): Promise<{ injections: ReceiptInjection[]; manifests: ExtensionManifest[] }> {
   const names = registeredExtensions.map(extension => extension.name);
   const installed = await loadAllExtensions(projectDir, names);
   if (new Set(names).size !== names.length || installed.length !== names.length) {
@@ -488,7 +489,7 @@ async function loadReceiptInjections(
         content: (await readReceiptSourceFile(projectDir, path.join(dir, injection.file))).toString('utf8') });
     }
   }
-  return injections;
+  return { injections, manifests: installed.map(extension => extension.manifest) };
 }
 
 async function inventoryReceiptFiles(directory: string): Promise<Map<string, Buffer>> {
@@ -512,17 +513,18 @@ async function inventoryReceiptFiles(directory: string): Promise<Map<string, Buf
 
 async function proveManagedSkillRawHash(
   projectDir: string, agent: AgentInstallation, skillName: string, context: SkillRenderContext,
-  injections: readonly ReceiptInjection[],
+  composition: { injections: readonly ReceiptInjection[]; manifests: ExtensionManifest[] },
 ): Promise<string> {
   const sourceSkillDir = path.join(getSkillsDir(), skillName);
   if ((await fs.lstat(sourceSkillDir)).isSymbolicLink()) throw new Error(`Linked bundled skill source: ${skillName}`);
   const expected = await renderSkillFiles(sourceSkillDir, skillName, agent.id, context);
   let content = expected.get('SKILL.md')!.toString('utf8');
-  for (const injection of injections) {
+  for (const injection of composition.injections) {
     if (injection.target === skillName) {
       content = applyInjection(content, injection.content, injection.position, injection.extensionName, skillName);
     }
   }
+  content = applyManifestToolPermissions(content, skillName, agent.id, composition.manifests);
   expected.set('SKILL.md', Buffer.from(content));
   const paths = resolveSkillPaths(projectDir, agent.skillsDir, agent.id, skillName, sourceSkillDir);
   let actual: Map<string, Buffer>;
@@ -565,7 +567,7 @@ export async function buildManagedSkillsState(
 ): Promise<Record<string, ManagedSkillState>> {
   const state: Record<string, ManagedSkillState> = {};
   const renderContext = context ?? createSkillRenderContext(agentInstallation.id, agentInstallation.skillsDir);
-  let injections: ReceiptInjection[] | null = null;
+  let injections: Awaited<ReturnType<typeof loadReceiptInjections>> | null = null;
   try {
     injections = await loadReceiptInjections(projectDir, registeredExtensions);
   } catch (error) {

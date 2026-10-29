@@ -10,6 +10,7 @@ import { loadAllExtensions, type InstalledExtensionManifest } from './extensions
 import { getAvailableSkills, buildManagedSkillsState, renderSkillFiles } from './installer.js';
 import { getSkillsDir } from '../utils/fs.js';
 import { applyInjection } from './injections.js';
+import { applyManifestToolPermissions } from './tool-permissions.js';
 import { logSkillTarget, physicalProjectPath, resolveSkillTargets, usesSharedCodexProfile, type SkillRenderContext, type SkillTargetGroup } from './skill-targets.js';
 
 interface SkillOwner {
@@ -207,6 +208,7 @@ async function renderComposition(
       content = applyInjection(content, bytes.toString('utf8'), injection.position, manifest.name, owner.name);
     }
   }
+  content = applyManifestToolPermissions(content, owner.name, runtime, extensions.map(extension => extension.manifest));
   files.set('SKILL.md', Buffer.from(content));
   return files;
 }

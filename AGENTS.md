@@ -73,6 +73,20 @@ Default artifacts are `.ai-factory/instruction-runs/<run-id>/manifest.json` and 
 - **User skills**: `<agent-config-dir>/skills/` (e.g. `.claude/skills/`, `.opencode/skills/`, `.agents/skills/`)
 - **Agent transformer system**: `src/core/transformers/` adapts skill format per agent (e.g. Codex rewrites invocation prefixes to `$`, Antigravity 2.0 uses `.agents/` with triggered rules and subagents, KiloCode sanitizes dotted names)
 
+### Extension tool permissions
+
+`extension.json` may declare `toolPermissions` per installed skill and runtime. Only
+Claude Code currently has a native adapter; unsupported runtimes are warned and skipped.
+`src/core/tool-permissions.ts` owns YAML field parsing, per-extension ownership comments,
+shared requests, and preservation across reinstall/update/remove. Keep its composition
+in managed receipt proof and skill migration rendering. Never infer grants from prose
+or broaden a scoped request into unrestricted shell permissions. See `docs/extensions.md`.
+
+Captured tool baselines must stay bound to their applied skill source owner and
+extension-native declaration. Replacement removal or changed source defaults use
+the current source field and recompose remaining requests; old native grants must
+never become unowned permissions on a restored bundle or a new replacement.
+
 ### Bundled loop subagents
 
 Bundled `loop-*` agent files require `aif-loop` in the selected/installed skill set for both Claude and Codex.
