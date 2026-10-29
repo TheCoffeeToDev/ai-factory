@@ -8,6 +8,7 @@ existing candidate evidence and exact-revision approval.
 | Case | Fixture / action | Required result |
 |------|------------------|-----------------|
 | Legacy | Only individual context exists; invoke plan | Same individual behavior, no shared files created |
+| Shared-only patch fallback | No individual context for fix/implement/improve; global/build contains only report formatting; twelve patches contain distinct prevention points | Each consumer reads only the latest ten patches automatically and retains the shared formatting rule; an existing individual file keeps the prior targeted-only fallback |
 | Layer order | Global says summary in bullets; build says table; individual plan says numbered list | Plan uses numbered list; fix uses table; docs uses bullets; non-conflicting instructions from all layers remain |
 | Group exclusion | Build requires plan/implementation checklist; invoke review, docs, warmup, build-automation | None loads/applies build context; all still load global and their individual file |
 | Early route | Invoke implement status/list/inline and improve list | Applicable shared/individual context applies to every output without loading unrelated procedure references |

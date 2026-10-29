@@ -54,14 +54,14 @@ codebase conventions, and tech-stack analysis. These rules are tailored to the c
 **Enforcement:** After generating any output artifact, verify it against all skill-context rules.
 If any rule is violated — fix the output before presenting it to the user.
 
-**Patch fallback (limited, only when skill-context is missing):**
+**Patch fallback (limited, only when individual skill-context is missing):**
 
-- If none of the applicable global, build, or individual skill-context files exists and the resolved patches dir exists:
+- If `.ai-factory/skill-context/aif-implement/SKILL.md` is absent and the resolved patches dir exists (even when global/build context exists):
     - Use `Glob` to find `*.md` files in the resolved patches dir
     - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
     - Read those selected patch files only
     - Prioritize **Root Cause** and **Prevention** sections
-- If skill-context exists, do **not** read all patches by default.
+- If the individual skill-context exists, do **not** read all patches by default.
     - Optionally read a few targeted recent patches only when a task clearly matches a known failure pattern.
 
 **Use this context when implementing:**

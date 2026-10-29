@@ -208,12 +208,12 @@ Otherwise, select at most one relevant research source using the same conservati
 
 Use patches as fallback context, not the default source:
 
-- If none of the applicable global, build, or individual skill-context files exists and the resolved patches dir exists:
+- If `.ai-factory/skill-context/aif-improve/SKILL.md` is absent and the resolved patches dir exists (even when global/build context exists):
   - `Glob: <resolved patches dir>/*.md`
   - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
   - Read those selected patch files only
   - Focus on reusable Prevention/Root Cause patterns that affect planning quality
-- If skill-context exists, do **not** read all patches by default.
+- If the individual skill-context exists, do **not** read all patches by default.
   - Optionally inspect a small targeted subset when refining around a known recurring issue.
 
 **Read `.ai-factory/skill-context/aif-improve/SKILL.md`** — MANDATORY if the file exists.
