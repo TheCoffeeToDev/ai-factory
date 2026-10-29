@@ -336,7 +336,7 @@ AI Factory has a built-in learning loop. Every bug fix creates a **patch** — a
 
 1. `/aif-fix` fixes a bug and creates a patch file in `paths.patches/YYYY-MM-DD-HH.mm.md`
 2. Each patch documents: **Problem**, **Root Cause**, **Solution**, **Prevention**, and **Tags**
-3. `/aif-evolve` reads patches incrementally using `paths.evolutions/patch-cursor.json` (first run reads all)
+3. `/aif-evolve` reads patches incrementally using `paths.evolutions/patch-cursor.json` (first run reads all). Targets are project-scoped by default; existing user-global skills require explicit `--global`. See [ownership and destinations](evolve.md#skill-ownership-and-write-destinations)
 4. Before approval, candidate rules are compared with the current effective instructions on the same problem and control cases; only validated revisions enter active skill-context
 5. Evolution logs retain exact candidate versions, cases, results, extra cost, regressions, and all outcomes, including no improvement or insufficient data; report-only saves do not advance the cursor by default
 6. Workflow skills (`/aif-implement`, `/aif-fix`, `/aif-improve`) prefer skill-context rules and use only limited recent patch fallback when needed
@@ -372,7 +372,7 @@ The more you use `/aif-fix`, the smarter AI becomes on your project. Patches acc
 **Periodic evolution** -- run `/aif-evolve` to analyze new patches, compare candidate rules, and approve demonstrated improvements:
 
 ```
-/aif-evolve      # Analyze patches + project → improve all skills
+/aif-evolve      # Analyze patches + project → improve project skills
 ```
 
 This closes the full learning loop: **fix → patch → evolve → better skills → fewer bugs → smarter fixes**.

@@ -43,7 +43,7 @@ Incremental state file:
 
 ### What is Skill-Context
 
-Built-in `aif-*` skills ship with AI Factory and get overwritten on update. To keep project-specific rules stable, `/aif-evolve` writes them to a separate location:
+Built-in skills ship with AI Factory and get overwritten on update. To keep project-specific rules stable, `/aif-evolve` writes them to a separate location:
 
 ```
 .ai-factory/skill-context/<skill-name>/SKILL.md
@@ -94,19 +94,32 @@ If the file exists, the skill treats its rules as project-level overrides — mo
 ### Usage
 
 ```
-/aif-evolve              # Evolve all skills
+/aif-evolve              # Evolve project skills only
 /aif-evolve fix          # Evolve only /aif-fix
 /aif-evolve implement    # Evolve only /aif-implement
-/aif-evolve all          # Evolve all skills (explicit)
+/aif-evolve all          # Evolve project skills (explicit)
+/aif-evolve all --global # Only existing user-global skills
+/aif-evolve --global all # Same selection; flag order does not matter
 ```
 
-Skill name is normalized automatically: `fix` → `aif-fix`, `/aif-plan` → `aif-plan`. If the resolved skill does not exist, an error is reported and evolution stops.
+Exact skill names win; only a missing exact name may use a verified built-in alias
+such as `fix` → `aif-fix`. A leading invocation `/` is removed. Errors show the selected
+scope and absolute locations actually searched. Ambiguous physical copies require a
+choice; symlink aliases are deduplicated, and symlink escapes are rejected.
+
+`--global` selects existing user-global skills for the active runtime, without installing
+anything or mixing in project skills. If the runtime does not expose its global root,
+evolve asks for an absolute path. Home paths are expanded and canonicalized before any
+file tool call. Project context can inform a global change, but approval names the exact
+absolute destination and its effect on every project using that skill. Evolution logs
+and the patch cursor stay in the current project. Global built-ins are skipped because
+there is no global skill-context contract yet.
 
 ### Workflow Overview
 
 | Step | What happens |
 |------|--------------|
-| **0: Resolve target & load context** | Normalize skill name, validate it exists. Read `DESCRIPTION.md` and skill-context files. For single-skill mode — only that skill's context + evolve's own. For all — glob all context files (no duplicates) |
+| **0: Resolve target & load context** | Parse scope and selector; freeze canonical entrypoint, owner/evidence, and write destination. Warn/skip managed or unknown targets. Read `DESCRIPTION.md`, eligible project built-in contexts, and evolve's own context once |
 | **1: Collect intelligence** | Read patches from `paths.patches` incrementally (first run reads all; later runs read only new patches by cursor + a small overlap window to catch missed points), extract each independent prevention point with its target skill(s), and build a **Prevention Point Registry** for the processed set (a patch with 5 points = 5 rows). Group by tags, find recurring patterns. Scan the project for conventions (linters, test patterns, error handling, logging, imports). For single-skill mode — focus convention scanning on areas relevant to that skill |
 | **2: Read target skills** | Load base SKILL.md **only for target skills** — not all. For `/aif-evolve plan` — read only `aif-plan/SKILL.md`. Keep in memory for Step 3 (no re-reads) |
 | **3: Check for stale rules** | Compare each skill-context rule against base SKILL.md. Classify as: fully covered (Case A), contradiction (Case B), partial overlap (Case C), or still unique (Case D). See [Stale Rule Cleanup](#stale-rule-cleanup) |
@@ -117,12 +130,35 @@ Skill name is normalized automatically: `fix` → `aif-fix`, `/aif-plan` → `ai
 | **7: Present & apply** | Show all candidate cards, ask for approval (apply validated candidates / let me pick / save report only). For "let me pick" — present in batches of up to 4. Apply only approved `accept` revisions; preserve negative and inconclusive outcomes in the evolution log under `paths.evolutions` |
 | **8: Suggest next actions** | Recommend `/aif-review`, next evolution timing, or new skill creation via `/aif-skill-generator` |
 
-### Built-in vs Custom Skills
+### Skill Ownership and Write Destinations
 
-| Skill type | Where rules are written | Why |
-|------------|------------------------|-----|
-| Built-in (`aif-*`) | `.ai-factory/skill-context/<skill-name>/SKILL.md` | Base SKILL.md is overwritten on update |
-| Custom (project skills) | `skills/<skill-name>/SKILL.md` (direct edit) | You own the file, no risk of overwrite |
+Ownership comes from canonical paths and installation records/manifests, never an
+`aif-*` prefix. Applied extension replacement records with matching physical
+installation evidence take precedence over built-in names; a manifest declaration
+alone does not establish replacement ownership.
+For example, a user-owned `aif-team-helper` is custom, while an extension replacement
+named `aif-plan` remains extension-managed.
+
+If a replacement install fails and AI Factory restores the bundled skill without
+an applied `extensions[].replacedSkills` entry, evolve resolves that restored target
+as a built-in from its matching installation record. It can then propose project
+skill-context improvements even while the extension manifest still declares the
+unapplied replacement. Conflicting records and files leave ownership unresolved.
+
+| Skill owner | Where rules are written |
+|-------------|-------------------------|
+| Verified AI Factory built-in, project scope | `.ai-factory/skill-context/<skill-name>/SKILL.md` only |
+| Verified user-owned, project scope | Exact resolved skill entrypoint or approved nested file |
+| Verified user-owned, explicit `--global` | Exact resolved absolute skill path, with cross-project impact stated before approval |
+| Extension-managed (either scope) | Warning and skip; installed and extension source files stay unchanged |
+| Global AI Factory built-in, unknown, or conflicting ownership | No writes; explain why, resolve uncertainty before proposing a named target |
+
+Missing provenance does not imply user ownership; explicit ownership confirmation may
+be needed. Every candidate, approval request, and log uses the same frozen target record.
+Before writes or stale-context deletion, scope, ownership, and baseline are rechecked;
+changed paths or instructions require renewed validation and approval. "Apply all"
+never authorizes a skipped target. `/aif-transfer` retains its narrower project built-in
+skill-context-only write boundary.
 
 ### Comparing Rule Candidates
 

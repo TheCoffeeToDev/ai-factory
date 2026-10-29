@@ -27,6 +27,7 @@ import {
 import { applyExtensionInjections, applySingleExtensionInjections, stripAllExtensionInjections, stripInjectionsByExtensionName } from './injections.js';
 import { configureExtensionMcpServers, removeExtensionMcpServers, validateMcpTemplate, type McpServerConfig } from './mcp.js';
 import { copyDirectory, ensureDir, fileExists, readJsonFile, removeDirectory } from '../utils/fs.js';
+import { applyExtensionToolPermissions, captureToolPermissionBases, removeExtensionToolPermissions, restoreToolPermissionBases } from './tool-permissions.js';
 import { logSkillTarget, resolveSkillTargets } from './skill-targets.js';
 import { captureSharedSkillRollback, collectSkillOwners, prepareSkillTargets, withSkillProjectLock } from './skills-migration.js';
 
@@ -119,6 +120,7 @@ export async function composeInstalledExtensionSkills(
     const agent = { ...config.agents.find(candidate => candidate.id === group.targets[0].id)!, skillsDir: group.skillsDir };
     injections += await applyExtensionInjections(projectDir, agent, config.extensions ?? []);
   }
+  await applyExtensionToolPermissions(projectDir, config.agents, installed.map(extension => extension.manifest));
   return injections;
 }
 
@@ -590,6 +592,7 @@ export async function stripInjectionsForAllAgents(
   extensionName: string,
   manifest?: ExtensionManifest | null,
 ): Promise<void> {
+  await removeExtensionToolPermissions(projectDir, agents, extensionName);
   for (const group of await resolveSkillTargets(projectDir, agents, { select: false })) {
     const agent = { ...agents.find(candidate => candidate.id === group.targets[0].id)!, skillsDir: group.skillsDir };
     if (manifest) {
@@ -706,6 +709,8 @@ export async function installExtensionAssetsForAllAgents(
       }
     }
 
+    await applyExtensionToolPermissions(projectDir, agents, [manifest]);
+
     if (manifest.mcpServers?.length) {
       for (const server of manifest.mcpServers) {
         let template: unknown;
@@ -787,6 +792,10 @@ async function commitResolvedExtensionLocked(
     backupDir = backupCandidateDir;
   }
 
+  const permissionBases = await captureToolPermissionBases(projectDir, config.agents, config.extensions);
+  for (const permission of manifest.toolPermissions ?? []) for (const [runtime, tools] of Object.entries(permission.agents)) {
+    log('info', `Requested tool permissions: ${manifest.name} -> ${runtime}/${permission.target}: ${tools.join(', ')}`);
+  }
   let assetInstall: ExtensionAssetInstallResult;
   const oldAgentFileTargets = collectManifestAgentFileTargets(oldManifest);
   const newAgentFileSources = buildExtensionAgentFileSources(manifest);
@@ -795,7 +804,9 @@ async function commitResolvedExtensionLocked(
     ...Object.values(oldManifest?.replaces ?? {}), ...(oldManifest?.skills ?? []),
     ...(manifest.injections ?? []).map(injection => injection.target),
     ...(oldManifest?.injections ?? []).map(injection => injection.target),
-  ]);
+    ...(manifest.toolPermissions ?? []).map(permission => permission.target),
+    ...(oldManifest?.toolPermissions ?? []).map(permission => permission.target),
+  ], { includeSingletons: Boolean(manifest.toolPermissions?.length || oldManifest?.toolPermissions?.length || permissionBases.length) });
   let discardBackup = true;
 
   try {
@@ -806,6 +817,14 @@ async function commitResolvedExtensionLocked(
     }
 
     assetInstall = await installExtensionAssetsForAllAgents(projectDir, config.agents, extensionDir, manifest);
+    const overwritten = new Set([...Object.values(manifest.replaces ?? {}), ...(manifest.skills ?? []).map(skill => path.basename(skill))]);
+    await applyExtensionToolPermissions(projectDir, config.agents, prospectiveExtensions.map(({ manifest: other }) => ({
+      ...other, toolPermissions: other.toolPermissions?.filter(permission => overwritten.has(permission.target)),
+    })));
+    await restoreToolPermissionBases(projectDir, config.agents, permissionBases, [
+      ...extensions.filter(extension => extension.name !== manifest.name),
+      { name: manifest.name, source, version: manifest.version, replacedSkills: assetInstall.replacedSkills },
+    ]);
   } catch (error) {
     const partialAssetInstall = error instanceof ExtensionAssetInstallError
       ? error.partialResult

@@ -1,3 +1,4 @@
+import { captureToolPermissionBases, restoreToolPermissionBases } from '../../core/tool-permissions.js';
 import chalk from 'chalk';
 import path from 'path';
 import { runWizard, type WizardAnswers } from '../wizard/prompts.js';
@@ -259,6 +260,7 @@ async function initLocked(options: InitOptions): Promise<void> {
       }, requiredSkills);
     }
     if (existingConfig) await prepareSkillTargets(projectDir, existingConfig, groups);
+    const permissionBases = await captureToolPermissionBases(projectDir, existingConfig?.agents ?? [], existingConfig?.extensions);
 
     const selectedAgentIds = new Set(answers.agents.map(agent => agent.id));
     const removedAgents = (existingConfig?.agents ?? []).filter(agent => !selectedAgentIds.has(agent.id));
@@ -403,6 +405,8 @@ async function initLocked(options: InitOptions): Promise<void> {
         console.log(chalk.green(`✓ Re-applied ${totalInjections} extension injection(s)`));
       }
     }
+
+    await restoreToolPermissionBases(projectDir, installedAgents, permissionBases, existingExtensions);
 
     for (const agent of installedAgents) {
       const managedBaseSkills = agent.installedSkills.filter(skill => !replacedSkills.has(skill));
