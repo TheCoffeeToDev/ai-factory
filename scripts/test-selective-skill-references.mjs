@@ -114,11 +114,12 @@ try {
     const migrated = await updateSkills(agent, project);
     assert.equal(migrated.entries.filter(entry => entry.reason === 'render-context-changed').length, skills.length);
     assert.equal(fs.readFileSync(path.join(refs('aif'), 'SETUP-COMPLETION.md'), 'utf8'), completion);
-    agent.managedSkills = await buildManagedSkillsState(project, agent, skills);
+    agent.installedSkills = migrated.installedSkills;
+    agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills);
     const unchanged = await updateSkills(agent, project);
-    assert.equal(unchanged.entries.filter(entry => entry.status === 'unchanged').length, skills.length);
+    assert.equal(unchanged.entries.filter(entry => entry.status === 'unchanged' && skills.includes(entry.skill)).length, skills.length);
     const updated = await updateSkills(agent, project, { force: true });
-    assert.equal(updated.entries.filter(entry => entry.status === 'changed').length, skills.length);
+    assert.equal(updated.entries.filter(entry => entry.status === 'changed' && skills.includes(entry.skill)).length, skills.length);
     assert.equal(fs.readFileSync(sentinel, 'utf8'), 'Preserve this user reference.');
     assert.equal(fs.readFileSync(path.join(refs('aif'), 'SETUP-COMPLETION.md'), 'utf8'), completion);
     const text = fs.readFileSync(entry('aif-implement'), 'utf8');
