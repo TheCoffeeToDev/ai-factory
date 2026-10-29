@@ -100,6 +100,16 @@ def validate_skill_name(name: str):
     return None
 
 
+def _matching_lock_keys(skills_section: dict, skill_names: set) -> set:
+    # Lock names that sanitize to the same directory can restore the same blocked
+    # installation, including on retries after SKILL.md was already removed.
+    directories = {_sanitize_skill_name(name) for name in skill_names} - {''}
+    return {
+        name for name in skills_section
+        if name in skill_names or _sanitize_skill_name(name) in directories
+    }
+
+
 def patch_lock(lock_path: Path, skill_names: set, dry_run: bool = False):
     """Remove known identity keys from skills-lock.json.
 
@@ -124,7 +134,7 @@ def patch_lock(lock_path: Path, skill_names: set, dry_run: bool = False):
     if not isinstance(skills_section, dict):
         return (False, "no 'skills' object in lock file (nothing to clean)")
 
-    matched = sorted(skill_names.intersection(skills_section))
+    matched = sorted(_matching_lock_keys(skills_section, skill_names))
     if not matched:
         available = sorted(skills_section.keys())
         if not available:
@@ -199,7 +209,7 @@ def verify_lock_clean(lock_path: Path, skill_names: set) -> bool:
     skills_section = data.get('skills')
     if not isinstance(skills_section, dict):
         return True
-    return skill_names.isdisjoint(skills_section)
+    return not _matching_lock_keys(skills_section, skill_names)
 
 
 # Reparse-point bit on Windows. NTFS junctions (created via `mklink /J`)

@@ -1051,6 +1051,24 @@ for (requested, directory, canonical, removed), name_key, prefix in product([
         if directory == 'convex-best-practices':
             retry = subprocess.run(command, capture_output=True, text=True)
             assert retry.returncode == 0, retry.stderr
+# A retry after files were removed but lock patching failed has no frontmatter.
+# Canonical lock keys that map to the same upstream directory must still be cleared.
+for requested in ['convex-best-practices', 'Convex Best Practices']:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        installed = root / '.claude/skills/convex-best-practices'
+        lock = root / 'skills-lock.json'
+        aliases = {'Convex Best Practices', 'convex-best-practices', 'CONVEX BEST PRACTICES'}
+        siblings = {'Convex Best Practices Plus', 'safe-one'}
+        original = json.dumps({'skills': {key: {} for key in aliases | siblings}})
+        lock.write_text(original)
+        command = [sys.executable, helper, '--root', tmp, '--skill', requested,
+                   '--installed-path', str(installed)]
+        dry = subprocess.run(command + ['--dry-run'], capture_output=True, text=True)
+        assert dry.returncode == 0 and lock.read_text() == original, dry.stderr
+        result = subprocess.run(command, capture_output=True, text=True)
+        assert result.returncode == 0, result.stderr
+        assert set(json.loads(lock.read_text())['skills']) == siblings, result.stdout
 # Unsupported names must stop before files or lock identities are lost.
 for name in ['> # folded name', '"unterminated', '&alias Convex Best Practices']:
     with tempfile.TemporaryDirectory() as tmp:

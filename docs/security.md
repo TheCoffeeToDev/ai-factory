@@ -104,7 +104,7 @@ If `PYTHON_CMD` is empty, external-skill installation and Learn Mode stop before
 
 For scan-only review of an already-existing local path, the user may explicitly accept Level 2-only review. Level 1 is reported as skipped, not passed; this exception does not authorize installation.
 
-Blocked-skill cleanup removes the scanned directory and its known lock identities (logical name, sanitized name, validated directory name, and matching frontmatter name). Success requires both physical removal and a clean lock file; failures remain incomplete cleanup. Unrelated skill entries are preserved.
+Blocked-skill cleanup removes the scanned directory and its known lock identities (logical name, sanitized name, validated directory name, and matching frontmatter name), including lock keys that sanitize to the same upstream installation directory. This also clears stale display-name keys on retries after the files were already removed. Success requires both physical removal and a clean lock file; failures remain incomplete cleanup. Unrelated skill entries are preserved.
 
 For an existing installation, cleanup requires one unambiguous top-level frontmatter `name`; nested metadata and block-scalar text cannot supply it. Missing, duplicate, incomplete, or unsupported name layouts stop cleanup before files or lock entries are removed. Correct the identity metadata before retrying. Retries for an already-absent sanitized install path do not require frontmatter.
 
