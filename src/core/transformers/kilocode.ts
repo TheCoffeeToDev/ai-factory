@@ -5,6 +5,7 @@ import {
   extractFrontmatterName,
   replaceFrontmatterName,
   rewriteInvocationPrefix,
+  rewriteReferenceInvocationPrefix,
   removeFrontmatter,
 } from '../transformer.js';
 
@@ -21,6 +22,11 @@ function toKiloWorkflowContent(content: string): string {
 }
 
 export class KiloCodeTransformer implements AgentTransformer {
+  transformReference(skillName: string, content: string): string {
+    return WORKFLOW_SKILLS.has(skillName)
+      ? rewriteReferenceInvocationPrefix(content, toKiloWorkflowInvocation) : content;
+  }
+
   transform(skillName: string, content: string): TransformResult {
     if (WORKFLOW_SKILLS.has(skillName)) {
       return {

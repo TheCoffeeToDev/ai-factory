@@ -232,6 +232,8 @@ Context-gate defaults for `/aif-commit`, `/aif-review`, `/aif-verify`:
 
 ## Workflow Skills
 
+The setup, implement, verify, and fix entrypoints select their detailed references by mode. Load the selected procedure before its step; do not read every reference at startup. Mode boundaries, artifact ownership, ultra marker checks, regression-first fallbacks, and exact handoffs remain mandatory. Missing selected references stop the dependent step. See [selective workflow references](skills.md#workflow-skills) for installation details and reproducible footprint measurements.
+
 These skills form the development pipeline. Each one feeds into the next.
 
 ### `/aif-explore [regular|ultra] [topic or plan name]` — discovery before planning
@@ -393,6 +395,8 @@ Also runs read-only context gates against the resolved architecture, roadmap, an
 Checks only rules compliance for staged changes, working-tree changes, or a provided git ref. It reads the resolved rules hierarchy, uses optional active plan context only to disambiguate scope, and stays read-only. Human verdicts are `PASS` / `WARN` / `FAIL`: missing or ambiguous rules stay `WARN`, while `FAIL` is reserved for explicit hard-rule violations tied to concrete diff evidence. The final output appends an `aif-gate-result` JSON block with lowercase `pass` / `warn` / `fail`.
 
 ### `/aif-review [PR number or URL] [+check]` — code review with read-only context gates
+
+Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks. Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
 
 Reviews staged changes or PR diff and reports correctness/security/performance findings. Includes read-only architecture/roadmap/rules gate notes in review output (`WARN` for non-blocking inconsistencies, `ERROR` only for explicitly blocking criteria), then appends an `aif-gate-result` JSON block.
 

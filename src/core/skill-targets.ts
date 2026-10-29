@@ -90,7 +90,8 @@ export function createSkillRenderContext(agentId: string, skillsDir: string, sha
   });
   if (sharedCodex) logSkillTarget('[FIX:155] render:shared-home', { skillsDir: agent.skillsDir, homeSkillsDir: buildTemplateVars(agent).home_skills_dir });
   const hash = createHash('sha256').update(JSON.stringify({
-    version: 1,
+    // v2 renders runtime invocation prefixes in Markdown references as well.
+    version: 2,
     transformer: getTransformerIdentity(sharedCodex ? 'codex' : agentId),
     variables: buildTemplateVars(agent),
   })).digest('hex');
