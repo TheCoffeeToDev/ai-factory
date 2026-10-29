@@ -102,6 +102,9 @@ FORCE_OUTPUT="$TMPDIR/update-force.log"
 run_update normal "$FIRST_OUTPUT"
 assert_contains "$FIRST_OUTPUT" "\[universal\] Status:" "status section must be printed"
 assert_contains "$FIRST_OUTPUT" "changed: [0-9]+" "changed counter must be printed"
+assert_exists "$PROJECT_DIR/.agents/skills/aif-skill-generator/scripts/security-scan.py" "update must heal a legacy aif-only selection"
+assert_exists "$PROJECT_DIR/.agents/skills/aif-skill-generator/scripts/cleanup-blocked-skill.py" "update must install the cleanup helper"
+node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.argv[1],'utf8')).agents[0];if(!a.installedSkills.includes('aif-skill-generator')||!a.managedSkills['aif-skill-generator'])process.exit(1);" "$PROJECT_DIR/.ai-factory.json"
 assert_contains "$FIRST_OUTPUT" "skipped: [0-9]+" "skipped counter must be printed"
 assert_contains "$FIRST_OUTPUT" "removed: [0-9]+" "removed counter must be printed"
 assert_contains "$FIRST_OUTPUT" "aif-nonexistent \(removed from package\)" "removed package skill must be reported"
@@ -460,7 +463,7 @@ import path from 'node:path';
 const project = process.argv[2];
 const file = path.join(project, '.ai-factory.json');
 const config = JSON.parse(fs.readFileSync(file, 'utf8'));
-config.agents[0].installedSkills = ['aif'];
+config.agents[0].installedSkills = config.agents[0].installedSkills.filter(skill => skill !== 'aif-loop');
 fs.writeFileSync(file, JSON.stringify(config));
 fs.writeFileSync(path.join(project, '.claude/agents/loop-custom.md'), 'user-owned loop role\n');
 EOF

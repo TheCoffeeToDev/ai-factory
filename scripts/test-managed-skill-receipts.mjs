@@ -22,14 +22,51 @@ async function installedProject(project, id = 'codex', skillsDir = '.agents/skil
   return agent;
 }
 
-function runCommand(project, command, agents = 'codex', skills = 'aif') {
+function runCommand(project, command, agents = 'codex', skills = 'aif', { force = false, expectFailure = false } = {}) {
   const moduleUrl = pathToFileURL(path.join(root, `dist/cli/commands/${command}.js`)).href;
-  const options = command === 'init' ? { agents, skills } : {};
+  const options = command === 'init' ? { agents, skills } : { force };
   const code = `globalThis.fetch = async () => ({ok:true,status:200,headers:{get:()=>null},json:async()=>({version:'2.19.0'})});
     const module = await import(${JSON.stringify(moduleUrl)}); await module[${JSON.stringify(`${command}Command`)}](${JSON.stringify(options)});`;
   const result = spawnSync(process.execPath, ['--input-type=module', '-e', code], { cwd: project, encoding: 'utf8', timeout: 60000 });
-  assert.equal(result.status, 0, `${command} failed: ${result.error?.message ?? result.stderr}\n${result.stdout}`);
+  assert.ifError(result.error);
+  if (expectFailure) assert.notEqual(result.status, 0, `${command} unexpectedly succeeded`);
+  else assert.equal(result.status, 0, `${command} failed: ${result.stderr}\n${result.stdout}`);
   return result.stdout + result.stderr;
+}
+
+for (const [command, force, fresh] of [['update', false, false], ['update', true, false],
+  ['init', false, false], ['init', false, true]]) {
+  test(`${command}${force ? ' --force' : ''} preserves an untracked security dependency (${fresh ? 'fresh' : 'existing'})`, async project => {
+    if (!fresh) await installedProject(project, 'claude', '.claude/skills');
+    const configFile = path.join(project, '.ai-factory.json');
+    const beforeConfig = fresh ? null : await fs.readFile(configFile);
+    const generator = path.join(project, '.claude/skills/aif-skill-generator');
+    await fs.mkdir(path.join(generator, 'scripts'), { recursive: true });
+    const files = { 'SKILL.md': 'User-owned generator', 'scripts/security-scan.py': 'User-owned scanner' };
+    for (const [name, content] of Object.entries(files)) await fs.writeFile(path.join(generator, name), content);
+    const output = runCommand(project, command, 'claude', 'aif', { force, expectFailure: true });
+    assert.match(output, /Required skill "aif-skill-generator" conflicts with an untracked or modified target/);
+    for (const [name, content] of Object.entries(files)) assert.equal(await fs.readFile(path.join(generator, name), 'utf8'), content);
+    if (fresh) await assert.rejects(fs.stat(configFile), { code: 'ENOENT' });
+    else assert.deepEqual(await fs.readFile(configFile), beforeConfig, 'conflict must not adopt the user skill');
+    await assert.rejects(fs.stat(path.join(generator, 'scripts/cleanup-blocked-skill.py')), { code: 'ENOENT' });
+  });
+}
+
+for (const modified of [false, true]) {
+  test(`reinit ${modified ? 'preserves a modified' : 'accepts a clean managed'} security dependency`, async project => {
+    const agent = await installedProject(project, 'claude', '.claude/skills');
+    await installSkills({ projectDir: project, agentId: agent.id, skillsDir: agent.skillsDir, skills: ['aif-skill-generator'] });
+    agent.installedSkills.push('aif-skill-generator');
+    agent.managedSkills = await buildManagedSkillsState(project, agent, agent.installedSkills);
+    await saveConfig(project, { version: '2.19.0', agents: [agent] }, { hydrateAgentFileSources: false });
+    const scanner = path.join(project, agent.skillsDir, 'aif-skill-generator/scripts/security-scan.py');
+    if (modified) await fs.writeFile(scanner, 'Local scanner edits');
+    const before = await fs.readFile(scanner);
+    const output = runCommand(project, 'init', 'claude', 'aif', { expectFailure: modified });
+    if (modified) assert.match(output, /Preserving existing files/);
+    assert.deepEqual(await fs.readFile(scanner), before);
+  });
 }
 
 async function registeredInjection(project, agent) {
@@ -137,7 +174,7 @@ for (const [id, skill, installedFile] of [
         assert.match(output, /Preserving unproven or modified skill/);
       }
       const saved = await loadConfig(project);
-      assert.deepEqual(saved.agents[0].installedSkills, ['aif']);
+      assert.deepEqual(saved.agents[0].installedSkills, ['aif', 'aif-skill-generator']);
       assert.equal(saved.agents[0].managedSkills[skill], undefined, 'preserved files must not remain managed');
     });
   }

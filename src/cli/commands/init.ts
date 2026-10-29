@@ -10,6 +10,8 @@ import {
   hashManagedFile,
   installConfigFiles,
   installSkills,
+  includeRequiredSkills,
+  assertRequiredSkillTargetsSafe,
   installSubagents,
   getAvailableSkills,
   rebuildManagedAgentFilesForAgents,
@@ -235,12 +237,28 @@ async function initLocked(options: InitOptions): Promise<void> {
       answers = await runWizard(existingAgentIds);
     }
 
+    const resolvedSkills = includeRequiredSkills(answers.selectedSkills);
+    const requiredSkills = resolvedSkills.filter(skill => !answers.selectedSkills.includes(skill));
+    if (resolvedSkills.length !== answers.selectedSkills.length) {
+      console.log(chalk.dim('Including aif-skill-generator: required by /aif for security scanning and blocked-skill cleanup.'));
+    }
+    answers.selectedSkills = resolvedSkills;
+
     const groups = await resolveSkillTargets(projectDir,
       answers.agents.map(agent => ({
         id: agent.id,
         skillsDir: existingConfig?.agents.find(previous => previous.id === agent.id)?.skillsDir ?? getAgentConfig(agent.id).skillsDir,
       })),
     );
+    for (const group of groups) {
+      const previous = existingConfig?.agents.filter(agent => group.targets.some(target => target.id === agent.id)) ?? [];
+      await assertRequiredSkillTargetsSafe(projectDir, {
+        id: group.targets[0].id,
+        skillsDir: group.skillsDir,
+        installedSkills: [...new Set(previous.flatMap(agent => agent.installedSkills))],
+        managedSkills: Object.assign({}, ...previous.map(agent => agent.managedSkills ?? {})),
+      }, requiredSkills);
+    }
     if (existingConfig) await prepareSkillTargets(projectDir, existingConfig, groups);
     const permissionBases = await captureToolPermissionBases(projectDir, existingConfig?.agents ?? [], existingConfig?.extensions);
 

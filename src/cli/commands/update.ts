@@ -12,6 +12,7 @@ import {
   buildExtensionAgentFileSources,
   buildManagedSkillsState,
   getAvailableSkills,
+  includeRequiredSkills,
   partitionSkills,
   type ConfigFileUpdateEntry,
   rebuildManagedAgentFilesForAgents,
@@ -41,6 +42,8 @@ interface UpdateCommandOptions {
 
 function formatReason(reason: string): string {
   switch (reason) {
+    case 'required-by-aif':
+      return 'required by /aif security scanning';
     case 'source-hash-changed':
       return 'source changed';
     case 'installed-hash-drift':
@@ -87,7 +90,7 @@ async function promptForNewSkills(
     if (excludedSkills.has(skill)) {
       return false;
     }
-    return agents.some(agent => !partitionSkills(agent.installedSkills).base.includes(skill));
+    return agents.some(agent => !includeRequiredSkills(partitionSkills(agent.installedSkills).base).includes(skill));
   });
 
   if (candidates.length === 0) {
@@ -338,7 +341,8 @@ async function updateLocked(options: UpdateCommandOptions): Promise<void> {
       });
       for (const agent of participants) {
         const previous = new Set(agent.installedSkills);
-        agent.installedSkills = result.installedSkills.filter(skill => previous.has(skill) || selectedNewSkills.includes(skill));
+        const selected = new Set(includeRequiredSkills([...agent.installedSkills, ...selectedNewSkills]));
+        agent.installedSkills = result.installedSkills.filter(skill => selected.has(skill));
         skillEntriesByAgent.set(agent.id, result.entries.filter(entry => previous.has(entry.skill) || !representative.installedSkills.includes(entry.skill)));
       }
     }

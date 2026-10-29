@@ -99,6 +99,10 @@ try {
 EOF
 
 assert_contains "$INIT_OUTPUT" "Claude Code:" "Claude Code summary must be printed"
+assert_contains "$INIT_OUTPUT" "Including aif-skill-generator" "init must explain the security dependency"
+assert_exists "$PROJECT_DIR/.claude/skills/aif-skill-generator/scripts/security-scan.py" "aif-only selection must include scanner"
+assert_exists "$PROJECT_DIR/.claude/skills/aif-skill-generator/scripts/cleanup-blocked-skill.py" "aif-only selection must include cleanup helper"
+node -e "const fs=require('fs');const a=JSON.parse(fs.readFileSync(process.argv[1],'utf8')).agents[0];if(!a.installedSkills.includes('aif-skill-generator')||!a.managedSkills['aif-skill-generator'])process.exit(1);" "$PROJECT_DIR/.ai-factory.json"
 assert_contains "$INIT_OUTPUT" "Agent files directory:" "Claude init summary must include agent files directory"
 assert_contains "$INIT_OUTPUT" "Installed agent files: ${EXPECTED_AGENT_FILES}" "Claude init summary must report installed agent files"
 assert_exists "$PROJECT_DIR/.claude/agents/best-practices-sidecar.md" "Claude init must install best-practices sidecar"
@@ -142,7 +146,7 @@ process.chdir(projectDir);
 const originalPrompt = inquirer.prompt;
 const readConfig = async () => JSON.parse(await readFile('.ai-factory.json', 'utf8'));
 
-async function runInteractive(selectSkills) {
+async function runInteractive(selectSkills, expectedSkills) {
   let promptCount = 0;
   let selectedSkills;
   inquirer.prompt = async questions => {
@@ -165,8 +169,8 @@ async function runInteractive(selectSkills) {
   }
   assert.equal(promptCount, 2, 'Init must use the interactive wizard');
   const agent = (await readConfig()).agents[0];
-  assert.deepEqual(agent.installedSkills, selectedSkills);
-  assert.deepEqual(Object.keys(agent.managedSkills).sort(), [...selectedSkills].sort());
+  assert.deepEqual(agent.installedSkills, expectedSkills ?? selectedSkills);
+  assert.deepEqual(Object.keys(agent.managedSkills).sort(), [...(expectedSkills ?? selectedSkills)].sort());
   const loopInstalled = selectedSkills.includes('aif-loop');
   assert.equal(existsSync('.claude/agents/loop-orchestrator.md'), loopInstalled);
   assert.equal(agent.installedAgentFiles.includes('loop-orchestrator.md'), loopInstalled);
@@ -182,9 +186,9 @@ assert.deepEqual((await readdir('.claude/skills')).sort(), (await readConfig()).
 // Reconfiguration: selecting loop installs it; deselecting it removes its files and metadata.
 await mkdir('.claude/skills/custom-skill');
 await writeFile('.claude/skills/custom-skill/SKILL.md', 'User-owned custom skill\n');
-await runInteractive(() => ['aif', 'aif-loop']);
+await runInteractive(() => ['aif', 'aif-loop'], ['aif', 'aif-loop', 'aif-skill-generator']);
 assert(existsSync('.claude/skills/aif-loop/SKILL.md'), 'Selecting loop must install it');
-await runInteractive(() => ['aif']);
+await runInteractive(() => ['aif'], ['aif', 'aif-skill-generator']);
 assert(!existsSync('.claude/skills/aif-loop'), 'Reinit must remove deselected loop');
 await runInteractive(() => []);
 assert(!existsSync('.claude/skills/aif'), 'Empty selection must remove tracked base skills');
@@ -222,6 +226,8 @@ await initCommand({
 EOF
 
 assert_contains "$CODEX_OUTPUT" "Codex CLI:" "Codex summary must be printed"
+assert_exists "$PROJECT_DIR/.codex/skills/aif-skill-generator/scripts/security-scan.py" "flag-based aif-only init must include scanner"
+assert_exists "$PROJECT_DIR/.codex/skills/aif-skill-generator/scripts/cleanup-blocked-skill.py" "flag-based aif-only init must include cleanup helper"
 assert_contains "$CODEX_OUTPUT" "Agent files directory:" "Codex init summary must include agent files directory"
 assert_contains "$CODEX_OUTPUT" "Installed agent files: ${EXPECTED_CODEX_AGENT_FILES}" "Codex init summary must report installed agent files"
 assert_contains "$CODEX_OUTPUT" "Managed config files: 1" "Codex init summary must report managed config file count"
@@ -254,6 +260,7 @@ keep = true
 EOF
 
 (cd "$PROJECT_DIR" && node "$ROOT_DIR/dist/cli/index.js" init --agents codex --skills aif > "$TMPDIR/init-codex-rerun.log" 2>&1)
+assert_exists "$PROJECT_DIR/.codex/skills/aif-skill-generator/scripts/security-scan.py" "reinit must retain the required security skill"
 assert_contains "$PROJECT_DIR/.codex/config.toml" "\\[user\\]" "Codex init rerun must preserve tracked local config changes"
 assert_contains "$PROJECT_DIR/.codex/config.toml" "keep = true" "Codex init rerun must preserve tracked local config content"
 EXPECTED_CODEX_AGENT_FILES="$EXPECTED_CODEX_AGENT_FILES" node -e "const fs=require('fs');const c=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));const a=c.agents[0];const expected=Number(process.env.EXPECTED_CODEX_AGENT_FILES);if(a.id!=='codex')process.exit(1);if(!Array.isArray(a.installedAgentFiles)||a.installedAgentFiles.length!==expected)process.exit(1);if(!a.installedConfigFiles||a.installedConfigFiles[0]!=='config.toml')process.exit(1);if(!a.managedConfigFiles||!a.managedConfigFiles['config.toml'])process.exit(1);" "$PROJECT_DIR/.ai-factory.json"

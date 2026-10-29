@@ -512,7 +512,7 @@ async function inventoryReceiptFiles(directory: string): Promise<Map<string, Buf
 }
 
 async function proveManagedSkillRawHash(
-  projectDir: string, agent: AgentInstallation, skillName: string, context: SkillRenderContext,
+  projectDir: string, agent: Pick<AgentInstallation, 'id' | 'skillsDir'>, skillName: string, context: SkillRenderContext,
   composition: { injections: readonly ReceiptInjection[]; manifests: ExtensionManifest[] },
 ): Promise<string> {
   const sourceSkillDir = path.join(getSkillsDir(), skillName);
@@ -970,6 +970,48 @@ export async function installSkills(options: InstallOptions): Promise<string[]> 
   return installedSkills;
 }
 
+export function includeRequiredSkills(skills: string[]): string[] {
+  // /aif calls scanner and cleanup scripts shipped by aif-skill-generator.
+  return skills.includes('aif') && !skills.includes('aif-skill-generator')
+    ? [...skills, 'aif-skill-generator']
+    : skills;
+}
+
+export async function assertRequiredSkillTargetsSafe(
+  projectDir: string,
+  agent: Pick<AgentInstallation, 'id' | 'skillsDir' | 'installedSkills' | 'managedSkills'>,
+  requiredSkills: string[],
+): Promise<void> {
+  for (const skill of requiredSkills) {
+    const paths = resolveSkillPaths(projectDir, agent.skillsDir, agent.id, skill, path.join(getSkillsDir(), skill));
+    const target = paths.flat ? paths.targetSkillFile : paths.targetSkillDir;
+    const stat = await fs.lstat(target).catch((error: NodeJS.ErrnoException) => {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    });
+    if (!stat) continue;
+    const receipt = agent.managedSkills?.[skill]?.rawInstalledHash;
+    if (!stat.isSymbolicLink() && agent.installedSkills.includes(skill)) {
+      if (receipt && receipt === await hashInstalledSkill(paths, true)) continue;
+      if (!receipt) {
+        try {
+          // Legacy tracked installs may lack raw receipts. Accept only a full
+          // source match, never a receipt recovered from arbitrary current bytes.
+          await proveManagedSkillRawHash(projectDir, agent, skill,
+            createSkillRenderContext(agent.id, agent.skillsDir), { injections: [], manifests: [] });
+          continue;
+        } catch {
+          // Unproven legacy bytes must be preserved just like a modified target.
+        }
+      }
+    }
+
+    logSkillTarget('[FIX:44] dependency:conflict', { runtime: agent.id, skill, target });
+    throw new Error(`Required skill "${skill}" conflicts with an untracked or modified target: ${target}. `
+      + 'Preserving existing files. Move or back up this target, then rerun the command.');
+  }
+}
+
 export async function installSubagents(options: InstallSubagentsOptions): Promise<string[]> {
   const { projectDir } = options;
   const agentId = options.agentId ?? 'claude';
@@ -1334,13 +1376,17 @@ export async function updateSkills(
   const availableSkills = await getAvailableSkills();
   const availableSet = new Set(availableSkills);
   const excludeSet = new Set(excludeSkills);
-  const installNewSet = new Set(installNewSkills);
+  const installNewSet = new Set(includeRequiredSkills([...agentInstallation.installedSkills, ...installNewSkills]));
 
   const entries: SkillUpdateEntry[] = [];
 
   const { base: previousBaseSkills, custom } = partitionSkills(agentInstallation.installedSkills);
   const previousBaseSet = new Set(previousBaseSkills);
   const previousManaged = agentInstallation.managedSkills ?? {};
+
+  await assertRequiredSkillTargetsSafe(projectDir, agentInstallation,
+    [...installNewSet].filter(skill => skill === 'aif-skill-generator'
+      && !previousBaseSet.has(skill) && !excludeSet.has(skill)));
 
   const removedSkills = previousBaseSkills.filter(s => !availableSet.has(s) && !excludeSet.has(s));
   if (removedSkills.length > 0) {
@@ -1382,7 +1428,9 @@ export async function updateSkills(
     entries.push({
       skill,
       status: installedNewSet.has(skill) ? 'changed' : 'skipped',
-      reason: installedNewSet.has(skill) ? 'new-in-package' : 'install-failed',
+      reason: installedNewSet.has(skill)
+        ? (skill === 'aif-skill-generator' && !installNewSkills.includes(skill) ? 'required-by-aif' : 'new-in-package')
+        : 'install-failed',
     });
   }
 
