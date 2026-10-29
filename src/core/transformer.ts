@@ -13,6 +13,7 @@ export interface TransformResult {
 
 export interface AgentTransformer {
   transform(skillName: string, content: string): TransformResult;
+  transformReference?(skillName: string, content: string): string;
   postInstall?(projectDir: string): Promise<void>;
   getWelcomeMessage(): string[];
   getInvocationHint?(): string;
@@ -72,6 +73,22 @@ export function rewriteInvocationPrefix(
     INVOCATION_PATTERN,
     (_match, prefix: string, invocation: string) => `${prefix}${mapInvocation(invocation)}`,
   );
+}
+
+export function rewriteReferenceInvocationPrefix(
+  content: string,
+  mapInvocation: (invocation: string) => string,
+): string {
+  // Gate JSON is a wire protocol: suggested_next.command stays canonical even
+  // when surrounding human handoffs use a runtime-specific invocation prefix.
+  const gates = /^(`{3,}|~{3,})aif-gate-result[ \t]*\r?\n[\s\S]*?(?:^\1[ \t]*(?=\r?$)|$(?![\s\S]))/gm;
+  let output = '';
+  let offset = 0;
+  for (const match of content.matchAll(gates)) {
+    output += rewriteInvocationPrefix(content.slice(offset, match.index), mapInvocation) + match[0];
+    offset = match.index + match[0].length;
+  }
+  return output + rewriteInvocationPrefix(content.slice(offset), mapInvocation);
 }
 
 interface TransformerRegistration {

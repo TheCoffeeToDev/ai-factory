@@ -230,6 +230,8 @@ Context-gate defaults for `/aif-commit`, `/aif-review`, `/aif-verify`:
 
 ## Workflow Skills
 
+The setup, implement, verify, and fix entrypoints select their detailed references by mode. Load the selected procedure before its step; do not read every reference at startup. Mode boundaries, artifact ownership, ultra marker checks, regression-first fallbacks, and exact handoffs remain mandatory. Missing selected references stop the dependent step. See [selective workflow references](skills.md#workflow-skills) for installation details and reproducible footprint measurements.
+
 These skills form the development pipeline. Each one feeds into the next.
 
 ### `/aif-explore [regular|ultra] [topic or plan name]` — discovery before planning
