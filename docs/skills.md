@@ -189,7 +189,12 @@ offers finishing an unfinished plan first. Only an explicit scope/mode/start cho
 can hand off to installed `/aif-plan`; otherwise all artifacts remain read-only.
 Grouped handoff carries a primary `Milestone:` and the remaining `Also completes:`
 names into the new plan in every mode, preserving claims without editing existing plans.
-The planner retains the full selection; completion and verification check each linked milestone independently.
+The copyable request includes the roadmap source and an explicit ordered milestone
+list, so a fresh session receives the same selection. The planner retains the full
+selection; completion and verification check each linked milestone independently.
+Both advisors read clear localized plan headings and labels, including task progress
+and primary/additional milestone linkage in active and archived plans. Ambiguity
+keeps progress/claims uncertain rather than making work ready again.
 Unavailable UI uses plain-text choices; background runs return pending choices.
 See [roadmap-next settings](config-reference.md#roadmap-next-defaults) for fallback
 precedence, user-owned capacities and invalid-value behavior.

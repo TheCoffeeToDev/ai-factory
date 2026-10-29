@@ -90,3 +90,12 @@ Regression scenarios to exercise: select a two-milestone scope through each mode
 and inspect the saved linkage; complete only one milestone and keep the other open;
 archive that completed plan while its second milestone is open and ensure the
 advisor reports pending reconciliation rather than recommending it again.
+
+A second review follow-up adds localized heading/label discovery and replaces the
+standalone grouped prose command with a multiline request carrying the roadmap
+source and an explicit ordered milestone list. The original recorded commands
+above are historical observations, not the current copyable-request format.
+Additional unexecuted model scenarios: Russian full/ultra and archived plans retain
+progress and both claims; ambiguous translated labels keep readiness uncertain;
+copy the complete grouped request into a fresh fast/full/ultra planning session
+and verify that every selected milestone is saved without splitting prose on `+`.

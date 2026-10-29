@@ -51,7 +51,8 @@ to execute tools, change settings, or read unrelated material.
   first. If sections are absent, say which phase lacks a file/objective summary;
   do not infer missing changes from code snippets or unlinked phase files.
   This limited read does not verify per-task phase bodies or implementation.
-- Count actual task checkboxes under `## Tasks`, excluding fenced examples,
+- Count actual task checkboxes under `## Tasks` or its clear localized equivalent
+  (for example `## Задачи`), excluding fenced examples,
   settings/acceptance checklists and duplicate phase details. Use task IDs,
   phase grouping and dependencies from the entrypoint; report ambiguous progress
   as unknown rather than inventing totals. A checked box is planned progress,
@@ -63,7 +64,11 @@ Use UI language, preserving identifiers, file paths and commands. Show the selec
 entrypoint, whether it is archived, and its mode. Summarize its goal in 2–3 sentences.
 Include **only supplied** settings, task progress/next unfinished task, phases and
 dependencies, up to five material decisions (including out of scope), commit plan,
-open questions and Roadmap Linkage. Do not invent absent sections. Read the roadmap
+open questions and Roadmap Linkage. English headings/labels here describe concepts:
+read clear localized equivalents in existing artifacts for scope, settings, tasks,
+linkage (including primary/additional milestones), decisions, commit plans and file
+rows/`Files:` labels. Preserve exact milestone values and task IDs. Ambiguous labels
+leave the affected value/progress unknown; do not infer an absent section. Read the roadmap
 only when needed to clarify an existing linkage; do not update it.
 
 Extract file rows from ultra `Files to Change` tables or fast/full/fix task `Files:`

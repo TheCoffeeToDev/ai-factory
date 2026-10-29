@@ -30,7 +30,7 @@ What's next?
 
 If the resolved roadmap artifact exists:
 
-1. Read it
+1. Read it. Recognize clear localized equivalents of the plan's Roadmap Linkage, primary milestone and additional-milestone labels; ambiguous matches stay open for owner review.
    1.1. If the plan entrypoint includes `## Roadmap Linkage`, consider every non-`none` `Milestone:` and `Also completes:` entry; preserve quoted names/IDs, including embedded commas. Never reduce a group to its first milestone.
 2. Check each linked unchecked milestone independently against the completed work; when no linkage exists, check for supported milestone matches
 3. Mark a milestone `[x]` and add it to the Completed table with today's date only when its own scope is fully satisfied; finishing all plan tasks alone does not prove every linked milestone complete

@@ -315,6 +315,11 @@ A selected group is saved in fast/full plans and ultra `index.md` as one primary
 are preserved, including commas inside quoted names. `/aif-improve` retains the group;
 implementation and verification assess completion of each linked milestone separately.
 Completed plans with still-open links remain pending reconciliation even after archiving.
+The English linkage/task headings and labels in examples are structural; artifact
+language still applies. Advisors and completion/verification recognize clear
+localized equivalents while preserving exact milestone names/IDs and task IDs.
+Roadmap-next's copyable request carries the source path and every selection in an
+explicit ordered list; joining names into a prose description alone is insufficient.
 
 **Example plan file:**
 
