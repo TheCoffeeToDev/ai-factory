@@ -2122,6 +2122,14 @@ else
     fail "API compatibility examples or reference installation"
 fi
 
+echo -e "\n${BOLD}=== Evolve ownership reference installation ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-evolve-ownership.mjs"; then
+    pass "evolve ownership and candidate validation reference installation"
+else
+    fail "evolve ownership or candidate validation reference installation"
+fi
+
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
 
 set +e

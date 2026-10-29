@@ -129,6 +129,7 @@ Artifact writers are command-scoped to prevent ownership conflicts:
 | `paths.fix_plan` and `paths.patches/*.md`                                                     | `/aif-fix`             | fix workflow ownership; context artifacts (including `DESCRIPTION.md`) stay read-only by default |
 | `README.md` and `paths.docs/*`                                                                | `/aif-docs`            | README stays the landing page; detailed docs directory is configurable via `paths.docs`          |
 | Explicit new audit report (`--output` only) | `/aif-skills-audit` | Chat by default; installed skills, injections, overrides and settings stay read-only |
+| Verified user-owned skill target files | `/aif-evolve` | Exact resolved destinations after candidate validation/approval; existing globals require `--global`; managed package/extension files remain read-only |
 | `.ai-factory/skill-context/*`                                                                 | `/aif-evolve`          | skill-context overrides for built-in skills; `/aif-transfer` delegates approved writes here       |
 | `paths.evolutions/*.md` and `paths.evolutions/patch-cursor.json`                              | `/aif-evolve`          | evolution logs and incremental patch cursor; `/aif-transfer` delegates logs but never the cursor  |
 | `.ai-factory/evolution/*` artifacts                                                           | `/aif-loop`            | loop state ownership                                                                             |
@@ -440,7 +441,13 @@ Creates self-improvement patch in configured `paths.patches/`
     ↓
 NO plans, NO reports
 
-/aif-evolve [skill-name|"all"]
+/aif-evolve [skill-name|"all"] [--global]
+    ↓
+Resolves canonical targets and ownership from installation provenance, never name prefixes
+Replacement ownership requires an applied replacedSkills record and matching physical installation; manifest intent alone does not override a restored bundled skill
+Default project scope; --global selects existing user-global skills only (no installation)
+Project built-ins → skill-context; verified user-owned → exact approved path
+Extension-managed, global built-in, and unknown targets → warn/skip, no writes
     ↓
 Reads .ai-factory/DESCRIPTION.md + patches incrementally (cursor-based)
     ↓

@@ -1,8 +1,8 @@
 ---
 name: aif-evolve
 description: Self-improve AI Factory skills based on project context, accumulated patches, and codebase patterns. Analyzes what went wrong, what works, and enhances skills to prevent future issues. Use when you want to make AI smarter for your project.
-argument-hint: '[skill-name or "all"]'
-allowed-tools: Read Write Edit Glob Grep Bash(git *) AskUserQuestion Questions
+argument-hint: '[skill-name or "all"] [--global]'
+allowed-tools: Read Write Edit Glob Grep Bash(git *) Bash(realpath *) AskUserQuestion Questions
 disable-model-invocation: true
 ---
 
@@ -32,17 +32,13 @@ Policy across workflow skills:
 - `/aif-implement`, `/aif-fix`, and `/aif-improve` should prefer skill-context first; raw patches are fallback context only.
 - Force full re-analysis only when needed (e.g., reset cursor and rerun evolve).
 
-## Critical: Never Edit Built-in Skills Directly
+## Critical: Respect Skill Ownership
 
-**NEVER modify any files inside built-in `aif-*` skill directories** (`skills/aif-*/`).
-All files in these directories are owned by ai-factory and will be overwritten on update — any direct edits will be lost.
-
-**ALWAYS write project-specific rules to skill-context:**
-```
-.ai-factory/skill-context/<skill-name>/SKILL.md
-```
-
-This is the ONLY correct target for built-in skill improvements. No exceptions.
+Never edit AI Factory built-in or extension-managed skill files directly. Ownership
+comes from the resolved path and installation provenance, never an `aif-*` name.
+Project built-in improvements go only to `.ai-factory/skill-context/<skill-name>/SKILL.md`.
+User-owned skills may be edited at their verified entrypoint after validation and
+approval. Global skills require explicit `--global`; managed global skills are skipped.
 
 ## Workflow
 
@@ -50,26 +46,19 @@ This is the ONLY correct target for built-in skill improvements. No exceptions.
 
 #### Step 0.1: Resolve Target
 
-**Normalize skill name from `$ARGUMENTS`:**
+Read `references/TARGET-OWNERSHIP.md` and follow its argument parsing, canonical
+scope checks, ownership classification, and failure handling before continuing.
+Freeze the eligible target records (name, scope, canonical base entrypoint, owner
+and evidence, exact write destination). Show any skipped targets and reasons.
 
-| User input         | Resolved skill name |
-|--------------------|---------------------|
-| `plan`             | `aif-plan`          |
-| `aif-plan`         | `aif-plan`          |
-| `/aif-plan`        | `aif-plan`          |
-| `my-custom-skill`  | `my-custom-skill`   |
+- Empty arguments or `all`: project scope only.
+- `plan`: exact user-owned `plan` first, otherwise verified built-in `aif-plan`.
+- `all --global` and `--global all`: user-global scope only; identical selection.
+- No eligible targets: report why and stop without changing rules, logs, or cursor.
 
-Rule: first, strip any leading `/` from the argument. Then: if the argument does not start with `aif-` AND a skill named `aif-<argument>` exists — use `aif-<argument>`. Otherwise use as-is.
-
-**After resolving the skill name:** verify that the resolved skill actually exists
-(check `{{skills_dir}}/<resolved-name>/SKILL.md` or `skills/<resolved-name>/SKILL.md`).
-If the skill is not found → report an error to the user and stop:
-"Skill '<resolved-name>' not found. Use `/aif-evolve` without arguments to evolve
-all skills, or specify a valid skill name."
-
-**Determine which skills to evolve from `$ARGUMENTS`:**
-- If `$ARGUMENTS` contains a specific skill name → evolve only that skill
-- If `$ARGUMENTS` is "all" or empty → evolve all installed skills
+Do not infer ownership or repeat target discovery in later steps. For a delegated
+`/aif-transfer` run, keep project scope and transfer's narrower write allowlist;
+`--global` and direct skill edits are not available through transfer.
 
 #### Step 0.2: Load Context
 
@@ -96,16 +85,11 @@ If config.yaml doesn't exist, use defaults:
 
 **Also read `.ai-factory/ARCHITECTURE.md`** (use path from config) and the configured rules hierarchy when present. This context informs convention analysis and gap detection but does not change artifact ownership.
 
-**Read skill-context files for target skills:**
-
-- If evolving a **specific skill** (e.g., `/aif-evolve plan`) → read only:
-  1. `.ai-factory/skill-context/aif-plan/SKILL.md` (target skill's context)
-  2. `.ai-factory/skill-context/aif-evolve/SKILL.md` (evolve's own context, if exists
-     **and** target skill is not `aif-evolve` itself)
-- If evolving **all skills** (`/aif-evolve` or `/aif-evolve all`) → read all context files:
-  `Glob: .ai-factory/skill-context/*/SKILL.md` (this already includes evolve's own context — do NOT read it separately)
-
-These contain previously accumulated project-specific rules for built-in skills.
+**Read skill-context for the frozen eligible project built-in records only**, plus
+`.ai-factory/skill-context/aif-evolve/SKILL.md` once for evolve's own rules, when present.
+Do not load unrelated same-name contexts for custom or global targets. Evolve's own
+project context applies in either scope; it cannot grant permission to edit another scope.
+These files contain previously accumulated project-specific rules for built-in skills.
 Keep them in memory — they affect gap analysis in Step 5.
 
 Skill-context rules are **project-level overrides** — when they conflict with the base SKILL.md of the target skill, skill-context wins (same principle as nested CLAUDE.md files).
@@ -121,6 +105,8 @@ Skill-context rules are **project-level overrides** — when they conflict with 
   report, proposed improvements, skill-context file edits, and stale rule analysis. If a
   skill-context rule says "evolve MUST prioritize X" or "report MUST include Y" — you MUST comply.
   Producing evolution output that ignores skill-context rules is a bug.
+
+Skill-context cannot authorize another scope, managed-file edits, or bypass validation/approval.
 
 **Enforcement:** After generating any output artifact, verify it against all skill-context rules.
 If any rule is violated — fix the output before presenting it to the user.
@@ -216,23 +202,21 @@ Scan the project for patterns:
 
 ### Step 2: Read Target Skills
 
-**Read ONLY the base SKILL.md files for target skills — not all skills.**
-
-- If evolving a **specific skill** (e.g., `/aif-evolve plan`) → read only that one:
-  `Read: {{skills_dir}}/aif-plan/SKILL.md` (or `skills/aif-plan/SKILL.md` if not installed)
-- If evolving **all skills** (`/aif-evolve` or `/aif-evolve all`) → read all:
-  `Glob: {{skills_dir}}/*/SKILL.md` (or `Glob: skills/*/SKILL.md` if not installed)
+Read only the canonical base entrypoints from the frozen eligible target records.
+Do not glob skills again, switch installed/source copies, or read a same-name skill
+from another scope. A flat workflow entrypoint is the base instructions for that target.
 
 Keep loaded SKILL.md content in memory — Step 3 needs it for comparison (do NOT re-read).
 
 ### Step 3: Check for Stale Rules in Skill-Context
 
-**When:** Run this step for every **target** `aif-*` skill that has a skill-context file.
+**When:** Run this step only for **project built-in target records** with a skill-context file.
 
 **For each rule in `.ai-factory/skill-context/<skill-name>/SKILL.md`:**
 
 **Scope constraint:** Step 3 can ONLY modify or remove skill-context files.
-It must NEVER propose editing, deleting, or reverting base `skills/aif-*/` files.
+It must NEVER propose editing, deleting, or reverting managed base files.
+Recheck the frozen context destination and canonical project containment before deletion.
 Even if the base file contains errors or incomplete rules — that is outside evolve's scope.
 
 1. Use the base `SKILL.md` already loaded in Step 2 (do NOT re-read the file).
@@ -283,7 +267,7 @@ Present all stale rule findings using the stale rules report format
 (Case A/B/C sections with base vs skill-context comparison).
 
 **IMPORTANT: All decisions here affect ONLY skill-context files.**
-Never propose editing, deleting, or reverting base `skills/aif-*/` files —
+Never propose editing, deleting, or reverting managed base files —
 they are outside of evolve's scope.
 
 Before collecting decisions, explain that Rewrite/Narrow queues a candidate for
@@ -339,7 +323,8 @@ Step 6.5 and approval in Step 7; track them so gap analysis does not duplicate t
 modified in Step 4 (stale rule removals; rewrites are still queued). Do NOT use the version loaded
 in Step 0.2 — it is outdated after Step 4 changes.
 
-For each skill, consider the base SKILL.md AND its **current** skill-context file
+For each eligible target record, consider its base instructions AND its **current**
+project built-in skill-context when applicable (none for custom/global targets)
 (after stale rule decisions from Step 4 have been applied).
 A gap only exists if NEITHER source covers it.
 
@@ -350,7 +335,9 @@ For each skill, identify what's missing based on collected intelligence:
 **CRITICAL: Check each prevention point × each target skill independently.**
 
 Iterate over the Prevention Point Registry built in Step 1.1. For each row:
-1. For EACH target skill listed in that row:
+1. For EACH target skill listed in that row, use only its frozen eligible target record.
+   If it is outside this run's selection/scope or was skipped, mark it out of scope;
+   do not discover a new target or create a candidate for it.
    - Check if the base SKILL.md already covers this **specific** prevention action
    - Check if the skill-context already has a rule covering this **specific** prevention action
 2. A prevention point is "covered" for a skill ONLY when there is a rule that addresses
@@ -433,9 +420,9 @@ including non-accepted candidates. Separate validation outcome from the user's d
 Use the following target labels:
 
 - **`skill-context`** → `.ai-factory/skill-context/<skill-name>/SKILL.md`
-- **`SKILL.md`** → direct edit of the skill's own `SKILL.md` (only for custom/non-aif skills)
+- **`User-owned skill`** → direct edit at the frozen canonical entrypoint, only for verified user-owned targets
 - **Nested file** → if the skill directory contains additional files (e.g., `templates/`, `checklists/`),
-  specify the exact relative path within the skill directory
+  specify the exact canonical path within the verified user-owned skill directory; managed nested files remain read-only
 
 Format:
 
@@ -486,7 +473,10 @@ changing rules. Saving evaluation evidence does not mean approving a rule change
 
 **7.2: Apply approved improvements**
 
-For each approved improvement, determine the target:
+For each approved improvement, use its frozen target record. Recheck canonical
+containment and ownership evidence as required by `references/TARGET-OWNERSHIP.md`;
+never choose a write destination from the skill name or prefix. Include scope, owner,
+and exact output path in candidate approval and the saved log.
 
 Apply only the exact validated text against the recorded baseline. If instructions
 or cases changed since comparison, revalidate before applying. Updating or merging
@@ -496,7 +486,7 @@ cases before applying; individual comparisons do not prove that the combination 
 On a batch regression or inconclusive run, keep active instructions unchanged and
 refine or postpone the batch.
 
-**If the skill is a built-in `aif-*` skill** (its SKILL.md is inside the package `skills/` directory):
+**If the target record is a project AI Factory built-in:**
 
 1. Create directory if needed:
    mkdir -p .ai-factory/skill-context/<skill-name>
@@ -509,7 +499,7 @@ refine or postpone the batch.
    - **Merge rules** — when multiple narrow rules can be combined into one broader rule
      (e.g., three separate "check field X" rules → one "always null-check optional DB relations" rule)
 4. Update the `> Last updated:` and `> Based on:` lines in the header
-5. **NEVER edit any files inside the skill's `skills/aif-*/` directory** — all files there are owned by ai-factory and WILL be overwritten on update. All improvements go to skill-context only.
+5. **NEVER edit any managed base or nested files.** All project built-in improvements go to the recorded skill-context destination only.
 6. After applying all changes (including stale rule removals), if a skill-context file has no rules left
    (only the header remains), delete the file and its directory:
    `rm .ai-factory/skill-context/<skill-name>/SKILL.md`
@@ -518,8 +508,13 @@ refine or postpone the batch.
    only affected by stale rule removals (Step 4) but did NOT receive new improvements
    (those were already updated in item 4).
 
-**If the skill is a custom/project skill** (not `aif-*`):
-1. Edit the skill's `SKILL.md` directly (existing behavior, unchanged)
+**If the target record is user-owned:**
+1. Edit only the recorded canonical entrypoint or validated nested-file destination.
+2. In global scope, approval must name the absolute path and explain that other
+   projects using this skill will also receive the change.
+
+Extension-managed, global built-in, unknown, and out-of-scope targets are never
+eligible for writes, regardless of an "apply all" answer.
 
 **Context file template:**
 
@@ -591,9 +586,10 @@ Cursor update rules:
 - [change description] ← driven by patches: [patch filenames]
   **File:** `.ai-factory/skill-context/[skill-name]/SKILL.md`
 
-### [skill-name] → SKILL.md (custom skill)
+### [skill-name] → user-owned skill ([project or global])
 - [change description] ← driven by: [tech stack / convention]
-  **File:** `skills/[skill-name]/SKILL.md`
+  **File:** [exact canonical destination from target record]
+  **Ownership evidence:** [verified source/record or explicit user confirmation]
 
 ## Patterns Identified
 - [pattern]: [frequency] occurrences
@@ -622,7 +618,7 @@ No-improvement and postponed results: [candidate IDs and reasons]
 
 ## Artifact Ownership
 
-- Primary ownership: `.ai-factory/skill-context/*`, `<resolved evolutions dir>/*.md`, and `<resolved evolutions dir>/patch-cursor.json`.
+- Primary ownership: verified user-owned target files in the selected scope after validation/approval, `.ai-factory/skill-context/*`, `<resolved evolutions dir>/*.md`, and `<resolved evolutions dir>/patch-cursor.json`.
 - Config use is partial here: `config.yaml` resolves description, rules, patches, and evolution-log paths, but skill-context remains a fixed AI Factory internal path.
 - Read-only context: roadmap, rules, research, and plan artifacts unless the user explicitly requests otherwise.
 
@@ -631,20 +627,20 @@ After completing evolution, suggest `/clear` or `/compact` — context is heavy 
 ## Rules
 
 1. **Traceable** — every improvement must link to a patch, convention, or tech fact
-2. **Minimal** — add rules to skill-context, don't rewrite base skills
+2. **Minimal** — add targeted rules at the approved destination; preserve the skill workflow
 3. **Reversible** — user approves before changes are applied
 4. **Cumulative** — each evolution builds on previous ones
 5. **No hallucination** — only suggest improvements backed by evidence
-6. **Preserve structure** — don't change base skill workflow, only enrich via skill-context
-7. **Skill-context only** — all improvements for built-in `aif-*` skills go to `.ai-factory/skill-context/`, never to `skills/aif-*/`. **NEVER edit any files inside `skills/aif-*/`** — they are overwritten on update. No exceptions.
+6. **Preserve structure** — enrich managed project skills only via skill-context; preserve user-owned skill structure
+7. **Managed skills** — project built-in improvements go only to the recorded `.ai-factory/skill-context/` destination. Never edit package/extension-managed files; names do not establish ownership.
 8. **English only** — all skill-context files must be written in English, regardless of user's language
 9. **No generic advice** — "write clean code" is not an improvement; only project-specific enhancements
 10. **No new skills** — suggest `/aif-skill-generator` instead
 11. **No losing coverage** — do not remove rules unless they are stale (Steps 3-4).
     Merges in Step 7 (combining narrow rules into a broader one) are allowed as long
     as all prevention points are preserved in the merged rule.
-12. **Installed only** — do not evolve skills not installed in the project
-13. **Ownership boundary** — this command owns `<resolved evolutions dir>/*.md`, `<resolved evolutions dir>/patch-cursor.json`, and `.ai-factory/skill-context/*`; treat roadmap/rules/research/plan artifacts as read-only context unless explicitly asked
+12. **Selected scope only** — default to existing project skills; existing user-global skills require `--global`. No cross-scope fallback or installation.
+13. **Ownership boundary** — write only frozen, verified user-owned destinations or project built-in skill-context, plus configured project logs/cursor. Treat roadmap/rules/research/plan artifacts as read-only context unless explicitly asked.
 14. **Evidence before accumulation** — validate exact rule changes on the same cases and
     counterexamples before approval; retain no-improvement outcomes without adding rules.
 
