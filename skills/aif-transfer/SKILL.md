@@ -16,6 +16,18 @@ metadata:
 
 # Transfer — Reuse Anonymized Project Experience
 
+## Shared project skill-context
+
+Before mode routing or work, read existing files relative to the current project root in this order (reuse them if already loaded):
+
+1. `.ai-factory/skill-context/global-skill-context.md` — all bundled skills.
+2. `.ai-factory/skill-context/aif-transfer/SKILL.md` — this skill.
+
+Missing files are skipped; an existing unreadable file stops dependent work with its path.
+Precedence: individual > build (when applicable) > global > skill defaults; retain non-conflicting instructions and check all outputs against the effective rules.
+These layers customize workflow; they do not replace the project's rules/architecture hierarchy or relax explicit requirements, ownership, scope, safety/privacy, validation, or approval boundaries. Report conflicts with those boundaries instead of overriding them.
+`global` is a project-local layer, not home-directory configuration. Custom/extension skills do not automatically use it.
+
 Read fix patches from another AI Factory project, keep only lessons that fit the
 current project, anonymize them, and run the current `/aif-evolve` workflow against
 that sanitized evidence.
@@ -115,7 +127,7 @@ If `technical_terms_policy` is not one of `keep`, `translate`, or `mixed`, treat
 
 Require the current description artifact. If missing, stop and tell the user to run
 `/aif` first. Read the current description, architecture, resolved rules hierarchy, and
-existing `.ai-factory/skill-context/*/SKILL.md` files needed for the selected target.
+all applicable global, build, and individual skill-context layers for the selected target.
 
 ### Project Context
 
@@ -259,7 +271,10 @@ narrow overrides:
    exact validated `accept` revision. An evolution log containing only negative or
    postponed outcomes requires explicit report-save approval; it applies no rules.
 7. Write only to current-project paths owned by `/aif-evolve`.
-8. Apply the privacy preflight to all candidate cards and comparison evidence, including
+8. Named transfers cannot edit shared layers. For `all`, follow evolve's complete
+   consumer resolution and per-consumer validation before proposing a shared write;
+   apply privacy preflight to the entire shared change and every duplicate removal.
+9. Apply the privacy preflight to all candidate cards and comparison evidence, including
    rejected revisions and report-only logs. Use current-project or neutral cases only.
 
 ### Step 7: Post-Write Privacy Verification

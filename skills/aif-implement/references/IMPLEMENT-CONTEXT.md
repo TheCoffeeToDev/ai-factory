@@ -56,7 +56,7 @@ If any rule is violated — fix the output before presenting it to the user.
 
 **Patch fallback (limited, only when skill-context is missing):**
 
-- If `.ai-factory/skill-context/aif-implement/SKILL.md` does not exist and the resolved patches dir exists:
+- If none of the applicable global, build, or individual skill-context files exists and the resolved patches dir exists:
     - Use `Glob` to find `*.md` files in the resolved patches dir
     - Sort patch filenames ascending (lexical), then select the last **10** (or fewer if less exist)
     - Read those selected patch files only

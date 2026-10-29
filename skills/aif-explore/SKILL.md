@@ -14,6 +14,18 @@ Enter explore mode. Think deeply. Visualize freely. Follow the conversation wher
 
 ## Step 0: Load Config
 
+## Shared project skill-context
+
+Before mode routing or work, read existing files relative to the current project root in this order (reuse them if already loaded):
+
+1. `.ai-factory/skill-context/global-skill-context.md` — all bundled skills.
+2. `.ai-factory/skill-context/aif-explore/SKILL.md` — this skill.
+
+Missing files are skipped; an existing unreadable file stops dependent work with its path.
+Precedence: individual > build (when applicable) > global > skill defaults; retain non-conflicting instructions and check all outputs against the effective rules.
+These layers customize workflow; they do not replace the project's rules/architecture hierarchy or relax explicit requirements, ownership, scope, safety/privacy, validation, or approval boundaries. Report conflicts with those boundaries instead of overriding them.
+`global` is a project-local layer, not home-directory configuration. Custom/extension skills do not automatically use it.
+
 **FIRST:** Read `.ai-factory/config.yaml` if it exists to resolve:
 - **Command default:** `workflow.explore_mode` (`regular` by default; allowed: `regular`, `ultra`). An absent value uses `regular`; an invalid value/type emits `WARN [config] invalid workflow.explore_mode; falling back to regular` and uses `regular`.
 - **Paths:** `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.research`, `paths.plan`, `paths.plans`, and `paths.rules`

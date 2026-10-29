@@ -14,6 +14,14 @@ must state their effect on other projects in the approval request.
 
 For each eligible candidate × target skill:
 
+For a shared destination, repeat this comparison for every frozen consumer from
+`SHARED-CONTEXT.md`, including consumers without the originating failure. Freeze
+global/build/individual layers in both compositions and include duplicate removals
+and retained exceptions. No partial shared acceptance: one missing comparison or
+regression makes the shared candidate ineligible. Record equivalence plus measured
+duplicate reduction as maintenance evidence for consolidation; never label unchanged
+behavior a behavioral improvement or infer token savings from fewer files.
+
 1. Assign a stable candidate ID and revision. Link the prevention point to its patch,
    convention, or verified tech fact. Preserve the original problem as a reproducible
    case with input, initial state, and observable expected behavior.
@@ -82,6 +90,11 @@ not improve behavior** and choose `keep_old`. If evidence is incomplete, choose
 unsuccessful revision into `accept`. Changed text, baseline, or cases invalidate the
 previous comparison; retain it and record a new comparison with its reason.
 
+For an equivalent consolidation under `SHARED-CONTEXT.md`, distinguish unchanged
+behavior from the measured maintenance benefit: fewer duplicate copies, all consumers
+and exceptions covered, and no behavioral regression. Only a complete comparison
+showing that benefit may be accepted as consolidation; it adds no new instruction.
+
 When multiple accepted candidates will be applied together, compare the exact combined
 instructions with the baseline on the union of their cases and record the batch result.
 The final user-selected set must match a tested combination. On a batch regression or
@@ -96,6 +109,7 @@ Do not put comparison history or rejected instructions into active skill-context
 ```markdown
 ### Candidate <ID> / revision <N> — <rule name>
 - Target skill, scope, canonical base entrypoint, owner/evidence, and exact output path:
+- Context layer and complete affected-consumer records (shared changes only):
 - Provenance / prevention point:
 - Original problem case (input, initial state, expected behavior):
 - Exact applicability condition:

@@ -506,7 +506,7 @@ your-project/
 │   │   └── <ultra-id>/
 │   │       ├── index.md
 │   │       └── phase-01-<slug>.md
-│   ├── skill-context/         # Project-specific rules from /aif-evolve (directly or via /aif-transfer)
+│   ├── skill-context/         # Optional global/build files + individual skill directories; see docs/evolve.md
 │   │   ├── aif-fix/
 │   │   │   └── SKILL.md
 │   │   └── aif-review/

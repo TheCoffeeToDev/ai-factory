@@ -447,6 +447,10 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 
 First resolves canonical skill targets and installation ownership. Project built-ins
 use skill-context; verified user-owned skills use their exact approved paths.
+Shared project layers load global → build (fix/implement/plan/verify/improve only) →
+individual, with individual taking precedence. Project `all` evolution can consolidate
+rules only after validating every affected consumer; named runs stay individual.
+See [Shared Evolution and Consolidation](evolve.md#shared-evolution-and-consolidation).
 Extension-managed and unknown targets are skipped. Global user-owned edits require
 `--global` and approval stating their cross-project reach; global built-ins are skipped.
 See [Skill Ownership and Write Destinations](evolve.md#skill-ownership-and-write-destinations).

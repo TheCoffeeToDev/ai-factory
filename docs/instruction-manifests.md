@@ -21,6 +21,11 @@ ai-factory instructions start --spec composition.json
 
 Use the actual installed directory for your runtime. For flat workflow files, pass their containing directory and `--entry aif-implement.md`; only that entry and the shared `references/` tree are inventoried. For directory skills, `prepare` inventories regular package files, excluding the top-level authoring `tests/` directory. It does not read those files into the model's execution context. Missing context files remain explicit missing resources after `start`. `--output` writes a new UTF-8 file without a BOM, avoiding PowerShell redirection encoding differences. JSON inputs also accept UTF-8 BOMs and UTF-16LE BOMs.
 
+If shared skill-context files exist, callers also list
+`.ai-factory/skill-context/global-skill-context.md` and, for its five workflow
+consumers, `.ai-factory/skill-context/build-skill-context.md` before the individual
+context. `prepare` does not discover optional layers or claim they were loaded.
+
 `--snapshot` grants local capture of the selected package and explicit context paths. Without it, hashes and sizes are recorded, but historical bytes are not preserved. Review generated `policy.snapshot_roots` and `policy.exclude` before starting. A snapshot root is an exact project-relative file or a directory prefix; exclusions use the same semantics, not globs.
 
 Set `task` and `stage` in the generated JSON when known. `start` returns a generated `run_id` and the manifest location. Supply a unique `run_id` in the specification for deterministic external registration. Existing runs are never overwritten.
