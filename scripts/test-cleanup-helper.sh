@@ -1008,6 +1008,12 @@ for requested, directory, canonical, removed in [
      {'Convex Best Practices', 'convex-best-practices'}),
     ('convex-best-practices', 'convex-best-practices', 'Convex Best Practices',
      {'Convex Best Practices', 'convex-best-practices'}),
+    ('convex-best-practices', 'convex-best-practices', 'Convex Best Practices # skill description',
+     {'Convex Best Practices', 'convex-best-practices'}),
+    ('convex-best-practices', 'convex-best-practices', '"Convex Best Practices" # description',
+     {'Convex Best Practices', 'convex-best-practices'}),
+    ('Convex Best Practices', 'installed-alias', "'Convex Best Practices' # description",
+     {'Convex Best Practices', 'convex-best-practices', 'installed-alias'}),
     ('Convex Best Practices', 'installed-alias', 'Convex Best Practices',
      {'Convex Best Practices', 'convex-best-practices', 'installed-alias'}),
     ('convex-best-practices', 'convex-best-practices', 'safe-one',
@@ -1040,6 +1046,22 @@ for requested, directory, canonical, removed in [
         if directory == 'convex-best-practices':
             retry = subprocess.run(command, capture_output=True, text=True)
             assert retry.returncode == 0, retry.stderr
+# Unsupported names must stop before files or lock identities are lost.
+for name in ['> # folded name', '"unterminated', '&alias Convex Best Practices']:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        installed = root / '.claude/skills/convex-best-practices'
+        installed.mkdir(parents=True)
+        (installed / 'SKILL.md').write_text(f'---\nname: {name}\n---\n')
+        lock = root / 'skills-lock.json'
+        original = json.dumps({'skills': {'Convex Best Practices': {}}})
+        lock.write_text(original)
+        result = subprocess.run([sys.executable, helper, '--root', tmp,
+                                 '--skill', 'convex-best-practices',
+                                 '--installed-path', str(installed)], capture_output=True, text=True)
+        assert result.returncode == 1, result.stdout
+        assert 'cannot establish canonical skill name' in result.stderr, result.stderr
+        assert installed.exists() and lock.read_text() == original, 'ambiguous cleanup mutated state'
 PY
 then
     pass "lock aliases: display/canonical/directory names cleaned; siblings and dry-run preserved"

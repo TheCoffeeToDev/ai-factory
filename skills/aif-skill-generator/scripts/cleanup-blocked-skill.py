@@ -330,7 +330,7 @@ def _sanitize_skill_name(name: str) -> str:
 
 
 def _read_skill_frontmatter_name(skill_md: Path):
-    """Best-effort parser for a simple `name:` key in YAML frontmatter."""
+    """Read a single-line YAML name scalar, failing closed on unsupported syntax."""
     try:
         lines = skill_md.read_text(encoding='utf-8').splitlines()
     except OSError:
@@ -348,9 +348,25 @@ def _read_skill_frontmatter_name(skill_md: Path):
         if key.strip() != 'name':
             continue
         value = value.strip()
-        if len(value) >= 2 and value[0] == value[-1] and value[0] in ('"', "'"):
-            value = value[1:-1]
-        return value
+        # Comments start at a whitespace-separated # outside quoted scalars.
+        # Keep this helper dependency-free; reject syntax we cannot decode rather
+        # than delete SKILL.md and lose a possible canonical lock identity.
+        if value.startswith("'"):
+            match = re.fullmatch(r"'((?:[^']|'')*)'(?:[ \t]+#.*)?", value)
+            if match:
+                return match.group(1).replace("''", "'")
+        elif value.startswith('"'):
+            match = re.fullmatch(r'("(?:[^"\\]|\\.)*")(?:[ \t]+#.*)?', value)
+            if match:
+                try:
+                    return json.loads(match.group(1))
+                except ValueError:
+                    pass
+        else:
+            scalar = re.split(r'\s+#', value, maxsplit=1)[0].strip()
+            if scalar and scalar[0] not in '!&*|>[{#' and ': ' not in scalar:
+                return scalar
+        raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
     return None
 
 
@@ -547,7 +563,11 @@ def main() -> int:
     skill_names = {skill, _sanitize_skill_name(skill)} - {''}
     if validated_installed is not None:
         skill_names.add(validated_installed.resolved.name)
-        canonical = _read_skill_frontmatter_name(validated_installed.resolved / 'SKILL.md')
+        try:
+            canonical = _read_skill_frontmatter_name(validated_installed.resolved / 'SKILL.md')
+        except RuntimeError as e:
+            print(f"error: {e}", file=sys.stderr)
+            return 1
         # A downloaded skill cannot nominate an unrelated lock entry for deletion.
         if canonical and _sanitize_skill_name(canonical) in {
             _sanitize_skill_name(skill), validated_installed.resolved.name.lower()
