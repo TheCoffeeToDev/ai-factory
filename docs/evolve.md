@@ -133,9 +133,17 @@ there is no global skill-context contract yet.
 ### Skill Ownership and Write Destinations
 
 Ownership comes from canonical paths and installation records/manifests, never an
-`aif-*` prefix. Extension replacement records take precedence over built-in names.
+`aif-*` prefix. Applied extension replacement records with matching physical
+installation evidence take precedence over built-in names; a manifest declaration
+alone does not establish replacement ownership.
 For example, a user-owned `aif-team-helper` is custom, while an extension replacement
 named `aif-plan` remains extension-managed.
+
+If a replacement install fails and AI Factory restores the bundled skill without
+an applied `extensions[].replacedSkills` entry, evolve resolves that restored target
+as a built-in from its matching installation record. It can then propose project
+skill-context improvements even while the extension manifest still declares the
+unapplied replacement. Conflicting records and files leave ownership unresolved.
 
 | Skill owner | Where rules are written |
 |-------------|-------------------------|

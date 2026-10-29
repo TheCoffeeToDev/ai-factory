@@ -21,7 +21,8 @@ try {
   for (const agent of getBuiltinAgentConfigs()) {
     const directory = path.join(project, agent.id);
     const options = { projectDir: directory, agentId: agent.id, skillsDir: agent.skillsDir, skills: ['aif-evolve'] };
-    const transformed = getTransformer(agent.id).transform('aif-evolve', source);
+    const transformer = getTransformer(agent.id);
+    const transformed = transformer.transform('aif-evolve', source);
     const skillRoot = path.join(directory, agent.skillsDir, transformed.flat ? '' : transformed.targetDir);
     // Reinstallation must retain both the ownership gate and candidate validation.
     for (let run = 0; run < 2; run++) {
@@ -31,7 +32,8 @@ try {
       assert.ok(entrypoint.includes('Bash(realpath *)'), `${agent.id}: canonicalization permission missing`);
       for (const name of references) {
         assert.ok(entrypoint.includes(`references/${name}`), `${agent.id}: ${name} routing missing`);
-        assert.equal(await readFile(path.join(skillRoot, 'references', name), 'utf8'), processTemplate(expected.get(name), buildTemplateVars(agent)), `${agent.id}: ${name} missing or changed`);
+        const reference = transformer.transformReference?.('aif-evolve', expected.get(name)) ?? expected.get(name);
+        assert.equal(await readFile(path.join(skillRoot, 'references', name), 'utf8'), processTemplate(reference, buildTemplateVars(agent)), `${agent.id}: ${name} missing or changed`);
       }
     }
     console.log(`PASS ${agent.id}: evolve scope/validation references survive installation and reinstallation`);

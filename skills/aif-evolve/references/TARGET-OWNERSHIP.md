@@ -50,14 +50,24 @@ name or frontmatter. For project installations, read `.ai-factory.json` for the
 matching runtime/root and registered `.ai-factory/extensions/**/extension.json`
 manifests. Extension `skills` paths install under their basename unless `replaces`
 maps that source path to a built-in name; account for runtime filename transforms.
-`extensions[].replacedSkills` is also managed ownership evidence. Extension claims
-take precedence over built-in names, including a replacement named `aif-plan`.
+Manifest declarations describe intended installation, not proof that it succeeded.
+For a replacement, require both an applied `extensions[].replacedSkills` entry for
+that target and matching physical installation evidence in this runtime/root:
+the installed entrypoint must correspond to that extension's replacement source,
+accounting for runtime transforms and known injections. Only that verified applied
+replacement takes precedence over a built-in name such as `aif-plan`.
+
+If installation failed or rolled back, no applied replacement record remains, and
+the physical target matches the restored bundled skill, classify it from the matching
+AI Factory installation record as a project built-in. A surviving manifest `replaces`
+claim must not make that restored base extension-managed. If the applied record and
+physical files disagree, leave ownership unresolved; do not infer either owner.
 Missing registered manifests or conflicting records leave ownership unresolved.
 
 | Owner | Required evidence | Permitted destination |
 |-------|-------------------|-----------------------|
-| AI Factory built-in | Matching AI Factory installation record for this physical runtime/root and bundled skill, with extension claims excluded; or verified AI Factory package source inventory | Project scope: `.ai-factory/skill-context/<name>/SKILL.md` only. Global scope: skip with a warning; no global override contract exists |
-| Extension-managed | Matching extension source/installation manifest or replacement record | Warn that updates overwrite edits; skip with no writes to the installed copy or extension source, and no synthetic built-in skill-context |
+| AI Factory built-in | Matching AI Factory installation record and bundled physical target for this runtime/root, with no verified applied extension replacement; or verified AI Factory package source inventory | Project scope: `.ai-factory/skill-context/<name>/SKILL.md` only. Global scope: skip with a warning; no global override contract exists |
+| Extension-managed | Matching registered extension source and physical installation; replacements additionally require the applied `extensions[].replacedSkills` record | Warn that updates overwrite edits; skip with no writes to the installed copy or extension source, and no synthetic built-in skill-context |
 | User-owned | Verified project/user skill source outside managed inventories, or explicit user confirmation of ownership when provenance is absent | Exact resolved entrypoint (or explicitly proposed existing nested file), in the selected scope only |
 | Unknown / conflicting | Insufficient or conflicting provenance | No writes; explain the missing evidence and ask for clarification in named mode, or skip in `all` mode |
 

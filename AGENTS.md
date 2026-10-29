@@ -438,6 +438,7 @@ NO plans, NO reports
 /aif-evolve [skill-name|"all"] [--global]
     ↓
 Resolves canonical targets and ownership from installation provenance, never name prefixes
+Replacement ownership requires an applied replacedSkills record and matching physical installation; manifest intent alone does not override a restored bundled skill
 Default project scope; --global selects existing user-global skills only (no installation)
 Project built-ins → skill-context; verified user-owned → exact approved path
 Extension-managed, global built-in, and unknown targets → warn/skip, no writes
