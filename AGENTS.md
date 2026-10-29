@@ -73,6 +73,20 @@ Default artifacts are `.ai-factory/instruction-runs/<run-id>/manifest.json` and 
 - **User skills**: `<agent-config-dir>/skills/` (e.g. `.claude/skills/`, `.opencode/skills/`, `.agents/skills/`)
 - **Agent transformer system**: `src/core/transformers/` adapts skill format per agent (e.g. Codex rewrites invocation prefixes to `$`, Antigravity 2.0 uses `.agents/` with triggered rules and subagents, KiloCode sanitizes dotted names)
 
+### Extension tool permissions
+
+`extension.json` may declare `toolPermissions` per installed skill and runtime. Only
+Claude Code currently has a native adapter; unsupported runtimes are warned and skipped.
+`src/core/tool-permissions.ts` owns YAML field parsing, per-extension ownership comments,
+shared requests, and preservation across reinstall/update/remove. Keep its composition
+in managed receipt proof and skill migration rendering. Never infer grants from prose
+or broaden a scoped request into unrestricted shell permissions. See `docs/extensions.md`.
+
+Captured tool baselines must stay bound to their applied skill source owner and
+extension-native declaration. Replacement removal or changed source defaults use
+the current source field and recompose remaining requests; old native grants must
+never become unowned permissions on a restored bundle or a new replacement.
+
 ### Bundled loop subagents
 
 Bundled `loop-*` agent files require `aif-loop` in the selected/installed skill set for both Claude and Codex.
@@ -129,6 +143,7 @@ Artifact writers are command-scoped to prevent ownership conflicts:
 | `paths.fix_plan` and `paths.patches/*.md`                                                     | `/aif-fix`             | fix workflow ownership; context artifacts (including `DESCRIPTION.md`) stay read-only by default |
 | `README.md` and `paths.docs/*`                                                                | `/aif-docs`            | README stays the landing page; detailed docs directory is configurable via `paths.docs`          |
 | Explicit new audit report (`--output` only) | `/aif-skills-audit` | Chat by default; installed skills, injections, overrides and settings stay read-only |
+| Verified user-owned skill target files | `/aif-evolve` | Exact resolved destinations after candidate validation/approval; existing globals require `--global`; managed package/extension files remain read-only |
 | `.ai-factory/skill-context/*`                                                                 | `/aif-evolve`          | skill-context overrides for built-in skills; `/aif-transfer` delegates approved writes here       |
 | `paths.evolutions/*.md` and `paths.evolutions/patch-cursor.json`                              | `/aif-evolve`          | evolution logs and incremental patch cursor; `/aif-transfer` delegates logs but never the cursor  |
 | `.ai-factory/evolution/*` artifacts                                                           | `/aif-loop`            | loop state ownership                                                                             |
@@ -182,6 +197,12 @@ Not yet configurable via the current schema:
 - `.ai-factory/skill-context/`
 - `README.md` landing page location
 - `docs-html/` output location for `/aif-docs --web`
+
+### Runtime-Aware Questions
+
+Question delivery follows `docs/skills.md#questions-across-runtimes`. `aif-plan`, `aif-review`, and `aif-verify` embed the portable contract; authors reuse the snippet in `skills/aif-skill-generator/references/BEST-PRACTICES.md`. Tool examples never imply runtime availability. Missing UI uses plain text; delegated/non-interactive runs preserve required approvals and return unresolved material decisions as blockers.
+
+`aif-skill-generator` applies this contract before mode routing, including URL-based Learn Mode, and embeds the self-contained section in every generated interactive skill. Learn Mode checks both clarification delivery and the generated section before presentation.
 
 ### Skill Naming (v2)
 
@@ -434,7 +455,13 @@ Creates self-improvement patch in configured `paths.patches/`
     ↓
 NO plans, NO reports
 
-/aif-evolve [skill-name|"all"]
+/aif-evolve [skill-name|"all"] [--global]
+    ↓
+Resolves canonical targets and ownership from installation provenance, never name prefixes
+Replacement ownership requires an applied replacedSkills record and matching physical installation; manifest intent alone does not override a restored bundled skill
+Default project scope; --global selects existing user-global skills only (no installation)
+Project built-ins → skill-context; verified user-owned → exact approved path
+Extension-managed, global built-in, and unknown targets → warn/skip, no writes
     ↓
 Reads .ai-factory/DESCRIPTION.md + patches incrementally (cursor-based)
     ↓

@@ -76,10 +76,13 @@ Usage:
 
 1. Parse the first argument as `source_project_path`. Respect quoted paths.
 2. Parse the optional second argument as the evolve target; default to `all`.
+   Reject flags (including `--global`) and extra arguments; do not forward them to evolve.
 3. Resolve and validate that target with `/aif-evolve` Step 0.1, using
    `{{skills_dir}}/aif-evolve/SKILL.md` or the development fallback
    `skills/aif-evolve/SKILL.md`. Stop before source analysis if evolve is unavailable or
-   the target skill does not exist.
+   the target skill does not exist. Keep project scope: reject `--global` and
+   restrict eligible targets to verified AI Factory built-ins with current-project
+   skill-context destinations. Do not delegate direct custom/extension/global edits.
 4. Resolve the current project root and the source root to normalized canonical paths.
    After parsing, refer to the source only as "reference project" in user-visible output;
    never echo the supplied path.

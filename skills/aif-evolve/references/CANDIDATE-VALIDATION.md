@@ -6,7 +6,13 @@ otherwise postpone until a reproducible evaluator and cases are available.
 
 ## Prepare the Comparison
 
-For each candidate × target skill:
+For each candidate × target skill, carry the frozen scope, canonical base entrypoint,
+owner/evidence, and exact destination from Step 0.1. A different physical skill or
+write destination is a different candidate, even when the name matches. Do not test
+or propose writes to skipped managed or unknown targets. Global user-owned edits
+must state their effect on other projects in the approval request.
+
+For each eligible candidate × target skill:
 
 1. Assign a stable candidate ID and revision. Link the prevention point to its patch,
    convention, or verified tech fact. Preserve the original problem as a reproducible
@@ -89,7 +95,7 @@ Do not put comparison history or rejected instructions into active skill-context
 
 ```markdown
 ### Candidate <ID> / revision <N> — <rule name>
-- Target skill and output path:
+- Target skill, scope, canonical base entrypoint, owner/evidence, and exact output path:
 - Provenance / prevention point:
 - Original problem case (input, initial state, expected behavior):
 - Exact applicability condition:

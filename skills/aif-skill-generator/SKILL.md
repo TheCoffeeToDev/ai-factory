@@ -156,6 +156,10 @@ For threat categories, severity levels, and user communication templates → rea
 - `/aif-skill-generator validate <path>` - **Full validation**: structure check + two-level security scan
 - `/aif-skill-generator template <type>` - Get a template (basic, task, reference, visual)
 
+## Questions and Interactive Output (All Modes)
+
+Before routing arguments to any mode, read and follow the Runtime-Aware Questions contract in `references/BEST-PRACTICES.md`. It applies to standard generation, URL-based Learn Mode, and any follow-up questions. Include that self-contained section in every generated interactive skill's `SKILL.md`, regardless of generation mode.
+
 ## Argument Detection
 
 **IMPORTANT**: Before starting the standard workflow, detect the mode from `$ARGUMENTS`:

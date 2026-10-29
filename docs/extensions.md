@@ -2,7 +2,7 @@
 
 # Extensions
 
-Extensions let third-party developers add new capabilities to AI Factory — custom CLI commands, MCP servers, skill injections, runtime definitions, runtime-specific agent files, and more. Extensions survive `ai-factory update` (injections and managed agent files are automatically re-applied after skills are refreshed).
+Extensions let third-party developers add new capabilities to AI Factory — custom CLI commands, MCP servers, skill injections, runtime definitions, runtime-specific agent files, scoped tool requests, and more. Extensions survive `ai-factory update` (injections, tool requests, and managed agent files are automatically re-applied after skills are refreshed).
 
 ## For Users
 
@@ -246,7 +246,7 @@ If your extension project installs `ai-factory` as a local dependency and you wa
 }
 ```
 
-The schema validates the public manifest shape: commands, runtime definitions, runtime-aware `agentFiles`, injections, skills, replacements, and MCP server templates. Install-time semantics still run in AI Factory itself, including runtime existence, safe relative paths, extension matching, duplicate ownership, and whether a runtime supports managed agent files.
+The schema validates the public manifest shape: commands, runtime definitions, runtime-aware `agentFiles`, injections, `toolPermissions`, skills, replacements, and MCP server templates. Install-time semantics still run in AI Factory itself, including runtime existence, safe relative paths, extension matching, duplicate ownership, and whether a runtime supports managed agent files.
 
 ### Manifest Fields
 
@@ -260,6 +260,7 @@ The schema validates the public manifest shape: commands, runtime definitions, r
 | `agents` | `array` | Runtime definitions that become available to `ai-factory init`, `--agents`, and core runtime lookups once the extension is installed. |
 | `agentFiles` | `array` | Runtime-aware agent assets copied into `agentsDir` for built-in or extension-defined runtimes. |
 | `injections` | `array` | Content to inject into existing skill files. |
+| `toolPermissions` | `array` | Native tool requests for specific skills and runtimes; currently Claude Code only. |
 | `skills` | `array` | Paths to skill directories within the extension. |
 | `replaces` | `object` | Maps extension skill paths to base skill names they replace (e.g. `{"skills/my-commit": "aif-commit"}`). |
 | `mcpServers` | `array` | MCP server configurations to merge into agent settings. |
@@ -339,6 +340,76 @@ After completing each task:
 2. Check for console.log statements left in production code
 3. Verify error messages are user-friendly
 ```
+
+---
+
+### Skill Tool Permissions
+
+Instructions injected into a skill do not change its YAML frontmatter. An extension
+can separately declare the native tool permissions needed by a specific skill:
+
+```json
+{
+  "toolPermissions": [
+    {
+      "target": "aif-implement",
+      "agents": {
+        "claude": ["Bash(ai-factory hello *)"]
+      }
+    }
+  ]
+}
+```
+
+Declare each `target` once, with a non-empty `agents` map of runtime IDs to tool
+arrays. The target is an installed skill name, not a path. The CLI reports requested
+skills/runtimes/tools before applying them. Missing targets are reported and skipped.
+Extensions without this field retain their existing behavior.
+
+**Runtime support:** Claude Code receives the exact declared entries in that skill's
+`allowed-tools`. Other runtimes are explicitly reported as unsupported and receive no
+permission changes. AI Factory does not translate an unsupported request into broad
+shell access or write global/session permission settings. A Claude root shared with
+another configured runtime is rejected because a runtime-specific grant cannot be
+isolated there.
+
+Claude requests support native tool names such as `Read` or `mcp__server__tool`,
+scoped non-shell rules such as `Read(src/**)`, and literal Bash executable/subcommand prefixes such as `Bash(ai-factory hello *)`.
+Unrestricted `Bash`, `Bash(*)`, wildcard tool names, command chaining, multiline rules,
+and unsupported rule syntax are rejected. Existing broader user entries are preserved;
+AI Factory does not infer additional permissions from injected prose.
+
+Claude's field provides native pre-approvals during the invoking turn; it does not
+restrict the available tool pool. Managed settings, deny/ask rules, and other native
+policies still apply. See [Claude Code's skill permission documentation](https://code.claude.com/docs/en/skills#pre-approve-tools-for-a-skill).
+
+**Ownership and updates:** the field is rendered as a YAML flow list with an
+`aif-ext-tools` comment containing its original field and extension requests. Keep this
+comment intact. Entries already present in the original field stay user/base-owned;
+an extension never claims them. Shared requests produce one entry and remain until
+all requesting extensions are removed. Removing an extension removes only its owned
+entries, including when its installed manifest is missing. User additions, duplicate
+entries, and edited entries are preserved. Removing the ownership comment relinquishes
+automatic cleanup rather than authorizing deletion of unproven entries.
+
+Reinstall, extension refresh, `init`, `update` (including `--force`), and `upgrade`
+preserve the existing unowned field while the source owner and its extension-native
+tool declaration remain unchanged, and recompose active requests. This includes user
+removals; changed bundled package defaults for that field require manual reconciliation.
+Removing a replacement uses the restored bundled skill's own declaration. Refreshing
+a replacement with a different source or native tool declaration uses the new source
+field, including on same-version local refreshes. Captured native grants and edits
+from the previous source are not carried over; remaining extensions' requests are
+recomposed with their ownership intact. Applied replacement records and installed
+extension sources establish the source identity, rather than a manifest claim alone.
+Permission targets participate in extension rollback. Managed receipts include the
+exact known permission composition; user changes are not promoted into proven package
+ownership.
+
+String, quoted-string, flow-list, and block-list fields are accepted. Invalid or
+ambiguous YAML, permission aliases/anchors, unsafe paths, and symbolic/hard-linked skill entries
+fail without granting permissions. Other frontmatter fields and the skill body retain
+their bytes.
 
 ---
 

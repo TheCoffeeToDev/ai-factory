@@ -122,11 +122,20 @@ The `agents` array can include any built-in agent IDs plus runtime IDs provided 
 
 Codex additionally persists `configFiles` / `installedConfigFiles` for managed files such as `.codex/config.toml`. Updates refresh files that still match the saved installation baseline; local modifications and untracked pre-existing config files are preserved. Codex app installs Codex-style skills into `.agents/skills` and can write MCP config to `.codex/config.toml`, but it does not define a runtime-global `agentsDir`.
 
-AI Factory also stores internal `managedSkills`, `managedAgentFiles`, `managedConfigFiles`, and `agentFileSources` maps, omitted above for brevity. Managed entries keep source/install hashes. Skill entries may additionally carry `renderContextHash`, which detects changed template paths or shared-runtime profiles even when package source bytes are unchanged, and `rawInstalledHash`, which includes injection content and exact file bytes. These fields do not change native agent/config ownership.
+AI Factory also stores internal `managedSkills`, `managedAgentFiles`, `managedConfigFiles`, and `agentFileSources` maps, omitted above for brevity. Managed entries keep source/install hashes. Skill entries may additionally carry `renderContextHash`, which detects changed template paths or shared-runtime profiles even when package source bytes are unchanged, and `rawInstalledHash`, which includes injection content, extension tool-request metadata, and exact file bytes. These fields do not change native agent/config ownership.
 
 Kilo Code follows the same ownership checks when a runtime is deselected: only tracked workflow files matching their saved raw installation receipt are removed. Untracked or modified workflows are preserved. Installing a skill does not delete legacy directories under `.kilocode/skills/`; their names alone do not prove AI Factory ownership or authorize migration.
 
-Removing a runtime deletes its unneeded skills only when they match the saved raw baseline as well as the normalized install hash. Modified skills and legacy entries without a raw baseline are preserved with a warning. Init, update, and upgrade issue a raw baseline only when the complete installed skill matches the rendered package source and verified registered injections. Unknown files, links, injection markers, or unavailable injection sources prevent a new deletion baseline, including after a skill was reinstalled.
+Removing a runtime deletes its unneeded skills only when they match the saved raw baseline as well as the normalized install hash. Modified skills and legacy entries without a raw baseline are preserved with a warning. Init, update, and upgrade issue a raw baseline only when the complete installed skill matches the rendered package source, verified registered injections, and the declared native tool requests. Unknown files, links, injection markers, or unavailable injection sources prevent a new deletion baseline, including after a skill was reinstalled.
+
+Extensions may declare skill/runtime-scoped `toolPermissions` in their manifest.
+Claude Code skill fields carry `aif-ext-tools` ownership comments; no global permission
+settings or new `.ai-factory.json` permission map is created. Updates preserve the
+unowned field while its source owner and extension-native declaration stay unchanged.
+Replacement removal or changed replacement defaults use the current source field
+and recompose remaining requests, without retaining the previous source's grants. Other runtimes are
+reported as unsupported. See [Skill Tool Permissions](extensions.md#skill-tool-permissions)
+for syntax, native policy behavior, and the package-default reconciliation limit.
 
 `agentFileSources` records bundled or extension ownership. `loadConfig()` still reads legacy Claude-only `subagentsDir`, `installedSubagents`, and `managedSubagents` keys; new saves use the universal names and backfill sources when bundled inventory or installed extension manifests provide evidence.
 
