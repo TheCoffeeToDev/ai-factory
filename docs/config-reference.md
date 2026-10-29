@@ -118,24 +118,24 @@ pinned source revision and MIT notice.
 
 | Key | Default | Read by skills | Notes |
 |-----|---------|----------------|-------|
-| `paths.description` | `.ai-factory/DESCRIPTION.md` | `/aif-skills-audit`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-docs`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Core project description artifact |
-| `paths.architecture` | `.ai-factory/ARCHITECTURE.md` | `/aif-skills-audit`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-fix`, `/aif-docs`, `/aif-loop`, `/aif-evolve`, `/aif-transfer`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Architecture source of truth |
+| `paths.description` | `.ai-factory/DESCRIPTION.md` | `/aif-skills-audit`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-docs`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup`, `/aif-roadmap-next` | Core project description artifact |
+| `paths.architecture` | `.ai-factory/ARCHITECTURE.md` | `/aif-skills-audit`, `/aif-architecture`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-fix`, `/aif-docs`, `/aif-loop`, `/aif-evolve`, `/aif-transfer`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup`, `/aif-roadmap-next` | Architecture source of truth |
 | `paths.docs` | `docs/` | `/aif-docs` | Detailed docs directory; `README.md` stays fixed in project root |
-| `paths.roadmap` | `.ai-factory/ROADMAP.md` | `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-loop`, `/aif-warmup` | Strategic roadmap artifact |
+| `paths.roadmap` | `.ai-factory/ROADMAP.md` | `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-commit`, `/aif-loop`, `/aif-warmup`, `/aif-plan-overview`, `/aif-roadmap-next` | Strategic roadmap artifact |
 | `paths.research` | `.ai-factory/RESEARCH.md` | `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-improve`, `/aif-fix`, `/aif-warmup` | Regular persisted exploration file; ultra bundles derive `<parent>/research/<english-slug>/` from this path and keep a compatible `RESEARCH.md` inside |
-| `paths.rules_file` | `.ai-factory/RULES.md` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-rules`, `/aif-reference`, `/aif-loop`, `/aif-warmup` | Top-level rules artifact |
-| `paths.plan` | `.ai-factory/PLAN.md` | `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-loop` | Fast-plan path |
-| `paths.plans` | `.ai-factory/plans/` | `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-loop`, `/aif-archive` | Named plans directory: full plans are root `.md` files; ultra plans are direct child directories whose `index.md` contains the stable `<!-- aif:plan-mode:ultra -->` marker plus linked phase files |
-| `paths.fix_plan` | `.ai-factory/FIX_PLAN.md` | `/aif-fix`, `/aif-improve`, `/aif-implement`, `/aif-verify` | Fix-plan path |
+| `paths.rules_file` | `.ai-factory/RULES.md` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-rules`, `/aif-reference`, `/aif-loop`, `/aif-warmup`, `/aif-roadmap-next` | Top-level rules artifact |
+| `paths.plan` | `.ai-factory/PLAN.md` | `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-loop`, `/aif-plan-overview`, `/aif-roadmap-next` | Fast-plan path |
+| `paths.plans` | `.ai-factory/plans/` | `/aif-plan`, `/aif-explore`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-loop`, `/aif-archive`, `/aif-plan-overview`, `/aif-roadmap-next` | Named plans directory: full plans are root `.md` files; ultra plans are direct child directories whose `index.md` contains the stable `<!-- aif:plan-mode:ultra -->` marker plus linked phase files |
+| `paths.fix_plan` | `.ai-factory/FIX_PLAN.md` | `/aif-fix`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-plan-overview`, `/aif-roadmap-next` | Fix-plan path |
 | `paths.security` | `.ai-factory/SECURITY.md` | `/aif-security-checklist` | Security ignore-state artifact |
 | `paths.references` | `.ai-factory/references/` | `/aif-reference` | Knowledge reference storage |
 | `paths.patches` | `.ai-factory/patches/` | `/aif-plan`, `/aif-improve`, `/aif-implement`, `/aif-fix`, `/aif-evolve`, `/aif-transfer` (source config only) | Fix patches and fallback learning context; transfer never writes or copies them |
 | `paths.evolutions` | `.ai-factory/evolutions/` | `/aif-plan`, `/aif-evolve`, `/aif-transfer` | Evolution logs and patch cursor; transfer delegates one approved log but never touches the cursor |
 | `paths.evolution` | `.ai-factory/evolution/` | `/aif-loop` | Reflex loop state root |
 | `paths.specs` | `.ai-factory/specs/` | `/aif-plan`, `/aif-verify` | Specs / archived plan support |
-| `paths.rules` | `.ai-factory/rules/` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-rules`, `/aif-warmup` | Area-rules directory and relative rule resolution base |
+| `paths.rules` | `.ai-factory/rules/` | `/aif-skills-audit`, `/aif-plan`, `/aif-explore`, `/aif-roadmap`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-rules`, `/aif-warmup`, `/aif-roadmap-next` | Area-rules directory and relative rule resolution base |
 | `paths.qa` | `.ai-factory/qa/` | `/aif-qa`, `/aif-qa-check` | QA artifacts root; branch slug is appended as subdirectory (`<paths.qa>/<branch-slug>/`). `/aif-qa` writes `change-summary.md`, `test-plan.md`, and `test-cases.md`; `/aif-qa-check` writes revision/worktree/source/target/replay-bound `qa-check.md`, canonical per-case `browser-replay/TC-NNN.js` scripts, preserved replacements under `browser-replay/history/`, and root-level agent memory. |
-| `paths.archive` | `.ai-factory/archive/` | `/aif-archive`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-improve` | Archive directory for completed plans and roadmap snapshots. `archive/plans/` stores full `.md` plans and ultra bundle directories; `archive/roadmap/` stores dated snapshots. Plan identifiers retain any sequential prefix. |
+| `paths.archive` | `.ai-factory/archive/` | `/aif-archive`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-improve`, `/aif-plan-overview`, `/aif-roadmap-next` | Archive directory for completed plans and roadmap snapshots. `archive/plans/` stores full `.md` plans and ultra bundle directories; `archive/roadmap/` stores dated snapshots. Plan identifiers retain any sequential prefix. |
 
 ### `warmup`
 
@@ -148,10 +148,12 @@ pinned source revision and MIT notice.
 | Key | Default | Read by skills | Notes |
 |-----|---------|----------------|-------|
 | `workflow.explore_mode` | `regular` | `/aif-explore` | Default mode: `regular` or `ultra`; a leading mode token overrides it. `ultra` opts into saving a named research bundle. |
-| `workflow.plan_mode` | `ask` | `/aif-plan` | Default mode: `ask`, `fast`, `full`, or `ultra`; a leading mode token overrides it. `ask` keeps the full/fast question, or fast in non-interactive Handoff mode. |
+| `workflow.plan_mode` | `ask` | `/aif-plan`, `/aif-roadmap-next` | Default mode: `ask`, `fast`, `full`, or `ultra`; a leading mode token overrides it. `ask` keeps the full/fast question, or fast in non-interactive Handoff mode. |
 | `workflow.improve_check` | `false` | `/aif-improve` | Boolean default for findings validation. `+check` enables it; `--no-check` disables it for one invocation; the last explicit flag wins. `--list` always skips validation. |
+| `workflow.roadmap_next_mode` | concrete `workflow.plan_mode`, otherwise `ultra` | `/aif-roadmap-next` | Optional user-owned fast/full/ultra default; explicit argument wins; invalid present value warns and uses ultra |
+| `workflow.roadmap_next_capacity` | `{fast: 1, full: 2, ultra: 3}` | `/aif-roadmap-next` | Optional user-owned mapping of positive integer estimate points per mode; absent/invalid keys use their built-in defaults |
 | `workflow.auto_create_dirs` | `true` | No dedicated built-in reader yet | Present in schema/template; reserved for directory-management behavior |
-| `workflow.plan_id_format` | `slug` | `/aif-plan`, `/aif-implement`, `/aif-improve`, `/aif-explore`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-archive`, `/aif-warmup` | Active values: `slug` (default), `sequential`; `timestamp` and `uuid` are reserved and fall back to `slug`. Sequential writes a full plan as `paths.plans/<NNNN>_<stem>.md` or an ultra bundle as `paths.plans/<NNNN>_<stem>/index.md`. Allocation counts numbered full files and only directories whose `index.md` has the exact ultra marker, uses max + 1, starts at `0001`, caps at `9999`, ignores unrelated numbered directories, and excludes the archive. Moving/deleting the highest active artifact can free its number. Force-disabled when `HANDOFF_BRANCH_PREPARED=1`. `/aif-warmup` only reports the configured preference. |
+| `workflow.plan_id_format` | `slug` | `/aif-plan`, `/aif-implement`, `/aif-improve`, `/aif-explore`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-archive`, `/aif-warmup`, `/aif-plan-overview` | Active values: `slug` (default), `sequential`; `timestamp` and `uuid` are reserved and fall back to `slug`. Sequential writes a full plan as `paths.plans/<NNNN>_<stem>.md` or an ultra bundle as `paths.plans/<NNNN>_<stem>/index.md`. Allocation counts numbered full files and only directories whose `index.md` has the exact ultra marker, uses max + 1, starts at `0001`, caps at `9999`, ignores unrelated numbered directories, and excludes the archive. Moving/deleting the highest active artifact can free its number. Force-disabled when `HANDOFF_BRANCH_PREPARED=1`. `/aif-warmup` only reports the configured preference. |
 | `workflow.analyze_updates_architecture` | `true` | No dedicated built-in reader yet | Present in schema/template; reserved for setup/update workflow control |
 | `workflow.architecture_updates_roadmap` | `true` | No dedicated built-in reader yet | Present in schema/template; reserved for architecture-to-roadmap automation |
 | `workflow.verify_mode` | `normal` | `/aif-verify`, `/aif-warmup` | Default strictness for verification runs; `/aif-warmup` only reports the configured preference |
@@ -183,11 +185,36 @@ Invalid values or types emit `WARN [config]` and fall back to those same default
 preserve existing values and comments and backfill only missing/incomplete keys.
 These settings support the three command options listed above.
 
+#### Roadmap-next defaults
+
+```yaml
+workflow:
+  roadmap_next_mode: full
+  roadmap_next_capacity:
+    fast: 1
+    full: 2
+    ultra: 3
+```
+
+Mode precedence: explicit valid argument → valid `roadmap_next_mode` → concrete
+`plan_mode` → ultra (`ask` is not a concrete mode). An invalid explicit/present
+override warns and uses built-in ultra; it does not silently fall through to another
+configured preference. Invalid/missing capacity entries keep that mode's built-in
+value; a non-mapping value resets all capacity defaults with a warning. Booleans and
+quoted numbers are invalid capacities. S/M/L/XL use 1/2/3/4+ estimated points; XL
+has no known upper bound and is proposed alone. These are scope estimates, not
+execution time, token limits or a guarantee that the plan fits.
+
+Both keys are optional and user-owned. The initial template includes commented
+examples only, so a default next-mode value cannot mask a later `plan_mode` choice.
+Setup reruns preserve scalar/nested settings and comments verbatim rather than
+managing or backfilling these fields. Neither advisor writes config or plan artifacts.
+
 ### `git`
 
 | Key | Default | Read by skills | Notes |
 |-----|---------|----------------|-------|
-| `git.enabled` | `true` | `/aif`, `/aif-plan`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup` | Disables branch/worktree assumptions when false; `/aif-qa` switches to manual change context instead of git diffing; `/aif-warmup` only reports the configured preference |
+| `git.enabled` | `true` | `/aif`, `/aif-plan`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-qa`, `/aif-qa-check`, `/aif-warmup`, `/aif-plan-overview` | Disables branch/worktree assumptions when false; `/aif-qa` switches to manual change context instead of git diffing; `/aif-warmup` only reports the configured preference |
 | `git.base_branch` | `main` with auto-detect fallback | `/aif`, `/aif-plan`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-review`, `/aif-rules-check`, `/aif-qa`, `/aif-warmup` | Target branch for diff, merge, and verification guidance; `/aif-warmup` only reports the configured preference |
 | `git.create_branches` | `true` | `/aif`, `/aif-plan`, `/aif-improve`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-warmup` | Full and ultra plans still exist when false; they skip automatic branch creation; `/aif-warmup` only reports the configured preference |
 | `git.branch_prefix` | `feature/` | `/aif`, `/aif-plan`, `/aif-warmup` | Prefix for auto-created full-plan branches; `/aif-warmup` only reports the configured preference |
@@ -197,8 +224,8 @@ These settings support the three command options listed above.
 
 | Key | Default | Read by skills | Notes |
 |-----|---------|----------------|-------|
-| `rules.base` | `.ai-factory/rules/base.md` | `/aif-skills-audit`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-warmup` | Base project rule file |
-| `rules.<area>` | none | `/aif-skills-audit`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-warmup`; written by `/aif-rules area:<name>` | Named area rule entries like `rules.api`, `rules.frontend`; preserved during `/aif` reruns |
+| `rules.base` | `.ai-factory/rules/base.md` | `/aif-skills-audit`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-warmup`, `/aif-roadmap-next` | Base project rule file |
+| `rules.<area>` | none | `/aif-skills-audit`, `/aif-implement`, `/aif-verify`, `/aif-rules-check`, `/aif-commit`, `/aif-fix`, `/aif-evolve`, `/aif-transfer`, `/aif-warmup`, `/aif-roadmap-next`; written by `/aif-rules area:<name>` | Named area rule entries like `rules.api`, `rules.frontend`; preserved during `/aif` reruns |
 
 ## Skill Matrix
 
@@ -215,6 +242,8 @@ These settings support the three command options listed above.
 |-------|--------------|---------------|--------------------|
 | `/aif-architecture` | Yes | No | `paths.description`, `paths.architecture`, `language.ui`, `language.artifacts` |
 | `/aif-plan` | Yes | No | `paths.*` for planning artifacts, `language.ui`, `language.artifacts`, `language.technical_terms`, `git.*`, `workflow.plan_mode` |
+| `/aif-plan-overview` | Yes | No | Plan/archive/roadmap paths, language, `git.enabled`, `workflow.plan_id_format`; read-only summary |
+| `/aif-roadmap-next` | Yes | No | Roadmap/plan/archive/context/rules paths, language, `workflow.plan_mode`, user-owned `workflow.roadmap_next_*`; read-only recommendation |
 | `/aif-explore` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.research`, `paths.plan`, `paths.plans`, `paths.rules`, `language.ui`, `language.artifacts`, `language.technical_terms`, `workflow.explore_mode` |
 | `/aif-roadmap` | Yes | No | `paths.description`, `paths.architecture`, `paths.rules_file`, `paths.roadmap`, `paths.research`, `paths.rules`, `language.ui`, `language.artifacts` |
 | `/aif-improve` | Yes | No | `paths.plan`, `paths.plans`, `paths.fix_plan`, `paths.research`, `paths.description`, `paths.patches`, `language.ui`, `language.artifacts`, `language.technical_terms`, `git.enabled`, `git.base_branch`, `git.create_branches`, `workflow.improve_check` |

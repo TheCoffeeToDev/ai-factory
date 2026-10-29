@@ -180,6 +180,16 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
 
 ## When to Use What?
 
+Two read-only advisors support the existing loop:
+
+```text
+/aif-roadmap-next → user selects scope → /aif-plan → /aif-plan-overview → /aif-implement
+```
+
+The first recommends ready, unclaimed roadmap work within an estimated mode capacity;
+the second explains the existing plan and planned file changes. Neither mutates
+project artifacts. Planning begins only after the user selects a scope and start.
+
 | Command | Use Case | Creates Branch? | Creates Plan? |
 |---------|----------|-----------------|---------------|
 | `/aif-warmup` | Load essential project context at session start or before a fork | No | No |
@@ -187,6 +197,8 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
 | `/aif-explore ultra` | Durable system analysis with adaptive C4/ADR/dependency coverage | No | No (creates `<parent(paths.research)>/research/<english-slug>/`) |
 | `/aif-grounded` | Evidence-only answers, strict verification, and high-stakes questions where guessing is unacceptable | No | No |
 | `/aif-roadmap` | Strategic planning, milestones, long-term vision | No | `paths.roadmap` (default: `.ai-factory/ROADMAP.md`) |
+| `/aif-roadmap-next` | Choose the next ready roadmap scope, accounting for dependencies and active plans | No | No (optional separate `/aif-plan` handoff after selection) |
+| `/aif-plan-overview` | Explain a fast/full/ultra/fix plan and its declared file map | No | No |
 | `/aif-rules` | Capture project conventions or add area-specific rules before planning and implementation | No | No (`paths.rules_file` or `paths.rules/<area>.md`) |
 | `/aif-plan fast` | Small tasks, quick fixes, experiments | No | `paths.plan` (default: `.ai-factory/PLAN.md`) |
 | `/aif-plan full` | Full features, stories, epics | Optional (`git.enabled` + `git.create_branches`) | `paths.plans/<branch-or-slug>.md` (or `paths.plans/<NNNN>_<branch-or-slug>.md` when `workflow.plan_id_format: sequential` — see [Plan Files](plan-files.md)) |
@@ -302,7 +314,10 @@ High-level project planning. Creates `paths.roadmap` (default: `.ai-factory/ROAD
 Three modes — **fast** (quick single file), **full** (rich single file), and
 **ultra** (a directory whose `index.md` owns scope/progress and whose phase files
 specify implementation in code-level detail). Full and ultra share testing,
-logging, docs, roadmap, branch, and worktree preferences. Sequential IDs put
+logging, docs, roadmap, branch, and worktree preferences. In every mode, an explicitly
+selected milestone group is persisted as `Milestone:` plus `Also completes:` lines;
+completion checks each linked milestone separately, and archived completed plans
+with open roadmap links remain pending reconciliation. Sequential IDs put
 `NNNN_` on the full filename or ultra directory and count active full files plus
 directories whose `index.md` contains the stable ultra marker.
 A leading mode token overrides `workflow.plan_mode`. With its default `ask`,

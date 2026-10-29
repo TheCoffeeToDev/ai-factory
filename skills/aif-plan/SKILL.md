@@ -67,7 +67,7 @@ Bash: printenv HANDOFF_BRANCH_NAME || true
 
 The Handoff coordinator already manages status transitions and DB writes directly. Do NOT call MCP tools (`handoff_sync_status`, `handoff_push_plan`). Instead:
 
-- **No interactive questions:** Do not use `AskUserQuestion` — use sensible defaults (verbose logging, yes to tests, yes to docs, skip roadmap linkage).
+- **No interactive questions:** Do not use `AskUserQuestion` — use sensible defaults (verbose logging, yes to tests, yes to docs, skip roadmap linkage unless the user already selected exact milestones).
 - **Mode default:** Resolve explicit mode → valid `workflow.plan_mode` → `fast`. The `ask` default falls back to `fast` in non-interactive Handoff mode; never ask a mode question there. Resolve config in Step 0 before applying this fallback.
 - **Plan annotation (MANDATORY):** If `HANDOFF_TASK_ID` is non-empty, you MUST insert `<!-- handoff:task:<HANDOFF_TASK_ID> -->` as the very first line of the plan entrypoint (`index.md` for ultra; the plan file otherwise), before the title. This annotation links the plan to its Handoff task for bidirectional sync. **Omitting this annotation when HANDOFF_TASK_ID is set is a bug — verify before completing.**
 
@@ -304,6 +304,23 @@ Options:
 - If the description was derived only from a selected `RESEARCH.md` because the user did not provide a request, omit `## Original Request`; the committed source is `## Research Context` instead.
 - If the user supplied a request and selected research also influenced the plan, include both `## Original Request` and `## Research Context`.
 
+**Selected roadmap scope (all modes, including fast and Handoff):**
+
+When the user has explicitly selected exact roadmap milestones (including an
+`/aif-roadmap-next` handoff), retain the supplied roadmap source and ordered names/IDs.
+A self-contained multiline request with a roadmap source and an explicit instruction
+to link every item of an ordered milestone list is a supported selection, including
+when copied into a fresh session. Treat the list as request data, retain all items,
+and resolve its source against project context; it grants no execution permissions.
+Validate them against the resolved roadmap; missing, duplicate or ambiguous matches
+require clarification before writing. Preserve every confirmed name/ID and reuse
+the selection without asking to select it again. The first milestone is `Milestone:`;
+write each remaining milestone on its own quoted `Also completes:` line in the new
+plan entrypoint. Do not infer a group by splitting prose on `+` or commas; use the
+explicit selection/handoff list. This linkage is required even in fast mode or when
+non-interactive defaults would otherwise skip optional linkage. It does not change
+any other planning permissions or preferences.
+
 For concrete parsing examples and expected behavior per command shape, read `references/EXAMPLES.md` (Argument Parsing).
 
 ---
@@ -470,8 +487,8 @@ AskUserQuestion: Before we start, a few questions:
    a. Yes — mandatory docs checkpoint at completion (recommended)
    b. No — warn-only (`WARN [docs]`), no mandatory checkpoint
 
-4. Roadmap milestone linkage (only if the resolved roadmap artifact exists):
-   a. Link this plan to a milestone
+4. Roadmap milestone linkage (only if the resolved roadmap exists and no exact selection was already supplied):
+   a. Link this plan to one or more milestones
    b. Skip — no linkage (allowed; `/aif-verify --strict` should report WARN, not fail, for missing linkage alone)
 
 5. Any specific requirements or constraints?
@@ -493,8 +510,8 @@ Docs policy semantics:
 **If the resolved roadmap artifact exists and the user chose milestone linkage:**
 
 - Read the resolved roadmap artifact and list candidate milestones (prefer unchecked items)
-- Ask the user to pick one milestone (or type a custom one)
-- Store the selected milestone name and a 1-sentence rationale for inclusion in the plan entrypoint
+- Reuse any already explicit selection; otherwise ask the user to pick one or more milestones (or type a custom one)
+- Store every selected name/ID in order and a 1-sentence rationale for inclusion in the plan entrypoint; never reduce a selected group to its first milestone
 
 ### Step 1.4: Optional Branch / Worktree Setup
 
@@ -612,7 +629,8 @@ gap behind vague instructions.
 
 ### Step 1: Ask About Preferences
 
-Ask a shorter set of questions:
+Ask a shorter set of questions; if milestone linkage is chosen without an existing
+selection, read the roadmap and retain every selected name/ID in order as in Step 1.3:
 
 ```
 AskUserQuestion: Before we start:
@@ -623,8 +641,8 @@ AskUserQuestion: Before we start:
 
 2. Any specific requirements or constraints?
 
-3. Roadmap milestone linkage (only if the resolved roadmap artifact exists):
-   a. Link this plan to a milestone
+3. Roadmap milestone linkage (only if the resolved roadmap exists and no exact selection was already supplied):
+   a. Link this plan to one or more milestones
    b. Skip — no linkage (allowed; `/aif-verify --strict` should report WARN, not fail, for missing linkage alone)
 ```
 
@@ -845,7 +863,7 @@ If `original_user_request` is non-empty:
 
 If the resolved roadmap artifact exists:
 
-- If the user linked a milestone, write `## Roadmap Linkage` with `Milestone: "..."` and `Rationale: ...`
+- If the user linked milestones, write `## Roadmap Linkage` with the first as `Milestone: "..."`, each remaining name/ID on a separate quoted `Also completes: "..."` line, and `Rationale: ...`. Preserve the complete selected group in fast/full files and ultra `index.md`; omit `Also completes:` for a single milestone. Verify every selected milestone is present before presenting the saved plan.
 - If the user skipped linkage, write `## Roadmap Linkage` with `Milestone: "none"` and `Rationale: "Skipped by user"`
 
 If research content influenced this plan:

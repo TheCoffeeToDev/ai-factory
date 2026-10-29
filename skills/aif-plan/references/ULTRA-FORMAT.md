@@ -64,6 +64,7 @@ Created: [date]
 
 ## Roadmap Linkage (optional)
 Milestone: "[milestone name or none]"
+Also completes: "[additional selected milestone]"  # optional; repeat once per remaining milestone
 Rationale: [one sentence]
 
 ## Research Context (optional)

@@ -72,6 +72,31 @@ paths.plans/<plan>/    →  (index tasks [x]) → paths.archive/plans/<plan>/
 
 Roadmap snapshots: `/aif-archive --roadmap` trims closed milestones from `ROADMAP.md` into dated snapshots under `paths.archive/roadmap/`.
 
+## Read-only Plan Overview
+
+`/aif-plan-overview [@path | plan-name | --archived]` explains an existing plan
+without changing it. Discovery is explicit path → branch/sequential full or ultra
+artifact → sole named plan → fast → fix, with ambiguity reported. Names can search
+active and archived roots; automatic discovery excludes archives, including a
+relocated archive nested under the plans directory.
+
+An ultra overview reads the full index and only linked phase titles/Objectives/
+Files to Change sections. Phase bodies and unlinked files are not preloaded.
+Progress comes from task checkboxes in the entrypoint and is not execution evidence.
+Missing sections remain missing rather than inferred from application code.
+
+The file map uses source `Files:` declarations or phase file tables. It preserves
+explicit actions/references, merges duplicate paths, expands `{a,b}`, and leaves
+wildcards/generated placeholders literal. Unknown or multiple actions remain visible.
+The optional stdlib formatter runs with isolated imports and no bytecode writes;
+it reads only JSON stdin and does not inspect/create project files. Flat workflows
+receive it through the existing references asset mechanism. Without Python, the
+same map is rendered manually. Counts describe planned paths, not verified files.
+
+The suggested continuation is implementation, fix ownership, or verification for
+completed tasks; archived plans remain historical. No command is invoked, no plan
+is rewritten, and no Handoff/TaskList/branch state changes occur.
+
 ## Artifact Ownership Quick Map
 
 To avoid ownership conflicts, artifact writers are command-scoped:
@@ -285,6 +310,16 @@ requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
 
 If `.ai-factory/ROADMAP.md` exists, `/aif-plan` may include a `## Roadmap Linkage` section in the plan file.
 This makes milestone alignment explicit for `/aif-implement` completion marking and `/aif-verify` roadmap gates.
+A selected group is saved in fast/full plans and ultra `index.md` as one primary
+`Milestone:` plus one quoted `Also completes:` line per additional milestone. Names/IDs
+are preserved, including commas inside quoted names. `/aif-improve` retains the group;
+implementation and verification assess completion of each linked milestone separately.
+Completed plans with still-open links remain pending reconciliation even after archiving.
+The English linkage/task headings and labels in examples are structural; artifact
+language still applies. Advisors and completion/verification recognize clear
+localized equivalents while preserving exact milestone names/IDs and task IDs.
+Roadmap-next's copyable request carries the source path and every selection in an
+explicit ordered list; joining names into a prose description alone is insufficient.
 
 **Example plan file:**
 

@@ -126,7 +126,7 @@ created solely from `RESEARCH.md` without an explicit user request.
 
 If a relevant configured or marked ultra-bundle `RESEARCH.md` exists, `/aif-plan` may read its `Active Summary` as optional context. It selects at most one source, never by recency alone. It includes `Research Context` only when research content influenced the generated plan. Linked plans include the exact `Source:` path with revision metadata so downstream skills treat the embedded context as committed requirements and warn if live research has drifted.
 
-If the resolved roadmap artifact exists, `/aif-plan` may also capture a `Roadmap Linkage` section (milestone name + brief rationale) to make milestone alignment explicit.
+If the resolved roadmap artifact exists, `/aif-plan` may also capture a `Roadmap Linkage` section (primary milestone, any additional selected milestones, and brief rationale) to make milestone alignment explicit.
 
 Plan prompts and summaries use `language.ui`; saved plan artifacts use `language.artifacts` and preserve commands, paths, branch names, identifiers, config keys, and raw errors according to `language.technical_terms`.
 
@@ -145,6 +145,59 @@ Plan prompts and summaries use `language.ui`; saved plan artifacts use `language
 ```
 
 All `/aif-plan` modes apply a mandatory [meaning-preservation gate](plan-files.md#meaning-preservation-in-requirement-rewrites) when turning requirements into tasks, including requirements from the user request without existing requirement artifacts. The verdict precedes presentation of the plan and any readability assessment.
+
+### `/aif-plan-overview [@path | plan-name | --archived]`
+
+Read-only explanation of an existing fast/full/ultra/fix plan, with its declared
+file map. Automatic discovery matches implementation priority; explicit names also
+search the archive and ambiguous active/archive copies require a choice.
+
+```text
+/aif-plan-overview
+/aif-plan-overview @.ai-factory/plans/0007_feature-auth
+/aif-plan-overview feature-auth
+/aif-plan-overview --archived
+```
+
+Reads single-file plans or ultra `index.md` completely. For linked ultra phases it
+reads only titles, objectives and file-change tables, not implementation bodies.
+Reports supplied settings, task progress/dependencies, decisions/out-of-scope,
+commits, questions and roadmap linkage without inventing missing sections. The
+optional isolated stdlib Python helper formats deduplicated planned paths, expands
+literal braces, preserves phase/task/action references and collapses folder chains;
+manual rendering works without Python. Globs/placeholders remain declarations.
+It does not update checkboxes, sync Handoff, invoke fix, or verify execution. See
+[Plan overview](plan-files.md#read-only-plan-overview).
+
+### `/aif-roadmap-next [fast | full | ultra]`
+
+Recommends the next scope from the roadmap, considering dependencies, active plans
+and coarse S/M/L/XL estimates (1/2/3/4+ points). Default capacity is fast=1,
+full=2, ultra=3. It starts with the first ready unclaimed milestone and adds only
+related ready work that fits. Oversized work is proposed alone with split/ultra
+advice; incomplete dependencies are not treated as completed inside a proposal.
+
+```text
+/aif-roadmap-next
+/aif-roadmap-next fast
+```
+
+Reports the proposal, existing code, exclusions, up to two alternatives and remaining
+milestone statuses. `Milestone:` / `Also completes:` in active plan linkage reserve
+work; completed-but-unreconciled plans, including archived plans, also prevent duplicate recommendations. It
+offers finishing an unfinished plan first. Only an explicit scope/mode/start choice
+can hand off to installed `/aif-plan`; otherwise all artifacts remain read-only.
+Grouped handoff carries a primary `Milestone:` and the remaining `Also completes:`
+names into the new plan in every mode, preserving claims without editing existing plans.
+The copyable request includes the roadmap source and an explicit ordered milestone
+list, so a fresh session receives the same selection. The planner retains the full
+selection; completion and verification check each linked milestone independently.
+Both advisors read clear localized plan headings and labels, including task progress
+and primary/additional milestone linkage in active and archived plans. Ambiguity
+keeps progress/claims uncertain rather than making work ready again.
+Unavailable UI uses plain-text choices; background runs return pending choices.
+See [roadmap-next settings](config-reference.md#roadmap-next-defaults) for fallback
+precedence, user-owned capacities and invalid-value behavior.
 
 ### `/aif-roadmap [check | vision or requirements]`
 Creates or updates a strategic project roadmap:
