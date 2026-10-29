@@ -327,7 +327,7 @@ write_lock "$TEST_TMPDIR" '{
   "skills": {"foo": {"source": "x/y"}}
 }'
 mkdir -p "$TEST_TMPDIR/.claude/skills/foo"
-echo "# leftover" > "$TEST_TMPDIR/.claude/skills/foo/SKILL.md"
+printf '%s\n' '---' 'name: foo' '---' '# leftover' > "$TEST_TMPDIR/.claude/skills/foo/SKILL.md"
 if "$PYTHON" "$HELPER" --skill foo --root "$TEST_TMPDIR" \
    --installed-path .claude/skills/foo > "$TEST_TMPDIR/out" 2>&1; then
     if [[ ! -e "$TEST_TMPDIR/.claude/skills/foo" ]]; then
@@ -384,7 +384,7 @@ write_lock "$TEST_TMPDIR" '{
 }'
 # Real leftover at the SANITIZED upstream path:
 mkdir -p "$TEST_TMPDIR/.claude/skills/convex-best-practices"
-echo "# blocked skill" > "$TEST_TMPDIR/.claude/skills/convex-best-practices/SKILL.md"
+printf '%s\n' '---' 'name: Convex Best Practices' '---' '# blocked skill' > "$TEST_TMPDIR/.claude/skills/convex-best-practices/SKILL.md"
 
 # (a) Synthesized path from logical name. Helper must reject this
 #     absent wrong path by identity rather than silently claim cleanup
@@ -695,7 +695,7 @@ write_lock "$TEST_TMPDIR" '{
 }'
 mkdir -p "$TEST_TMPDIR/.claude/skills/blocked"
 mkdir -p "$TEST_TMPDIR/.claude/skills/neighbor"
-echo "# blocked" > "$TEST_TMPDIR/.claude/skills/blocked/SKILL.md"
+printf '%s\n' '---' 'name: blocked' '---' '# blocked' > "$TEST_TMPDIR/.claude/skills/blocked/SKILL.md"
 echo "# neighbor" > "$TEST_TMPDIR/.claude/skills/neighbor/SKILL.md"
 if "$PYTHON" "$HELPER" --skill blocked --root "$TEST_TMPDIR" \
    --installed-path .claude/skills/blocked > "$TEST_TMPDIR/out" 2>&1; then
@@ -721,7 +721,7 @@ if [[ $IS_WINDOWS -eq 0 ]]; then
   "skills": {"foo": {"source": "x/y"}}
 }'
     mkdir -p "$TEST_TMPDIR/.claude/skills/foo/locked"
-    echo "# blocked" > "$TEST_TMPDIR/.claude/skills/foo/SKILL.md"
+    printf '%s\n' '---' 'name: foo' '---' '# blocked' > "$TEST_TMPDIR/.claude/skills/foo/SKILL.md"
     echo "stay" > "$TEST_TMPDIR/.claude/skills/foo/locked/child"
     # Drop write perms on the parent so children cannot be unlinked.
     chmod 555 "$TEST_TMPDIR/.claude/skills/foo/locked"
@@ -1005,7 +1005,7 @@ import tempfile
 from itertools import product
 
 helper = sys.argv[1]
-for (requested, directory, canonical, removed), name_key in product([
+for (requested, directory, canonical, removed), name_key, prefix in product([
     ('Convex Best Practices', 'convex-best-practices', 'Convex Best Practices',
      {'Convex Best Practices', 'convex-best-practices'}),
     ('convex-best-practices', 'convex-best-practices', 'Convex Best Practices',
@@ -1020,12 +1020,15 @@ for (requested, directory, canonical, removed), name_key in product([
      {'Convex Best Practices', 'convex-best-practices', 'installed-alias'}),
     ('convex-best-practices', 'convex-best-practices', 'safe-one',
      {'convex-best-practices'}),
-], ['name', '"name"', "'name'", r'"na\u006de"']):
+], ['name', '"name"', "'name'", r'"na\u006de"'], [
+    '', 'metadata:\n  name: convex-best-practices\n',
+    'description: |\n  name: convex-best-practices\n',
+]):
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         installed = root / '.claude/skills' / directory
         installed.mkdir(parents=True)
-        (installed / 'SKILL.md').write_text(f'---\n{name_key}: {canonical}\n---\n')
+        (installed / 'SKILL.md').write_text(f'---\n{prefix}{name_key}: {canonical}\n---\n')
         sibling = installed.parent / 'safe-one'
         sibling.mkdir()
         (sibling / 'SKILL.md').write_text('---\nname: safe-one\n---\n')
@@ -1064,6 +1067,31 @@ for name in ['> # folded name', '"unterminated', '&alias Convex Best Practices']
         assert result.returncode == 1, result.stdout
         assert 'cannot establish canonical skill name' in result.stderr, result.stderr
         assert installed.exists() and lock.read_text() == original, 'ambiguous cleanup mutated state'
+# Missing, duplicate, or incomplete top-level identities must also fail closed.
+for frontmatter in [
+    '# no frontmatter\n',
+    '---\nmetadata:\n  name: convex-best-practices\n---\n',
+    '---\nname: Convex Best Practices\nname: Other Skill\n---\n',
+    '---\nname: Convex Best Practices\n"name": Convex Best Practices\n---\n',
+    '---\nname: Convex Best Practices\n# no closing delimiter\n',
+    '---\nname: Convex\n  Best Practices\n---\n',
+    '---\n? name\n: Convex Best Practices\n---\n',
+]:
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        installed = root / '.claude/skills/convex-best-practices'
+        installed.mkdir(parents=True)
+        (installed / 'SKILL.md').write_text(frontmatter)
+        lock = root / 'skills-lock.json'
+        original = json.dumps({'skills': {'Convex Best Practices': {}, 'safe-one': {}}})
+        lock.write_text(original)
+        result = subprocess.run([sys.executable, helper, '--root', tmp,
+                                 '--skill', 'convex-best-practices',
+                                 '--installed-path', str(installed)], capture_output=True, text=True)
+        assert result.returncode == 1, result.stdout
+        assert 'cannot establish canonical skill name' in result.stderr, result.stderr
+        assert (installed / 'SKILL.md').read_text() == frontmatter
+        assert lock.read_text() == original, 'unresolved identity mutated lock state'
 PY
 then
     pass "lock aliases: display/canonical/directory names cleaned; siblings and dry-run preserved"

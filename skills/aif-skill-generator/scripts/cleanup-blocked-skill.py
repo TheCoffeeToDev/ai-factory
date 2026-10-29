@@ -329,21 +329,61 @@ def _sanitize_skill_name(name: str) -> str:
     return re.sub(r'[^a-z0-9._]+', '-', name.lower()).strip('.-')
 
 
+def _read_yaml_name_scalar(value: str, skill_md: Path) -> str:
+    """Decode supported single-line name scalars without a YAML dependency."""
+    value = value.strip()
+    if value.startswith("'"):
+        match = re.fullmatch(r"'((?:[^']|'')*)'(?:[ \t]+#.*)?", value)
+        if match and match.group(1):
+            return match.group(1).replace("''", "'")
+    elif value.startswith('"'):
+        match = re.fullmatch(r'("(?:[^"\\]|\\.)*")(?:[ \t]+#.*)?', value)
+        if match:
+            try:
+                decoded = json.loads(match.group(1))
+                if decoded:
+                    return decoded
+            except ValueError:
+                pass
+    else:
+        scalar = re.split(r'\s+#', value, maxsplit=1)[0].strip()
+        if scalar and scalar[0] not in '!&*|>[{#' and ': ' not in scalar:
+            return scalar
+    raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
+
+
 def _read_skill_frontmatter_name(skill_md: Path):
-    """Read a single-line YAML name scalar, failing closed on unsupported syntax."""
+    """Read one top-level name; incomplete or unsupported identities fail closed."""
     try:
         lines = skill_md.read_text(encoding='utf-8').splitlines()
-    except OSError:
+    except FileNotFoundError as e:
+        if skill_md.parent.exists():
+            raise RuntimeError(f"cannot establish canonical skill name from {skill_md}") from e
+        # An already-absent installation has no frontmatter on idempotent retries.
         return None
+    except (OSError, UnicodeError) as e:
+        raise RuntimeError(f"cannot establish canonical skill name from {skill_md}") from e
     if not lines or lines[0].strip() != '---':
-        return None
+        raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
 
+    canonical = None
+    last_key = None
     for line in lines[1:]:
         stripped = line.strip()
-        if stripped == '---':
-            return None
-        if not stripped or stripped.startswith('#') or ':' not in stripped:
+        if not stripped or stripped.startswith('#'):
             continue
+        if line[0].isspace():
+            # Nested metadata and block-scalar text cannot nominate a root name.
+            # A continued plain name is outside our supported single-line subset.
+            if last_key == 'name':
+                raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
+            continue
+        if stripped == '---':
+            if canonical is not None:
+                return canonical
+            break
+        if ':' not in stripped:
+            raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
         key, value = stripped.split(':', 1)
         key = key.strip()
         if key.startswith('"'):
@@ -356,29 +396,15 @@ def _read_skill_frontmatter_name(skill_md: Path):
             if not match:
                 raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
             key = match.group(1).replace("''", "'")
+        elif key and key[0] in '!&*?{[-':
+            raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
+        last_key = key
         if key != 'name':
             continue
-        value = value.strip()
-        # Comments start at a whitespace-separated # outside quoted scalars.
-        # Keep this helper dependency-free; reject syntax we cannot decode rather
-        # than delete SKILL.md and lose a possible canonical lock identity.
-        if value.startswith("'"):
-            match = re.fullmatch(r"'((?:[^']|'')*)'(?:[ \t]+#.*)?", value)
-            if match:
-                return match.group(1).replace("''", "'")
-        elif value.startswith('"'):
-            match = re.fullmatch(r'("(?:[^"\\]|\\.)*")(?:[ \t]+#.*)?', value)
-            if match:
-                try:
-                    return json.loads(match.group(1))
-                except ValueError:
-                    pass
-        else:
-            scalar = re.split(r'\s+#', value, maxsplit=1)[0].strip()
-            if scalar and scalar[0] not in '!&*|>[{#' and ': ' not in scalar:
-                return scalar
-        raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
-    return None
+        if canonical is not None:
+            raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
+        canonical = _read_yaml_name_scalar(value, skill_md)
+    raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
 
 
 def validate_installed_skill_path(installed: Path, root: Path, skill: str) -> ValidatedInstalledPath:

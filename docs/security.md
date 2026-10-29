@@ -106,6 +106,8 @@ For scan-only review of an already-existing local path, the user may explicitly 
 
 Blocked-skill cleanup removes the scanned directory and its known lock identities (logical name, sanitized name, validated directory name, and matching frontmatter name). Success requires both physical removal and a clean lock file; failures remain incomplete cleanup. Unrelated skill entries are preserved.
 
+For an existing installation, cleanup requires one unambiguous top-level frontmatter `name`; nested metadata and block-scalar text cannot supply it. Missing, duplicate, incomplete, or unsupported name layouts stop cleanup before files or lock entries are removed. Correct the identity metadata before retrying. Retries for an already-absent sanitized install path do not require frontmatter.
+
 ## Internal Self-Scan (AI Factory repo)
 
 Built-in AI Factory skills contain security threat examples in documentation, which can trigger expected false positives.
