@@ -19,7 +19,7 @@ Resolve reference paths beside this installed entrypoint, including flat workflo
 
 ## External skill safety
 
-Before installing any external skill, read [security scanning](references/SETUP-SECURITY.md). Never trust or use an external skill before the automated and semantic checks permit it. Scan only the actual installed external path; never block built-in `aif*` skills. A blocked skill must be removed with its exact installed path and lock entry. Missing Python requires the existing user decision; skipping the automated scan never skips semantic review.
+Before installing any external skill or generating a Learn Mode skill, read [security scanning](references/SETUP-SECURITY.md). Require supported Python 3 and both readable scanner/cleanup helpers before acquisition; missing prerequisites STOP acquisition. Never trust or use an external skill before the automated and semantic checks permit it. Scan only the actual installed external path; never block built-in `aif*` skills. A blocked skill requires cleanup exit 0 and verified removal of its scanned directory and known lock identities; otherwise report incomplete cleanup and STOP.
 
 ### Project Context
 
