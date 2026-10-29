@@ -93,6 +93,10 @@ ai-factory upgrade
 # Audit artifact metadata links (frontmatter id/depends_on/affects/etc.)
 ai-factory audit-artifacts
 
+# Discover declared project commands without executing them
+ai-factory commands
+ai-factory commands . packages/api packages/web --json
+
 # Record an explicitly registered skill invocation and verify its instruction bytes
 ai-factory instructions start --spec composition.json
 ai-factory instructions verify RUN
@@ -138,6 +142,10 @@ Run `ai-factory upgrade` to migrate old bare-named skills (`commit`, `feature`, 
 - For Codex CLI, prepares any required skill-directory migration before extension or native-file updates; unresolved migration conflicts stop the update, including with `--force`
 - For Codex CLI, also refreshes managed `.codex/config.toml` and prints a separate `Config files` status block; local modifications and untracked pre-existing config files are preserved
 - Skills newly available in the package but not previously installed are shown as `skipped` (not auto-installed)
+
+The [project command catalog](configuration.md#project-command-catalog) reads
+supported declarations and optional existing JSON mappings. It never executes
+commands, imports project extensions, installs tooling, or rewrites configuration.
 
 ### Documentation Commands
 

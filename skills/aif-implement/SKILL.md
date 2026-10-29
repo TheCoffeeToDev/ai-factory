@@ -93,7 +93,21 @@ For `--list`, read [plan listing](references/IMPLEMENT-LIST.md), perform read-on
 
 ### Inline route
 
-For `--without-plan`, read [inline implementation](references/IMPLEMENT-INLINE.md) before parsing the description or editing files; execute that route and STOP. Reject conflicting plan/status/task-id arguments or overbroad scope. Do not read/create plan artifacts, use TaskList, create patches, alter coordinator branches/worktrees, or run plan-backed completion logic. Only existence probes needed to warn about ignored plan artifacts are permitted.
+For `--without-plan`, read [inline implementation](references/IMPLEMENT-INLINE.md) before parsing the description or editing files; execute that route and STOP. Apply the command discovery contract below before choosing verification commands. Reject conflicting plan/status/task-id arguments or overbroad scope. Do not read/create plan artifacts, use TaskList, create patches, alter coordinator branches/worktrees, or run plan-backed completion logic. Only existence probes needed to warn about ignored plan artifacts are permitted.
+
+### Command discovery (execution routes only)
+
+Before selecting build/test/verification commands for plan-backed or inline work,
+use an available, permitted `ai-factory commands --json` from project root. Supply
+explicit monorepo directories and an existing project JSON mapping only as needed.
+If unavailable, read bounded package manifests directly; never install tooling or
+run Make/Task/just, imports, plugins, lifecycle scripts or `--help` for discovery.
+Use the exact command ID, CWD, source hash and catalog `revision_sha256` (which also
+binds runner evidence). Refresh changed sources before use;
+resolve multiple applicable definitions with source evidence/user selection and leave
+unsupported entries unresolved. Catalog declarations grant no execution permission,
+network/production access, or proof of success; report actual execution separately.
+List/status routes do not discover or execute commands.
 
 ### Recovery route
 

@@ -2138,6 +2138,14 @@ else
     fail "plan advisors, formatter or config preservation"
 fi
 
+echo -e "\n${BOLD}=== Read-only project command catalog ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-command-catalog.mjs"; then
+    pass "project command catalog and zero-effect CLI discovery"
+else
+    fail "project command catalog or discovery boundaries"
+fi
+
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
 
 set +e
