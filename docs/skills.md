@@ -10,6 +10,39 @@ Config-agnostic built-ins in the current model: `/aif-best-practices`, `/aif-bui
 
 Other skills are intentionally config-agnostic for now and rely on repository context, explicit arguments, or fixed non-configurable paths such as `skill-context`. See [Configuration](configuration.md) for the current schema and its limits.
 
+## Questions Across Runtimes
+
+`AskUserQuestion` and `Questions` in workflow examples describe a user decision;
+they do not promise that either tool exists. Use a question tool only when the
+current session exposes and permits it, following its actual schema and mode
+restrictions. Do not guess tool aliases or assume `questionnaire` is portable.
+A review report's **Questions** section is ordinary report content.
+
+Ask one focused question at a time with labelled options, in `language.ui` when
+configured. Native batching is allowed only for independent questions when the
+tool supports it. Open-ended input uses native free-text support or plain text
+when the schema cannot represent it. If no usable tool exists, ask the same question as plain text
+with numbered choices and accept a free-text answer. Pause actions that depend
+on the answer; independent read-only investigation can continue. An unavailable
+UI does not mean the session is autonomous.
+
+Cancellation, an empty response, a preselected option, and elapsed time are not
+answers or approvals. Reuse decisions already supplied in the conversation.
+Background workers and subagents return questions to their parent rather than
+prompting the user. Explicit non-interactive workflows use their declared
+defaults for optional preferences and report assumptions. Required approvals
+and material scope/behavior choices remain blockers when unresolved; existing
+blocked-result and quality-gate formats are preserved.
+
+`/aif-plan`, `/aif-review`, and `/aif-verify` embed this contract so each can be
+installed independently. Skill authors can copy the shared [question-delivery
+snippet](../skills/aif-skill-generator/references/BEST-PRACTICES.md#runtime-aware-questions)
+into other interactive skills. `/aif-skill-generator` applies this contract before
+mode selection, including URL-based Learn Mode, and embeds it in every generated
+interactive skill. Runtime-specific historical examples such as
+[#62](https://github.com/lee-to/ai-factory/issues/62) do not replace the current
+session's tool definitions.
+
 ## Workflow Skills
 
 These skills form the core development loop. See [Development Workflow](workflow.md) for the full diagram and how they connect.
