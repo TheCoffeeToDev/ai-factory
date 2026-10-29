@@ -124,6 +124,8 @@ Codex additionally persists `configFiles` / `installedConfigFiles` for managed f
 
 AI Factory also stores internal `managedSkills`, `managedAgentFiles`, `managedConfigFiles`, and `agentFileSources` maps, omitted above for brevity. Managed entries keep source/install hashes. Skill entries may additionally carry `renderContextHash`, which detects changed template paths or shared-runtime profiles even when package source bytes are unchanged, and `rawInstalledHash`, which includes injection content and exact file bytes. These fields do not change native agent/config ownership.
 
+Kilo Code follows the same ownership checks when a runtime is deselected: only tracked workflow files matching their saved raw installation receipt are removed. Untracked or modified workflows are preserved. Installing a skill does not delete legacy directories under `.kilocode/skills/`; their names alone do not prove AI Factory ownership or authorize migration.
+
 Removing a runtime deletes its unneeded skills only when they match the saved raw baseline as well as the normalized install hash. Modified skills and legacy entries without a raw baseline are preserved with a warning. Init, update, and upgrade issue a raw baseline only when the complete installed skill matches the rendered package source and verified registered injections. Unknown files, links, injection markers, or unavailable injection sources prevent a new deletion baseline, including after a skill was reinstalled.
 
 `agentFileSources` records bundled or extension ownership. `loadConfig()` still reads legacy Claude-only `subagentsDir`, `installedSubagents`, and `managedSubagents` keys; new saves use the universal names and backfill sources when bundled inventory or installed extension manifests provide evidence.
@@ -326,9 +328,13 @@ arguments override these defaults; absent settings preserve existing behavior.
 See [Command defaults](config-reference.md#command-defaults) for precedence and
 one-invocation overrides.
 
+`/aif-skills-audit` is a read-only config consumer for context paths, scoped rules
+and language. It works without config, introduces no keys, and reports in chat
+unless `--output` names a new report file. See [installed-library auditing](skills.md#aif-skills-audit).
+
 **Current config-aware skills** read `config.yaml` at Step 0. This currently includes:
 - Core workflow and quality commands: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
-- Additional utility commands: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
+- Additional utility commands: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
 
 Other skills are config-agnostic for now and rely on repository context, explicit arguments, or fixed non-configurable paths such as `skill-context`.
 
@@ -405,7 +411,7 @@ Configuration saved to agent's settings file (e.g. `.mcp.json` for Claude Code a
 ### Runtime Format Contract
 
 Source of truth for runtime MCP shapes and wrapper examples:
-[`skills/aif/SKILL.md#MCP Configuration`](../skills/aif/SKILL.md#mcp-configuration)
+[`skills/aif/references/SETUP-MCP.md`](../skills/aif/references/SETUP-MCP.md)
 
 Quick key mapping:
 - Standard MCP runtimes (including Antigravity in `.agents/mcp_config.json`) use `mcpServers.<server>`
@@ -422,7 +428,7 @@ export GITHUB_TOKEN="ghp_your_token"
 export DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 ```
 
-Runtime-specific wrapper examples are intentionally centralized in the `/aif` skill section above to avoid docs drift.
+Runtime-specific wrapper examples are intentionally centralized in the linked `/aif` MCP reference to avoid docs drift. The setup skill reads it only when configuring selected MCP servers.
 
 ## Project Structure
 

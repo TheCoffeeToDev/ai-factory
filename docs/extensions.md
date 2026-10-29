@@ -571,6 +571,8 @@ Extensions are tracked in `.ai-factory.json`:
 
 ## Security Considerations
 
+Extensions can call the opt-in [instruction manifest recorder](instruction-manifests.md) to register invocations, provide composition/dependency declarations, and append load evidence. The recorder does not evaluate dependency conditions or authenticate runtime events. No `context.provider` contract is needed.
+
 - **Extension names are validated** — names containing `..`, absolute paths, or special characters are rejected to prevent path traversal.
 - **Only registered extensions are loaded** — extensions must be listed in `.ai-factory.json` to have their commands executed. A rogue directory in `.ai-factory/extensions/` is ignored.
 - **Shell commands use argument arrays** — `git clone` and `npm pack` use `execFileSync` (no shell interpolation) to prevent command injection via malicious source URLs.

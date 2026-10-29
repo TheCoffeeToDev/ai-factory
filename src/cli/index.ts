@@ -3,6 +3,7 @@ import { initCommand } from './commands/init.js';
 import { updateCommand } from './commands/update.js';
 import { upgradeCommand } from './commands/upgrade.js';
 import { auditArtifactsCommand } from './commands/audit-artifacts.js';
+import { registerInstructionCommands } from './commands/instructions.js';
 import { extensionAddCommand, extensionRemoveCommand, extensionListCommand, extensionUpdateCommand } from './commands/extension.js';
 import { getCurrentVersion, loadConfig } from '../core/config.js';
 import { loadAllExtensions } from '../core/extensions.js';
@@ -45,6 +46,8 @@ program
 const ext = program
   .command('extension')
   .description('Manage extensions');
+
+registerInstructionCommands(program);
 
 ext
   .command('add <source>')

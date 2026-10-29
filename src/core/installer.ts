@@ -23,7 +23,7 @@ import type { AgentFileSource, AgentInstallation, ExtensionRecord, ManagedArtifa
 import { getAgentConfig } from './agents.js';
 import { getExtensionsDir, loadAllExtensions, type ExtensionManifest, type ExtensionAgentFile } from './extensions.js';
 import { applyInjection } from './injections.js';
-import { processSkillTemplates, buildTemplateVars, processTemplate } from './template.js';
+import { buildTemplateVars, processTemplate } from './template.js';
 import { createSkillRenderContext, logSkillTarget, physicalProjectPath, type SkillRenderContext } from './skill-targets.js';
 import { getTransformer, extractFrontmatterName, replaceFrontmatterName } from './transformer.js';
 
@@ -852,6 +852,7 @@ export async function renderSkillFiles(
 ): Promise<Map<string, Buffer>> {
   const files = new Map<string, Buffer>();
   const vars = buildTemplateVars(context.agent);
+  const transformer = getTransformer(context.transformerAgentId ?? agentId);
   async function visit(directory: string, relative: string): Promise<void> {
     for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
       if (!relative && SKILL_INTERNAL_TOP_LEVEL_DIRS.has(entry.name)) continue;
@@ -865,7 +866,11 @@ export async function renderSkillFiles(
           let content = bytes.toString('utf8');
           if (relPath === 'SKILL.md') {
             content = replaceFrontmatterName(content, skillName);
-            content = getTransformer(context.transformerAgentId ?? agentId).transform(skillName, content).content;
+            content = transformer.transform(skillName, content).content;
+          } else if (relPath.startsWith('references/') && relPath !== 'references/GATE-RESULT-CONTRACT.md') {
+            // The shared gate contract defines canonical machine enum values,
+            // not runtime commands; preserve its schema and prose verbatim.
+            content = transformer.transformReference?.(skillName, content) ?? content;
           }
           bytes = Buffer.from(processTemplate(content, vars));
         }
@@ -906,12 +911,14 @@ async function installSkillWithTransformer(
     const targetPath = path.join(projectDir, agentConfig.configDir, result.targetDir, result.targetName);
     await writeTextFile(targetPath, processTemplate(result.content, vars));
 
-    // Copy references directory if it exists in the source skill
-    const sourceRefsDir = path.join(sourceSkillDir, 'references');
-    if (await fileExists(sourceRefsDir)) {
-      const targetRefsDir = path.join(projectDir, agentConfig.configDir, result.targetDir, 'references');
-      await copyDirectory(sourceRefsDir, targetRefsDir);
-      await processSkillTemplates(targetRefsDir, agentConfig);
+    // Flat workflows share references; write only this skill's rendered assets.
+    // Use the same renderer as receipt verification and directory installs.
+    const rendered = await renderSkillFiles(sourceSkillDir, skillName, agentId, context);
+    for (const [relative, bytes] of rendered) {
+      if (!relative.startsWith('references/')) continue;
+      const target = path.join(projectDir, agentConfig.configDir, result.targetDir, relative);
+      await ensureDir(path.dirname(target));
+      await fs.writeFile(target, bytes);
     }
   } else {
     const targetSkillDir = path.join(projectDir, skillsDir, result.targetDir);
@@ -1235,6 +1242,19 @@ export async function removeOwnedSkills(
       if (lstatSync(directory).isSymbolicLink()) throw new Error(`Linked managed skill cannot be removed: ${directory}`);
       const files = await listFilesRecursive(directory);
       const directories = new Set([directory]);
+      // Receipts cover files, so source-owned empty subdirectories have no file
+      // parent from which to discover them. Include them before bottom-up rmdir.
+      async function collectDirectories(current: string): Promise<void> {
+        for (const entry of await fs.readdir(current, { withFileTypes: true })) {
+          const child = path.join(current, entry.name);
+          if (entry.isSymbolicLink()) throw new Error(`Linked skill entry cannot be removed: ${child}`);
+          if (entry.isDirectory()) {
+            directories.add(child);
+            await collectDirectories(child);
+          }
+        }
+      }
+      await collectDirectories(directory);
       for (const file of files) {
         if (lstatSync(file).isSymbolicLink()) throw new Error(`Linked skill file cannot be removed: ${file}`);
         let parent = path.dirname(file);

@@ -22,6 +22,7 @@ Generate, maintain, and improve project documentation following a landing-page R
 4. **Navigation.** Every doc file in the resolved docs directory has a header line with prev/next links following the Documentation table order: `[← Previous Page](prev.md) · [Back to README](<docs-to-readme-link>) · [Next Page →](next.md)`. First page has no prev link; last page has no next link. Every page ends with a "See Also" section linking to 2-3 related pages.
 5. **Cross-links use relative paths.** From README: link to the resolved docs directory path (for example `docs/workflow.md` by default). Between doc pages in the same directory: `workflow.md`.
 6. **Scannable.** Use tables, bullet lists, and code blocks. Avoid long paragraphs. Users scan, they don't read.
+7. **Meaning before readability.** Any editorial rewrite of requirements must pass the meaning-preservation gate in `references/REVIEW-CHECKLISTS.md` before readability review. Preserve obligations, permissions, conditions, and uncertainty; clearer wording grants no additional authority or confidence.
 
 ## Workflow
 
@@ -497,7 +498,7 @@ Show tree of generated files and `open docs-html/index.html` hint.
 
 **Skip this step** only when "Generate HTML only" was chosen — no content was modified, nothing to review.
 
-Read every generated/modified file and evaluate it against both checklists from `references/REVIEW-CHECKLISTS.md`. Two checklists: **Technical Accuracy** and **Readability & Completeness**.
+Read every generated/modified file and evaluate it using `references/REVIEW-CHECKLISTS.md`: **Meaning Preservation** first for requirement rewrites, then **Technical Accuracy** and **Readability & Completeness**. Compare rewritten requirements with their original source, including content moved or split between files. Report an explicit `Meaning preservation: PASS` or `FAIL` before readability results; use `N/A — no requirements rewritten` only when applicable. On failure, restore or repair the affected rewrite and repeat the comparison before proceeding. Missing source or unresolved ambiguity is a failure, not permission to guess.
 
 Fix any issues found before presenting the result to the user. Display results as a compact table with ✅/❌/⚠️ status per item.
 

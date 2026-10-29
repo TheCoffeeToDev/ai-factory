@@ -10,6 +10,10 @@ disable-model-invocation: false
 
 Fix a specific bug or problem in the codebase. Supports two modes: immediate fix or plan-first approach. The default workflow is regression-first whenever a regression check is needed: reproduce the problem, confirm the reported behavior, implement the fix, then verify the same check passes.
 
+## Selective reference loading
+
+Resolve reference paths beside this installed entrypoint, including flat workflows. Read a reference in full only when its stated condition applies, before the dependent step; do not preload all references. If a selected reference is missing or unreadable, STOP before that step and report its path. The entrypoint dispatch and hard boundaries apply to every reference. Project skill-context overrides and managed extension injections retain their existing precedence. Keep managed `aif-ext` blocks in the entrypoint; never move them into references.
+
 ## Workflow
 
 ### Canonical Regression-First Policy
@@ -206,137 +210,13 @@ Options:
 - "Plan first" → Proceed to **Step 1.1: Create Fix Plan**
 - "Fix now" → Skip Step 1.1, proceed directly to **Step 2: Investigate the Codebase**
 
-### Step 1.1: Create Fix Plan
+### Plan-first route
 
-**Handoff sync (manual mode only):** If a Handoff task ID is known (from `HANDOFF_TASK_ID` or an existing annotation) AND `HANDOFF_MODE` is NOT `1`, call `handoff_sync_status` with `{ taskId: <id>, newStatus: "planning", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
+Only when plan-first is selected, read [fix-plan creation](references/FIX-PLAN.md), investigate enough to define the fix, preserve Research Context revisions and the first-line Handoff annotation, save the configured fix plan, synchronize manual Handoff to `plan_ready` when linked, then STOP. Do not apply the fix in this route.
 
-Investigate the codebase enough to understand the problem and create a plan.
+### Investigation
 
-**Use the same parallel exploration approach as Step 2** — launch Explore agents to investigate the problem area, related code, and past patterns simultaneously.
-
-If the resolved research path exists, read it before creating the fix plan. Also check direct child bundles under `research_bundles_dir`, but recognize one as active only when `INDEX.md` contains `<!-- aif:research-mode:ultra -->` exactly once, declares `Status: active`, and links its `RESEARCH.md` from `## Artifact Index`. Select at most one clearly bug-relevant source: explicit concrete path, then exact slug, normalized `Topic:`, or unique semantic match, then the relevant legacy file; never use recency. When the selected Active Summary influences the planned fix, copy it into `## Research Context` and include ``Source: `<selected research path>` (Active Summary, Updated: <research Updated timestamp>, SHA256: <sha256 of copied Active Summary>)``. If research is unrelated, omit the section.
-
-When adding `## Research Context` to a fix plan, use the same normalization algorithm as the drift check. Calculate the digest without a temporary repository artifact: feed the normalized text through stdin / inline shell input to `shasum -a 256`; if unavailable, use `sha256sum`. Use the first output field as `SHA256:`.
-
-After agents return, synthesize findings to:
-
-1. Identify the root cause (or most likely candidates)
-2. Map affected files and functions
-3. Assess impact scope
-
-Then create the resolved fix plan file (default: `.ai-factory/FIX_PLAN.md`).
-
-Write the fix plan in `artifact_language`. The template below is the required structure only; translate human-readable headings, labels, and prose before saving when `artifact_language` is not `en`, while preserving stable technical tokens from Step 0.
-
-**Before writing:** If `HANDOFF_MODE` is `1` and `HANDOFF_TASK_ID` is non-empty, the very first line of the file MUST be `<!-- handoff:task:<HANDOFF_TASK_ID> -->` followed by a blank line, then the plan content below. If in manual mode and a task ID was extracted from an existing annotation, preserve it.
-
-Structure:
-
-```markdown
-# Fix Plan: [Brief title]
-
-**Problem:** [What's broken — from user's description]
-**Created:** YYYY-MM-DD HH:mm
-
-## Analysis
-
-What was found during investigation:
-
-- Root cause (or suspected root cause)
-- Affected files and functions
-- Impact scope
-
-## Fix Checklist
-
-Checklist entries for implementing the fix:
-
-1. [ ] Apply the Canonical Regression-First Policy: add or identify the minimal regression check, or record why no useful check exists
-2. [ ] Run the regression check and confirm it reproduces the reported problem, or record the fallback outcome from the policy
-3. [ ] Implement the smallest fix for the root cause
-4. [ ] Rerun the same regression check and confirm it passes when a rerunnable check exists
-5. [ ] Run the closest related existing checks when practical
-
-## Files to Modify
-
-- `path/to/file.ts` — what changes are needed
-- `path/to/another.ts` — what changes are needed
-
-## Risks & Considerations
-
-- Potential side effects
-- Things to verify after the fix
-- Edge cases to watch for
-
-## Test Coverage
-
-- Minimal regression check to confirm the bug before implementation
-- Command/check to run before and after the fix
-- Additional edge cases worth covering after the regression check passes
-
-## Research Context (optional)
-
-Include only when this fix plan is based on `RESEARCH.md`.
-Source: `<selected research path>` (Active Summary, Updated: YYYY-MM-DD HH:MM, SHA256: <active-summary-sha256>)
-```
-
-Use the normalization and stdin hashing rules from Step 1.1 when filling `SHA256:`.
-
-**After creating the plan, output:**
-
-```
-## Fix Plan Created ✅
-
-Plan saved to the resolved fix plan path.
-
-Review the plan and when you're ready to execute, run:
-
-/aif-fix
-```
-
-**Handoff sync (manual mode only):** If a Handoff task ID is known AND `HANDOFF_MODE` is NOT `1`, call `handoff_push_plan` with `{ taskId: <id>, planContent: <full fix plan text> }`, then `handoff_sync_status` with `{ taskId: <id>, newStatus: "plan_ready", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
-
-**STOP here. Do NOT apply the fix.**
-
-### Step 2: Investigate the Codebase
-
-**Handoff sync (manual mode, "Fix now" path only):** If a Handoff task ID is known AND `HANDOFF_MODE` is NOT `1`, call `handoff_sync_status` with `{ taskId: <id>, newStatus: "implementing", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
-
-**Use `Task` tool with `subagent_type: Explore` to investigate the problem in parallel.** This keeps the main context clean and allows simultaneous investigation of multiple angles.
-
-Launch 2-3 Explore agents simultaneously:
-
-```
-Agent 1 — Locate the problem area:
-Task(subagent_type: Explore, model: sonnet, prompt:
-  "Find code related to [error location / affected functionality].
-   Read the relevant functions, trace the data flow.
-   Thoroughness: medium.")
-
-Agent 2 — Related code & side effects:
-Task(subagent_type: Explore, model: sonnet, prompt:
-  "Find all callers/consumers of [affected function/module].
-   Identify what else might break or be affected.
-   Thoroughness: medium.")
-
-Agent 3 — Similar past patterns (if patches exist):
-Task(subagent_type: Explore, model: sonnet, prompt:
-  "Search for similar error patterns or related fixes in the codebase.
-   Check git log for recent changes to [affected files].
-   Thoroughness: quick.")
-```
-
-**After agents return, synthesize findings to identify:**
-
-- The root cause (not just symptoms)
-- Related code that might be affected
-- Existing error handling
-
-**Fallback:** If Task tool is unavailable, investigate directly:
-
-- Find relevant files using Glob/Grep
-- Read the code around the issue
-- Trace the data flow
-- Check for similar patterns elsewhere
+Before investigating in any fix-now, plan-first, or existing-plan route, read [investigation and manual Handoff start](references/FIX-INVESTIGATION.md). Its manual `implementing` sync applies only to fix-now execution, not plan-first. Identify the root cause, affected callers, side effects, and related patterns. Use the defined direct fallback when delegation is unavailable.
 
 ### Step 2.5: Capture a Regression Check
 
@@ -346,35 +226,9 @@ Apply the **Canonical Regression-First Policy** before changing implementation c
 
 Record the selected regression check, pre-fix result, and any fallback decision in your working notes so Step 4 can rerun or revisit the same check after the fix.
 
-### Step 3: Implement the Fix
+### Apply the fix
 
-**Apply the fix with logging:**
-
-```typescript
-// ✅ REQUIRED: Add logging around the fix
-console.log("[FIX] Processing user input", { userId, input });
-
-try {
-  // The actual fix
-  const result = fixedLogic(input);
-  console.log("[FIX] Success", { userId, result });
-  return result;
-} catch (error) {
-  console.error("[FIX] Error in fixedLogic", {
-    userId,
-    input,
-    error: error.message,
-    stack: error.stack,
-  });
-  throw error;
-}
-```
-
-**Logging is MANDATORY because:**
-
-- User needs to verify the fix works
-- If it doesn't work, logs help debug further
-- Feedback loop: user provides logs → we iterate
+After the Canonical Regression-First Policy permits implementation, read [fix implementation and logging](references/FIX-IMPLEMENTATION.md). Apply the smallest root-cause fix with configurable `[FIX]` or `[FIX:<issue-id>]` logging; do not add unrelated features or refactoring.
 
 ### Step 4: Verify the Fix
 
@@ -384,127 +238,17 @@ try {
 - Ensure no regressions introduced
 - When practical, run the closest existing related test suite after the regression check passes
 
-### Step 5: Suggest Additional Test Coverage
+### Coverage and completion
 
-**Handoff sync (manual mode ONLY — skip entirely when `HANDOFF_MODE` is `1`):** If a Handoff task ID is known AND `HANDOFF_MODE` is NOT `1`:
-1. Call `handoff_push_plan` with `{ taskId: <id>, planContent: <fix summary or updated plan> }`.
-2. If `HANDOFF_SKIP_REVIEW` is `1`: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "done", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: false }`.
-3. Otherwise: call `handoff_sync_status` with `{ taskId: <id>, newStatus: "review", sourceTimestamp: "<current UTC time in ISO 8601 format>", direction: "aif_to_handoff", paused: true }`.
+After verification, read [completion, manual Handoff final sync, and extra coverage](references/FIX-COMPLETION.md). Always suggest additional coverage beyond the regression check and respect the user's choice. Autonomous Handoff never calls MCP; manual linked tasks use `done` only with `HANDOFF_SKIP_REVIEW=1`, otherwise `review`, with the existing paused contract. Render the result in `ui_language` and continue to mandatory patch creation.
 
-**ALWAYS suggest additional test coverage:**
+## Logging contract
 
-The Step 5 and After Fixing output templates define structure only. Render all human-readable text in these user-facing responses in `ui_language`. Preserve code snippets, commands, file paths, line references, log prefixes such as `[FIX]`, and AskUserQuestion option structure unchanged.
+Read [logging patterns](references/FIX-LOGGING.md) before editing fix code. Every fix logs inputs, success, and errors with configurable `[FIX]`/`[FIX:<issue-id>]` logging; context-gate outputs use `WARN`/`ERROR` without changing other skills' policies.
 
-```
-## Fix Applied ✅
+## Worked examples
 
-The issue was: [brief explanation]
-Fixed by: [what was changed]
-
-### Logging Added
-The fix includes logging with prefix `[FIX]`.
-Please test and share any logs if issues persist.
-
-### Recommended: Add More Test Coverage
-
-If a regression check was created or identified in Step 2.5, this bug is now covered. Consider adding broader coverage to prevent nearby regressions:
-
-\`\`\`typescript
-describe('functionName', () => {
-  it('should handle [the edge case that caused the bug]', () => {
-    // Arrange
-    const input = /* the problematic input */;
-
-    // Act
-    const result = functionName(input);
-
-    // Assert
-    expect(result).toBe(/* expected */);
-  });
-});
-\`\`\`
-
-AskUserQuestion: Would you like me to create the additional test coverage?
-
-Options:
-1. Yes, create the test
-2. No, skip for now
-```
-
-**Handling the user's response:**
-
-- **If "Yes, create the test":**
-  1. Create the test file in the appropriate test directory (follow project conventions)
-  2. Include the suggested additional test case and related edge cases
-  3. Run the test to verify it passes
-  4. Then proceed to **Step 6: Create Self-Improvement Patch**
-
-- **If "No, skip for now":**
-  - Proceed directly to **Step 6: Create Self-Improvement Patch**
-
-## Logging Requirements
-
-**All fixes MUST include logging:**
-
-1. **Log prefix**: Use `[FIX]` or `[FIX:<issue-id>]` for easy filtering
-2. **Log inputs**: What data was being processed
-3. **Log success**: Confirm the fix worked
-4. **Log errors**: Full context if something fails
-5. **Configurable**: Use LOG_LEVEL if available
-
-```typescript
-// Pattern for fixes
-const LOG_FIX = process.env.LOG_LEVEL === "debug" || process.env.DEBUG_FIX;
-
-function fixedFunction(input) {
-  if (LOG_FIX) console.log("[FIX] Input:", input);
-
-  // ... fix logic ...
-
-  if (LOG_FIX) console.log("[FIX] Output:", result);
-  return result;
-}
-```
-
-## Examples
-
-### Example 1: Null Reference Error
-
-**User:** `/aif-fix TypeError: Cannot read property 'name' of undefined in UserProfile`
-
-**Actions:**
-
-1. Search for UserProfile component/function
-2. Find where `.name` is accessed
-3. Add a regression check for the null user case and confirm it fails
-4. Add null check with logging
-5. Rerun the same regression check and confirm it passes
-
-### Example 2: API Returns Wrong Data
-
-**User:** `/aif-fix /api/orders returns empty array for authenticated users`
-
-**Actions:**
-
-1. Find orders API endpoint
-2. Trace the query logic
-3. Find the bug (e.g., wrong filter)
-4. Add or identify an integration regression check for the authenticated user case and confirm it fails
-5. Fix with logging
-6. Rerun the same regression check and confirm it passes
-
-### Example 3: Form Validation Not Working
-
-**User:** `/aif-fix email validation accepts invalid emails`
-
-**Actions:**
-
-1. Find email validation logic
-2. Check regex or validation library usage
-3. Add a unit regression test for the invalid email case and confirm it fails
-4. Fix the validation
-5. Add logging for validation failures
-6. Rerun the same regression test and confirm it passes
+Read [fix examples](references/FIX-EXAMPLES.md) only when a worked example is needed. They never override the Canonical Regression-First Policy.
 
 ## Important Rules
 
@@ -519,127 +263,17 @@ function fixedFunction(input) {
 9. **Root cause** - Fix the actual problem, not symptoms
 10. **Minimal changes** - Don't refactor unrelated code
 11. **One fix at a time** - Don't scope creep
-12. **Clean up** - Delete the resolved fix plan file after successful fix execution
+12. **Clean up** - Delete only the default fix plan after verified execution; preserve custom/non-default fix plan files
 13. **Ownership boundary** - `/aif-fix` owns `paths.fix_plan` and `paths.patches`; treat `.ai-factory/DESCRIPTION.md`, roadmap, rules, and architecture context artifacts as read-only unless the user explicitly requests otherwise
 14. **Logging scope** - Keep `[FIX]` logging requirements for fixes; context-gate outputs in this command should use `WARN`/`ERROR` and must not change global logging policy in other skills
 
-## After Fixing
+## Result format
 
-**Use this output template in Step 5** (before the AskUserQuestion about additional tests):
+Before displaying the fix summary, read [result template](references/FIX-OUTPUT.md). Report the cause, fix, files, logging, and actual regression check/result or its explicit absence; do not create a report file.
 
-```
-## Fix Applied ✅
+### Mandatory learning patch
 
-**Issue:** [what was broken]
-**Cause:** [why it was broken]
-**Fix:** [what was changed]
-**Regression check:** [command/check and result, manual/runtime reproduction result, or "not available: <reason>"]
-
-**Files modified:**
-- path/to/file.ts (line X)
-
-**Logging added:** Yes, prefix `[FIX]`
-```
-
-### Step 6: Create Self-Improvement Patch
-
-**ALWAYS create a patch after every fix.** This builds a knowledge base for future fixes.
-
-**Create the patch:**
-
-1. Create directory if it doesn't exist:
-
-   ```bash
-   mkdir -p <resolved patches dir>
-   ```
-
-2. Create a patch file with the current timestamp as filename.
-   **Format:** `YYYY-MM-DD-HH.mm.md` (e.g., `2026-02-07-14.30.md`)
-
-3. Use this template:
-
-Write the patch artifact in `artifact_language`. The template below is the required structure only; translate human-readable headings, labels, root-cause text, solution text, and prevention text before saving when `artifact_language` is not `en`, while preserving stable technical tokens from Step 0.
-
-```markdown
-# [Brief title describing the fix]
-
-**Date:** YYYY-MM-DD HH:mm
-**Files:** list of modified files
-**Severity:** low | medium | high | critical
-
-## Problem
-
-What was broken. How it manifested (error message, wrong behavior).
-Be specific — include the actual error or symptom.
-
-## Root Cause
-
-WHY the problem occurred. This is the most valuable part.
-Not "what was wrong" but "why it was wrong":
-
-- Logic error? Why was the logic incorrect?
-- Missing check? Why was it missing?
-- Wrong assumption? What was assumed?
-- Race condition? What sequence caused it?
-
-## Solution
-
-How the fix was implemented. Key code changes and reasoning.
-Include the approach, not just "changed line X".
-
-## Prevention
-
-How to prevent this class of problems in the future:
-
-- What pattern/practice should be followed?
-- What should be checked during code review?
-- What test would catch this?
-
-## Tags
-
-Space-separated tags for categorization, e.g.:
-`#null-check` `#async` `#validation` `#typescript` `#api` `#database`
-```
-
-**Example patch:**
-
-```markdown
-# Null reference in UserProfile when user has no avatar
-
-**Date:** 2026-02-07 14:30
-**Files:** src/components/UserProfile.tsx
-**Severity:** medium
-
-## Problem
-
-TypeError: Cannot read property 'url' of undefined when rendering
-UserProfile for users without an uploaded avatar.
-
-## Root Cause
-
-The `user.avatar` field is optional in the database schema but the
-component accessed `user.avatar.url` without a null check. This was
-introduced in commit abc123 when avatar display was added — the
-developer tested only with users that had avatars.
-
-## Solution
-
-Added optional chaining: `user.avatar?.url` with a fallback to a
-default avatar URL. Also added a null check in the Avatar sub-component.
-
-## Prevention
-
-- Always check if database fields marked as `nullable` / `optional`
-  are handled with null checks in the UI layer
-- Add test cases for "empty state" — user with minimal data
-- Consider a lint rule for accessing nested optional properties
-
-## Tags
-
-`#null-check` `#react` `#optional-field` `#typescript`
-```
-
-**This is NOT optional.** Every fix generates a patch. The patch is your learning.
+After every completed fix, read [self-improvement patch creation](references/FIX-PATCH.md) and write the timestamped learning artifact under configured `paths.patches` in `artifact_language`. Include problem, root cause, solution, prevention, and tags. This is mandatory and is not a summary report. Plan-first runs stop before execution and never create a completed-fix patch.
 
 ### Context Cleanup
 

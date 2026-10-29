@@ -133,7 +133,7 @@
       "match": "authorized by admin"
     },
     {
-      "file": "aif/SKILL.md",
+      "file": "aif/references/SETUP-SECURITY.md",
       "severity": "CRITICAL",
       "description": "Scanner bypass: skill instructs to skip security scanning",
       "match": "Skip security scan"

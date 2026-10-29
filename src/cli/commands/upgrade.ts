@@ -43,7 +43,8 @@ import { prepareSkillTargets, recoverSkillMigration, withSkillProjectLock } from
 import { collectReplacedSkills, composeInstalledExtensionSkills } from '../../core/extension-ops.js';
 
 // Old v1 skill directory names that were renamed to aif-* in v2
-// Canonical 30 package skills in v2
+// Historical v2 ownership set for legacy upgrade cleanup.
+// New skills must not expand which legacy names can be deleted.
 const CANONICAL_V2_SKILL_NAMES = [
   'aif',
   'aif-architecture',

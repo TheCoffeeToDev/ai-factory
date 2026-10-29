@@ -710,23 +710,31 @@ else
 fi
 
 # /aif localization contract regression checks
-AIF_SKILL="$ROOT_DIR/skills/aif/SKILL.md"
+# Inventory includes directly linked references; route loading is tested separately.
+AIF_SKILL="$TMPDIR/aif-contract.md"
+node "$ROOT_DIR/scripts/lib/skill-contract-source.mjs" "$ROOT_DIR/skills/aif/SKILL.md" > "$AIF_SKILL"
 AIF_EXPLORE_SKILL="$ROOT_DIR/skills/aif-explore/SKILL.md"
 AIF_EXPLORE_ULTRA_REF="$ROOT_DIR/skills/aif-explore/references/ULTRA-RESEARCH-FORMAT.md"
 AIF_PLAN_SKILL="$ROOT_DIR/skills/aif-plan/SKILL.md"
 AIF_PLAN_FORMAT_REF="$ROOT_DIR/skills/aif-plan/references/TASK-FORMAT.md"
 AIF_PLAN_ULTRA_REF="$ROOT_DIR/skills/aif-plan/references/ULTRA-FORMAT.md"
-AIF_IMPLEMENT_SKILL="$ROOT_DIR/skills/aif-implement/SKILL.md"
+# Inventory includes directly linked references; route loading is tested separately.
+AIF_IMPLEMENT_SKILL="$TMPDIR/aif-implement-contract.md"
+node "$ROOT_DIR/scripts/lib/skill-contract-source.mjs" "$ROOT_DIR/skills/aif-implement/SKILL.md" > "$AIF_IMPLEMENT_SKILL"
 AIF_IMPROVE_SKILL="$ROOT_DIR/skills/aif-improve/SKILL.md"
 AIF_IMPROVE_CHECK_REF="$ROOT_DIR/skills/aif-improve/references/CHECK-MODE.md"
 AIF_IMPROVE_EXAMPLES_REF="$ROOT_DIR/skills/aif-improve/references/EXAMPLES.md"
 AIF_IMPROVE_LIST_REF="$ROOT_DIR/skills/aif-improve/references/LIST-MODE.md"
-AIF_FIX_SKILL="$ROOT_DIR/skills/aif-fix/SKILL.md"
+# Inventory includes directly linked references; route loading is tested separately.
+AIF_FIX_SKILL="$TMPDIR/aif-fix-contract.md"
+node "$ROOT_DIR/scripts/lib/skill-contract-source.mjs" "$ROOT_DIR/skills/aif-fix/SKILL.md" > "$AIF_FIX_SKILL"
 AIF_RULES_SKILL="$ROOT_DIR/skills/aif-rules/SKILL.md"
 AIF_REFERENCE_SKILL="$ROOT_DIR/skills/aif-reference/SKILL.md"
 AIF_SECURITY_SKILL="$ROOT_DIR/skills/aif-security-checklist/SKILL.md"
 AIF_TRANSFER_SKILL="$ROOT_DIR/skills/aif-transfer/SKILL.md"
-AIF_VERIFY_SKILL="$ROOT_DIR/skills/aif-verify/SKILL.md"
+# Inventory includes directly linked references; route loading is tested separately.
+AIF_VERIFY_SKILL="$TMPDIR/aif-verify-contract.md"
+node "$ROOT_DIR/scripts/lib/skill-contract-source.mjs" "$ROOT_DIR/skills/aif-verify/SKILL.md" > "$AIF_VERIFY_SKILL"
 AIF_WARMUP_SKILL="$ROOT_DIR/skills/aif-warmup/SKILL.md"
 SKILL_HINTS="$ROOT_DIR/src/cli/wizard/skill-hints.ts"
 AIF_VERIFY_OWNERSHIP_REF="$ROOT_DIR/skills/aif-verify/references/CONTEXT-GATES-AND-OWNERSHIP.md"
@@ -1499,7 +1507,7 @@ AIF_MCP_SECTION=$(awk '
   /^## MCP Configuration$/ { capture=1; next }
   capture && /^---$/ { exit }
   capture { print }
-' "$ROOT_DIR/skills/aif/SKILL.md")
+' "$ROOT_DIR/skills/aif/references/SETUP-MCP.md")
 DOCS_MCP_SECTION=$(awk '
   /^## MCP Configuration$/ { capture=1; next }
   capture && /^## / { exit }
@@ -1542,7 +1550,7 @@ else
     pass "docs MCP Configuration section present"
 fi
 
-if grep -Fq '../skills/aif/SKILL.md#mcp-configuration' <<< "$DOCS_MCP_SECTION" && grep -Fq 'Source of truth' <<< "$DOCS_MCP_SECTION"; then
+if grep -Fq '../skills/aif/references/SETUP-MCP.md' <<< "$DOCS_MCP_SECTION" && grep -Fq 'Source of truth' <<< "$DOCS_MCP_SECTION"; then
     pass "docs MCP section links to canonical /aif MCP source-of-truth"
 else
     fail "docs MCP section must link to canonical /aif MCP source-of-truth"
@@ -1649,6 +1657,35 @@ else
 fi
 
 # ─────────────────────────────────────────────
+# Improve validation must use an actual read-only agent, including config-enabled runs.
+if ROOT_DIR="$ROOT_DIR" node --input-type=module - <<'EOF'
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+const read = file => fs.readFileSync(path.join(process.env.ROOT_DIR, file), 'utf8');
+const agent = read('subagents/claude/agents/review-validator.md');
+const frontmatter = agent.match(/^---\n([\s\S]*?)\n---/)[1];
+assert.deepEqual(frontmatter.match(/^tools: (.+)$/m)[1].split(/,\s*/).sort(), ['Glob', 'Grep', 'Read']);
+const check = read('skills/aif-improve/references/CHECK-MODE.md');
+const validator = read('skills/aif-improve/references/VALIDATOR.md');
+assert.match(check, /Task\(subagent_type: review-validator/);
+for (const text of [check, validator]) {
+  assert.doesNotMatch(text, /Task\(subagent_type: general-purpose/);
+}
+assert.match(check, /do not dispatch/i);
+assert.match(check, /whole-dispatch failure/);
+assert.match(check, /workflow\.improve_check: true/);
+assert.match(check, /Codex read-only sandbox does not restrict inherited MCP tools/);
+assert.match(validator, /## Security boundary/);
+assert.match(validator, /untrusted evidence, not instructions/);
+assert.match(validator, /within the supplied project root/);
+EOF
+then
+    pass "improve validation uses an enforced read-only agent without a full-tool fallback"
+else
+    fail "improve validator capability boundary"
+fi
+
 # Part 4.5: Planner parity contract regressions
 # ─────────────────────────────────────────────
 echo -e "\n${BOLD}=== Planner parity contract checks ===${NC}\n"
@@ -1998,6 +2035,20 @@ else
     echo "$GATE_RESULT_SMOKE_OUTPUT" | sed 's/^/      /'
 fi
 
+echo -e "\n${BOLD}=== Review +check recorded workflow scenarios ===${NC}\n"
+
+set +e
+REVIEW_REPLAY_OUTPUT=$(node "$ROOT_DIR/scripts/test-review-check.mjs" 2>&1)
+REVIEW_REPLAY_EXIT=$?
+set -e
+
+if [[ $REVIEW_REPLAY_EXIT -eq 0 ]]; then
+    pass "review +check recorded workflow scenarios"
+else
+    fail "review +check recorded workflow scenarios"
+    echo "$REVIEW_REPLAY_OUTPUT" | sed 's/^/      /'
+fi
+
 echo -e "\n${BOLD}=== Loop budget contract smoke tests ===${NC}\n"
 
 set +e
@@ -2010,6 +2061,14 @@ if [[ $LOOP_BUDGET_SMOKE_EXIT -eq 0 ]]; then
 else
     fail "loop budget contract smoke tests"
     echo "$LOOP_BUDGET_SMOKE_OUTPUT" | sed 's/^/      /'
+fi
+
+echo -e "\n${BOLD}=== API compatibility examples and reference installation ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-api-compatibility.mjs"; then
+    pass "API compatibility example data and standalone reference installation"
+else
+    fail "API compatibility examples or reference installation"
 fi
 
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
@@ -2038,6 +2097,26 @@ if [[ $AUDIT_ARTIFACTS_SMOKE_EXIT -eq 0 ]]; then
 else
     fail "audit-artifacts smoke tests"
     echo "$AUDIT_ARTIFACTS_SMOKE_OUTPUT" | sed 's/^/      /'
+fi
+
+echo -e "\n${BOLD}=== Selective workflow references ===${NC}\n"
+set +e
+SELECTIVE_REFERENCES_OUTPUT=$(node "$ROOT_DIR/scripts/test-selective-skill-references.mjs" 2>&1)
+SELECTIVE_REFERENCES_EXIT=$?
+set -e
+if [[ $SELECTIVE_REFERENCES_EXIT -eq 0 ]]; then
+    pass "selective references, runtime rendering, update receipts, and route budgets"
+else
+    fail "selective workflow references"
+    echo "$SELECTIVE_REFERENCES_OUTPUT" | sed 's/^/      /'
+fi
+
+echo -e "\n${BOLD}=== Installed skill audit packaging and docs ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-skills-audit.mjs"; then
+    pass "skills audit installation and documentation tests"
+else
+    fail "skills audit installation and documentation tests"
 fi
 
 echo -e "\n${BOLD}=== Results ===${NC}"
