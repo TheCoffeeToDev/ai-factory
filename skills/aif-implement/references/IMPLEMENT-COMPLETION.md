@@ -31,10 +31,10 @@ What's next?
 If the resolved roadmap artifact exists:
 
 1. Read it
-   1.1. If the plan entrypoint includes `## Roadmap Linkage` with a non-`none` milestone, prefer that milestone for completion marking
-2. Check if the completed work corresponds to any unchecked milestone
-3. If yes — mark it `[x]` and add entry to the Completed table with today's date
-4. Tell the user which milestone was marked done
+   1.1. If the plan entrypoint includes `## Roadmap Linkage`, consider every non-`none` `Milestone:` and `Also completes:` entry; preserve quoted names/IDs, including embedded commas. Never reduce a group to its first milestone.
+2. Check each linked unchecked milestone independently against the completed work; when no linkage exists, check for supported milestone matches
+3. Mark a milestone `[x]` and add it to the Completed table with today's date only when its own scope is fully satisfied; finishing all plan tasks alone does not prove every linked milestone complete
+4. Tell the user which milestones were marked done and which remain open; ambiguous/partial matches stay open with `WARN [roadmap]` and owner review
 
 ### Context Maintenance (Artifacts)
 

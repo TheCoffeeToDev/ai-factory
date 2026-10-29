@@ -79,3 +79,14 @@ Both sources pass the repository's native skill validator. The generic Codex
 skill-creator quick validator rejects this repository's supported `argument-hint`
 and `disable-model-invocation` frontmatter extensions; those runtime metadata fields
 were retained rather than removed to fit a different validator profile.
+
+## Review follow-up
+
+The writer/completion contract now explicitly preserves grouped milestone selection
+in fast/full/ultra plans and checks completion per milestone. Roadmap-next also reads
+archived completed linkage before recommending open work. The model observations
+and hashes above predate these changes; no new live-model validation is claimed.
+Regression scenarios to exercise: select a two-milestone scope through each mode
+and inspect the saved linkage; complete only one milestone and keep the other open;
+archive that completed plan while its second milestone is open and ensure the
+advisor reports pending reconciliation rather than recommending it again.

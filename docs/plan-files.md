@@ -310,6 +310,11 @@ requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
 
 If `.ai-factory/ROADMAP.md` exists, `/aif-plan` may include a `## Roadmap Linkage` section in the plan file.
 This makes milestone alignment explicit for `/aif-implement` completion marking and `/aif-verify` roadmap gates.
+A selected group is saved in fast/full plans and ultra `index.md` as one primary
+`Milestone:` plus one quoted `Also completes:` line per additional milestone. Names/IDs
+are preserved, including commas inside quoted names. `/aif-improve` retains the group;
+implementation and verification assess completion of each linked milestone separately.
+Completed plans with still-open links remain pending reconciliation even after archiving.
 
 **Example plan file:**
 

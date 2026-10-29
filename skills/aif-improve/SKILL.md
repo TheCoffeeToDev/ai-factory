@@ -484,6 +484,7 @@ changes must be identified separately from editorial rewrites.
 - Remove deleted tasks
 - Update commit checkpoints if task count changed significantly
 - Preserve any `- [x]` checkboxes for already completed tasks
+- Preserve all selected `Milestone:` and `Also completes:` entries in `## Roadmap Linkage` on edits/regeneration unless the user explicitly changes the linked scope.
 - Preserve existing `## Original Request` exactly, including heading, body text, whitespace, and line breaks. Do not translate, summarize, normalize, trim, or rewrite it; this section is raw source input and is exempt from `artifact_language` rewriting.
 - Preserve existing `## Research Context` and its `Source:` / revision marker exactly on any rewrite, unless the user explicitly asks to rebase the plan to current research
 - Preserve or update `## Requirements Reconciliation` from the plan's committed

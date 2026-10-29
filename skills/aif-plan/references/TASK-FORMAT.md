@@ -43,6 +43,7 @@ Created: [date]
 ## Roadmap Linkage (optional)
 <!-- Only when .ai-factory/ROADMAP.md exists -->
 Milestone: "[milestone name from ROADMAP.md]"  # or "none"
+Also completes: "[additional selected milestone]"  # optional; repeat once per remaining milestone
 Rationale: [1 short sentence]
 
 ## Research Context (optional)

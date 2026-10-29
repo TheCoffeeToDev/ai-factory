@@ -331,6 +331,8 @@ ROADMAP.md = strategic checklist of high-level goals
 
 /aif-plan [fast|full|ultra] <description>
     ↓
+Preserves explicitly selected roadmap groups in every mode: primary `Milestone:` plus one `Also completes:` per remaining milestone; completion/verification assess each independently
+    ↓
 Reads .ai-factory/DESCRIPTION.md + ARCHITECTURE.md for context
     ↓
 Resolve mode once, independently of description; reusing a research topic retains the selected mode, including configured ultra

@@ -42,7 +42,7 @@ Check if `.ai-factory/DESCRIPTION.md` reflects the current state:
 
 Apply the canonical `references/CONTEXT-GATES-AND-OWNERSHIP.md` and `references/GATE-RESULT-CONTRACT.md` loaded in Step 0.1; do not maintain a second copy of their thresholds or schema here.
 
-Report architecture, rules, and roadmap gates explicitly. Prefer the plan's `## Roadmap Linkage` where present. Missing context or ambiguous mapping is a warning; explicit architecture/rule violations fail, clear roadmap contradictions follow the normal/strict thresholds. Missing milestone linkage remains a warning even in strict mode. Human context-gate labels remain `WARN` / `ERROR`; the final JSON uses `pass` / `warn` / `fail` and `"gate": "verify"`. Suggest `/aif-rules-check` when a standalone rules-only pass is useful.
+Report architecture, rules, and roadmap gates explicitly. Prefer the plan's `## Roadmap Linkage` where present, checking every `Milestone:` and `Also completes:` entry independently against its scope and evidence; a completed primary milestone does not establish completion of the others. Missing context or ambiguous mapping is a warning; explicit architecture/rule violations fail, clear roadmap contradictions follow the normal/strict thresholds. Missing milestone linkage remains a warning even in strict mode. Human context-gate labels remain `WARN` / `ERROR`; the final JSON uses `pass` / `warn` / `fail` and `"gate": "verify"`. Suggest `/aif-rules-check` when a standalone rules-only pass is useful.
 
 ### 3.6 Context Drift (Optional Remediation)
 

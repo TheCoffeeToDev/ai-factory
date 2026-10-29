@@ -57,17 +57,23 @@ disambiguation. Checked milestones are complete for dependency selection only;
 do not claim implementation verification or change their state.
 
 Inventory root full files and marked direct-child ultra `index.md` files under
-`paths.plans`, plus fast/fix entrypoints. Exclude `<paths.archive>/plans`, phase
-files and unmarked directories, even with relocated/nested paths. Read only each
+`paths.plans`, plus fast/fix entrypoints. Separately inventory root full files and
+marked direct-child ultra entrypoints under `<paths.archive>/plans` for outstanding
+roadmap linkage; archived plans are not active implementation/start candidates.
+Deduplicate physical entrypoints, including relocated/nested archive roots. Exclude
+phase files and unmarked directories. Read only each
 entrypoint's task status, scope and `## Roadmap Linkage`; ultra phases are not
 needed here. Never invoke implementation or update a checklist to inspect a plan.
 `Milestone:` and `Also completes:` under that linkage claim matching milestones.
 Accept quoted names, IDs or clear comma/list entries; do not split a quoted name's
 comma. A missing/`none` linkage is not a claim inferred from the filename.
 
-Unfinished claimed milestones are unavailable. A completed but unarchived plan
+Unfinished claimed milestones are unavailable. A completed plan, active or archived,
 whose linked milestone is still open is **pending reconciliation**, not a new
 unclaimed milestone: suggest verification/roadmap owner review and avoid duplication.
+Archiving alone never releases an open milestone for another recommendation.
+An unexpectedly unfinished archived plan leaves its linked milestones uncertain;
+report it for owner review rather than offering them as ready or resuming the archive.
 Report unlinked unfinished plans as possible overlap, not invented milestone claims.
 Unreadable/malformed entrypoints leave claim coverage uncertain; keep any affected
 recommendation provisional and do not offer it as an unconditionally ready start.

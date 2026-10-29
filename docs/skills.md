@@ -121,7 +121,7 @@ created solely from `RESEARCH.md` without an explicit user request.
 
 If a relevant configured or marked ultra-bundle `RESEARCH.md` exists, `/aif-plan` may read its `Active Summary` as optional context. It selects at most one source, never by recency alone. It includes `Research Context` only when research content influenced the generated plan. Linked plans include the exact `Source:` path with revision metadata so downstream skills treat the embedded context as committed requirements and warn if live research has drifted.
 
-If the resolved roadmap artifact exists, `/aif-plan` may also capture a `Roadmap Linkage` section (milestone name + brief rationale) to make milestone alignment explicit.
+If the resolved roadmap artifact exists, `/aif-plan` may also capture a `Roadmap Linkage` section (primary milestone, any additional selected milestones, and brief rationale) to make milestone alignment explicit.
 
 Plan prompts and summaries use `language.ui`; saved plan artifacts use `language.artifacts` and preserve commands, paths, branch names, identifiers, config keys, and raw errors according to `language.technical_terms`.
 
@@ -179,11 +179,12 @@ advice; incomplete dependencies are not treated as completed inside a proposal.
 
 Reports the proposal, existing code, exclusions, up to two alternatives and remaining
 milestone statuses. `Milestone:` / `Also completes:` in active plan linkage reserve
-work; completed-but-unreconciled plans also prevent duplicate recommendations. It
+work; completed-but-unreconciled plans, including archived plans, also prevent duplicate recommendations. It
 offers finishing an unfinished plan first. Only an explicit scope/mode/start choice
 can hand off to installed `/aif-plan`; otherwise all artifacts remain read-only.
 Grouped handoff carries a primary `Milestone:` and the remaining `Also completes:`
-names as context for the new plan, preserving claims without editing existing plans.
+names into the new plan in every mode, preserving claims without editing existing plans.
+The planner retains the full selection; completion and verification check each linked milestone independently.
 Unavailable UI uses plain-text choices; background runs return pending choices.
 See [roadmap-next settings](config-reference.md#roadmap-next-defaults) for fallback
 precedence, user-owned capacities and invalid-value behavior.

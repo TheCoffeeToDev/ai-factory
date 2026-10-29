@@ -309,7 +309,10 @@ High-level project planning. Creates `paths.roadmap` (default: `.ai-factory/ROAD
 Three modes — **fast** (quick single file), **full** (rich single file), and
 **ultra** (a directory whose `index.md` owns scope/progress and whose phase files
 specify implementation in code-level detail). Full and ultra share testing,
-logging, docs, roadmap, branch, and worktree preferences. Sequential IDs put
+logging, docs, roadmap, branch, and worktree preferences. In every mode, an explicitly
+selected milestone group is persisted as `Milestone:` plus `Also completes:` lines;
+completion checks each linked milestone separately, and archived completed plans
+with open roadmap links remain pending reconciliation. Sequential IDs put
 `NNNN_` on the full filename or ultra directory and count active full files plus
 directories whose `index.md` contains the stable ultra marker.
 A leading mode token overrides `workflow.plan_mode`. With its default `ask`,
