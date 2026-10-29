@@ -35,7 +35,11 @@ try {
     const sourceReferences = new Map();
 
     for (const name of referenceNames) {
-      sourceReferences.set(name, await readFile(path.join(root, 'skills', 'aif-explore', 'references', name)));
+      const source = await readFile(path.join(root, 'skills', 'aif-explore', 'references', name));
+      // These references use backticked skill commands. Flat Kilo workflows
+      // render those invocations while directory installs preserve these bytes.
+      sourceReferences.set(name, agentId === 'kilocode'
+        ? Buffer.from(source.toString('utf8').replaceAll('`/aif-', '`/aif:')) : source);
     }
 
     const firstInstall = await installSkills({

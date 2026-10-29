@@ -14,6 +14,12 @@ Other skills are intentionally config-agnostic for now and rely on repository co
 
 These skills form the core development loop. See [Development Workflow](workflow.md) for the full diagram and how they connect.
 
+`/aif`, `/aif-implement`, `/aif-verify`, and `/aif-fix` keep mode dispatch, ownership, integrity checks, and stop conditions in their entrypoints. Detailed procedures and templates live in their `references/` directories. Read each reference in full only for its stated route, before the dependent step; missing required references stop that step. Listing/status, inline implementation, recovery, completion, and plan-first fixes do not preload unrelated procedures. Managed extension overrides remain in the entrypoint and retain their precedence; project skill-context overrides still apply to all outputs.
+
+Reference names are distinct across these skills so flat workflow installs can share a references directory. Codex, KiloCode workflow, and Qwen installations render command invocation prefixes in Markdown references as well as the entrypoint. The shared machine-readable gate contract and `aif-gate-result` JSON blocks retain canonical command identifiers. Helpers and data files retain their original bytes; template variables in Markdown still use the selected runtime's paths.
+
+From the AI Factory source checkout, run `node scripts/measure-skill-entrypoints.mjs --baseline <pre-refactor-commit>` for a reproducible package instruction footprint (add `--json` for per-file evidence). It counts UTF-8 bytes/lines for each entrypoint and the full declared reference set of each route. It excludes extension injections, project/source context, executable helpers, tokenization, and actual model behavior. Full sessions may combine routes; shorter entrypoints alone do not prove lower total context usage. Run `npm run test:selective-references` in that checkout for installation/update and route-boundary checks.
+
 ### `/aif-warmup`
 Load the essential project context before starting work:
 ```

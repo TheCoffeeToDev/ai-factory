@@ -104,7 +104,7 @@ const specs = [
     expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['Review Sources', 'src/dependency.ts'] } },
   { id: 'pr-validator-unavailable-evidence', file: happyFile, pr: true, fresh: true,
     response: success('### Item 1 (section: critical)\nVerdict: drop\nReason: Unverified due to missing pinned context: src/dependency.ts.\n' + block(2, 'suggestion', 'drop')),
-    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['excluded_conclusions', 'src/dependency.ts'] } },
+    expected: { status: 'warn', command: '/aif-commit', counters: { hidden: 2, adjusted: 0, reclassified: 0 }, contains: ['Excluded conclusions', 'src/dependency.ts'] } },
   ...[false, true].map(available => ({ id: available ? 'explicit-sandbox-boundary' : 'explicit-fallback-boundary', file: happyFile,
     validator: { available, read_only_enforced: false }, response: success(keep),
     expected: { status: 'fail', command: '/aif-fix', counters: { hidden: 0, adjusted: 0, reclassified: 0 },

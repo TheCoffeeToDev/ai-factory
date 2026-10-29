@@ -411,7 +411,7 @@ Configuration saved to agent's settings file (e.g. `.mcp.json` for Claude Code a
 ### Runtime Format Contract
 
 Source of truth for runtime MCP shapes and wrapper examples:
-[`skills/aif/SKILL.md#MCP Configuration`](../skills/aif/SKILL.md#mcp-configuration)
+[`skills/aif/references/SETUP-MCP.md`](../skills/aif/references/SETUP-MCP.md)
 
 Quick key mapping:
 - Standard MCP runtimes (including Antigravity in `.agents/mcp_config.json`) use `mcpServers.<server>`
@@ -428,7 +428,7 @@ export GITHUB_TOKEN="ghp_your_token"
 export DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 ```
 
-Runtime-specific wrapper examples are intentionally centralized in the `/aif` skill section above to avoid docs drift.
+Runtime-specific wrapper examples are intentionally centralized in the linked `/aif` MCP reference to avoid docs drift. The setup skill reads it only when configuring selected MCP servers.
 
 ## Project Structure
 
