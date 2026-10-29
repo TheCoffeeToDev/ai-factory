@@ -8,6 +8,18 @@ disable-model-invocation: true
 
 # Evolve - Skill Self-Improvement
 
+## Shared project skill-context
+
+Before mode routing or work, read existing files relative to the current project root in this order (reuse them if already loaded):
+
+1. `.ai-factory/skill-context/global-skill-context.md` — all bundled skills.
+2. `.ai-factory/skill-context/aif-evolve/SKILL.md` — this skill.
+
+Missing files are skipped; an existing unreadable file stops dependent work with its path.
+Precedence: individual > build (when applicable) > global > skill defaults; retain non-conflicting instructions and check all outputs against the effective rules.
+These layers customize workflow; they do not replace the project's rules/architecture hierarchy or relax explicit requirements, ownership, scope, safety/privacy, validation, or approval boundaries. Report conflicts with those boundaries instead of overriding them.
+`global` is a project-local layer, not home-directory configuration. Custom/extension skills do not automatically use it.
+
 Analyze project context, patches, and codebase to improve existing skills. Makes AI Factory smarter with every run.
 
 ## Core Idea
@@ -36,7 +48,7 @@ Policy across workflow skills:
 
 Never edit AI Factory built-in or extension-managed skill files directly. Ownership
 comes from the resolved path and installation provenance, never an `aif-*` name.
-Project built-in improvements go only to `.ai-factory/skill-context/<skill-name>/SKILL.md`.
+Project built-in improvements go only to approved files under `.ai-factory/skill-context/`.
 User-owned skills may be edited at their verified entrypoint after validation and
 approval. Global skills require explicit `--global`; managed global skills are skipped.
 
@@ -78,6 +90,11 @@ If config.yaml doesn't exist, use defaults:
 
 **Note:** `.ai-factory/skill-context/` remains a fixed internal AI Factory path in the current schema. Patch and evolution-log locations are configurable via `paths.patches` and `paths.evolutions`.
 
+Read [references/SHARED-CONTEXT.md](references/SHARED-CONTEXT.md) before target-context
+analysis. Follow its consumer resolution, destination selection, shared stale-rule
+checks, and consolidation policy throughout Steps 3–7. No shared file is created
+or migrated automatically; existing individual contexts remain valid.
+
 **THEN:** Read `.ai-factory/DESCRIPTION.md` (use path from config) to understand:
 - Tech stack
 - Architecture
@@ -85,7 +102,7 @@ If config.yaml doesn't exist, use defaults:
 
 **Also read `.ai-factory/ARCHITECTURE.md`** (use path from config) and the configured rules hierarchy when present. This context informs convention analysis and gap detection but does not change artifact ownership.
 
-**Read skill-context for the frozen eligible project built-in records only**, plus
+**Read all applicable layers for the frozen eligible project built-in records only**, plus
 `.ai-factory/skill-context/aif-evolve/SKILL.md` once for evolve's own rules, when present.
 Do not load unrelated same-name contexts for custom or global targets. Evolve's own
 project context applies in either scope; it cannot grant permission to edit another scope.
@@ -210,9 +227,11 @@ Keep loaded SKILL.md content in memory — Step 3 needs it for comparison (do NO
 
 ### Step 3: Check for Stale Rules in Skill-Context
 
-**When:** Run this step only for **project built-in target records** with a skill-context file.
+**When:** Run this step only for **project built-in target records** with applicable context.
+Shared rules require the complete frozen consumer set from `SHARED-CONTEXT.md`;
+named or incomplete selections may report shared conflicts but cannot change shared files.
 
-**For each rule in `.ai-factory/skill-context/<skill-name>/SKILL.md`:**
+**For each rule in the applicable global, build, and individual layers:**
 
 **Scope constraint:** Step 3 can ONLY modify or remove skill-context files.
 It must NEVER propose editing, deleting, or reverting managed base files.
@@ -220,6 +239,8 @@ Recheck the frozen context destination and canonical project containment before 
 Even if the base file contains errors or incomplete rules — that is outside evolve's scope.
 
 1. Use the base `SKILL.md` already loaded in Step 2 (do NOT re-read the file).
+   For a shared rule, evaluate every consumer independently; one covered consumer
+   does not justify shared deletion. Preserve the rule for every uncovered consumer.
 2. Compare each skill-context rule against the base SKILL.md content:
 
    **Case A — Base fully covers skill-context rule (equivalent or superset):**
@@ -326,7 +347,7 @@ in Step 0.2 — it is outdated after Step 4 changes.
 For each eligible target record, consider its base instructions AND its **current**
 project built-in skill-context when applicable (none for custom/global targets)
 (after stale rule decisions from Step 4 have been applied).
-A gap only exists if NEITHER source covers it.
+A gap only exists if neither the base nor any applicable context layer covers it.
 
 For each skill, identify what's missing based on collected intelligence:
 
@@ -374,6 +395,11 @@ Compare project conventions against skill instructions:
 
 For each gap found, create a concrete improvement:
 
+Choose its destination using `SHARED-CONTEXT.md`: individual by default; build or
+global only with a complete verified consumer set in project `all` mode. Freeze
+shared destinations and consumer records before comparison or approval. The same
+rule in several files is a consolidation candidate, not permission to migrate it.
+
 **Quality rules for improvements:**
 - **One prevention point = one rule.** A single patch may contain multiple independent prevention
   items. Each one becomes a separate rule — do NOT merge them into a single vague summary.
@@ -392,7 +418,7 @@ Before presenting changes for approval, read
 Use its card and comparison procedure for every added, rewritten, or merged rule,
 including queued stale-rule rewrites. A candidate is a hypothesis, not an improvement yet.
 
-- Freeze the current effective instructions (base + current skill-context) and the exact
+- Freeze the current effective instructions (base + all applicable context layers) and the exact
   candidate change. Compare both versions on the same original problem and an explicit
   counterexample where the proposed rule must NOT apply.
 - Reuse the project's scenario mechanism when available. Without a runnable evaluator
@@ -419,7 +445,7 @@ including non-accepted candidates. Separate validation outcome from the user's d
 "Apply all" means only validated `accept` candidates, never untested proposals.
 Use the following target labels:
 
-- **`skill-context`** → `.ai-factory/skill-context/<skill-name>/SKILL.md`
+- **`skill-context`** → exact frozen individual, build, or global path; list every affected consumer for shared changes
 - **`User-owned skill`** → direct edit at the frozen canonical entrypoint, only for verified user-owned targets
 - **Nested file** → if the skill directory contains additional files (e.g., `templates/`, `checklists/`),
   specify the exact canonical path within the verified user-owned skill directory; managed nested files remain read-only
@@ -487,6 +513,12 @@ On a batch regression or inconclusive run, keep active instructions unchanged an
 refine or postpone the batch.
 
 **If the target record is a project AI Factory built-in:**
+
+For a frozen shared change record, apply only its approved exact file operations
+and duplicate removals under `SHARED-CONTEXT.md`. Preserve originals on failure;
+delete only an empty shared file, never its parent directory. Use the same header
+format with the layer name and `Applies to:` consumers. The following directory
+creation/cleanup instructions are for individual destinations only.
 
 1. Create directory if needed:
    mkdir -p .ai-factory/skill-context/<skill-name>

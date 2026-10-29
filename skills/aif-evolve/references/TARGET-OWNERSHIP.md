@@ -66,7 +66,7 @@ Missing registered manifests or conflicting records leave ownership unresolved.
 
 | Owner | Required evidence | Permitted destination |
 |-------|-------------------|-----------------------|
-| AI Factory built-in | Matching AI Factory installation record and bundled physical target for this runtime/root, with no verified applied extension replacement; or verified AI Factory package source inventory | Project scope: `.ai-factory/skill-context/<name>/SKILL.md` only. Global scope: skip with a warning; no global override contract exists |
+| AI Factory built-in | Matching AI Factory installation record and bundled physical target for this runtime/root, with no verified applied extension replacement; or verified AI Factory package source inventory | Project scope: individual `.ai-factory/skill-context/<name>/SKILL.md` by default; shared files only through `SHARED-CONTEXT.md` with every consumer resolved. Global scope: skip with a warning; no global override contract exists |
 | Extension-managed | Matching registered extension source and physical installation; replacements additionally require the applied `extensions[].replacedSkills` record | Warn that updates overwrite edits; skip with no writes to the installed copy or extension source, and no synthetic built-in skill-context |
 | User-owned | Verified project/user skill source outside managed inventories, or explicit user confirmation of ownership when provenance is absent | Exact resolved entrypoint (or explicitly proposed existing nested file), in the selected scope only |
 | Unknown / conflicting | Insufficient or conflicting provenance | No writes; explain the missing evidence and ask for clarification in named mode, or skip in `all` mode |
@@ -84,7 +84,10 @@ name | scope | canonical base entrypoint | owner + evidence | exact write destin
 
 Show these records and any skips before generating candidates. Use them throughout
 Steps 2–7, including stale cleanup, candidate cards, approval, and logs. Do not
-reconstruct a destination from a name later. Project context may inform global
+reconstruct a destination from a name later. A project `all` run may additionally
+freeze a shared change record only after resolving its entire consumer set under
+`SHARED-CONTEXT.md`; named/global runs cannot widen their destinations this way.
+Project context may inform global
 user-owned candidates, but those edits affect every project using that global skill;
 state that reach and the exact absolute output path in the approval request.
 Logs and the patch cursor remain in the current project's configured evolution

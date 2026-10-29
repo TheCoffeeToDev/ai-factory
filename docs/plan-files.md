@@ -339,7 +339,10 @@ AI Factory has a built-in learning loop. Every bug fix creates a **patch** — a
 3. `/aif-evolve` reads patches incrementally using `paths.evolutions/patch-cursor.json` (first run reads all). Targets are project-scoped by default; existing user-global skills require explicit `--global`. See [ownership and destinations](evolve.md#skill-ownership-and-write-destinations)
 4. Before approval, candidate rules are compared with the current effective instructions on the same problem and control cases; only validated revisions enter active skill-context
 5. Evolution logs retain exact candidate versions, cases, results, extra cost, regressions, and all outcomes, including no improvement or insufficient data; report-only saves do not advance the cursor by default
-6. Workflow skills (`/aif-implement`, `/aif-fix`, `/aif-improve`) prefer skill-context rules and use only limited recent patch fallback when needed
+6. Workflow skills (`/aif-implement`, `/aif-fix`, `/aif-improve`) prefer skill-context rules. When their individual context file is absent, they still read the latest ten patches (or fewer if available), even when global/build context exists; a shared rule alone does not establish that patch lessons were distilled.
+
+Applicable learned context includes optional global/build layers, not just individual
+files. Existing individual files need no migration. See [shared context and precedence](evolve.md#how-skills-use-context).
 
 **Example patch** (`paths.patches/2026-02-07-14.30.md`):
 

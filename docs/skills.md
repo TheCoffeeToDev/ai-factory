@@ -331,7 +331,7 @@ Self-improve skills based on project experience:
 - Compares current effective instructions and each candidate on the same frozen cases, retaining output evidence, extra cost, and regressions
 - Records accept / narrow / refine / keep old / postpone outcomes; missing execution evidence means postpone
 - Offers only exact validated `accept` revisions for user approval; checks their combination when applying several rules
-- Writes approved project-specific overrides to `.ai-factory/skill-context/<skill>/SKILL.md` (skills treat these as higher-priority rules)
+- Writes approved overrides to individual skill-context; project `all` mode may use shared global/build files only after validating every consumer. All bundled skills load global → build (fix/implement/plan/verify/improve only) → individual; individual wins conflicts. See [shared context](evolve.md#shared-evolution-and-consolidation)
 - Saves all outcomes, including "the new rule did not improve behavior", to `paths.evolutions` (default: `.ai-factory/evolutions/`) after apply/report-save approval
 - See [Skill Evolution](evolve.md#comparing-rule-candidates) for the comparison contract and evidence requirements
 

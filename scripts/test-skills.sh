@@ -2130,6 +2130,14 @@ else
     fail "evolve ownership or candidate validation reference installation"
 fi
 
+echo -e "\n${BOLD}=== Shared skill-context installation and lifecycle ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-shared-skill-context.mjs"; then
+    pass "shared skill-context installation and CLI lifecycle"
+else
+    fail "shared skill-context installation or CLI lifecycle"
+fi
+
 echo -e "\n${BOLD}=== Read-only project command catalog ===${NC}\n"
 
 if node "$ROOT_DIR/scripts/test-command-catalog.mjs"; then

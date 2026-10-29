@@ -12,7 +12,7 @@ import { buildTemplateVars, processTemplate } from '../dist/core/template.js';
 
 const root = fileURLToPath(new URL('../', import.meta.url));
 const source = await readFile(path.join(root, 'skills/aif-evolve/SKILL.md'), 'utf8');
-const references = ['TARGET-OWNERSHIP.md', 'CANDIDATE-VALIDATION.md'];
+const references = ['TARGET-OWNERSHIP.md', 'CANDIDATE-VALIDATION.md', 'SHARED-CONTEXT.md'];
 const expected = new Map(await Promise.all(references.map(async name => [
   name, await readFile(path.join(root, 'skills/aif-evolve/references', name), 'utf8'),
 ])));
