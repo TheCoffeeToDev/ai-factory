@@ -308,6 +308,11 @@ workflow:
   explore_mode: regular            # regular | ultra; explicit mode wins
   plan_mode: ask                   # ask | fast | full | ultra; explicit mode wins
   improve_check: false             # true enables +check; --no-check overrides once
+  # roadmap_next_mode: full        # optional; otherwise concrete plan_mode or ultra
+  # roadmap_next_capacity:         # optional user-owned positive integer estimates
+  #   fast: 1
+  #   full: 2
+  #   ultra: 3
   auto_create_dirs: true           # Create .ai-factory/ directories when missing
   plan_id_format: slug             # full filename / ultra directory ID: slug | sequential
   analyze_updates_architecture: true
@@ -337,11 +342,18 @@ arguments override these defaults; absent settings preserve existing behavior.
 See [Command defaults](config-reference.md#command-defaults) for precedence and
 one-invocation overrides.
 
+`/aif-plan-overview` is a read-only consumer of plan/archive paths and language.
+`/aif-roadmap-next` also reads roadmap/context paths and optional
+`workflow.roadmap_next_mode` / `workflow.roadmap_next_capacity`. Their commented
+examples are user-owned and preserved on setup reruns; neither advisor writes
+config. See [Roadmap-next defaults](config-reference.md#roadmap-next-defaults).
+
 `/aif-skills-audit` is a read-only config consumer for context paths, scoped rules
 and language. It works without config, introduces no keys, and reports in chat
 unless `--output` names a new report file. See [installed-library auditing](skills.md#aif-skills-audit).
 
 **Current config-aware skills** read `config.yaml` at Step 0. This currently includes:
+- Read-only planning advisors: `/aif-plan-overview`, `/aif-roadmap-next`
 - Core workflow and quality commands: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
 - Additional utility commands: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
 

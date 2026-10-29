@@ -186,6 +186,15 @@ workflow:
   # --list always skips refinement and validation.
   improve_check: false
 
+  # Optional user-owned defaults for /aif-roadmap-next (preserved on setup reruns).
+  # If absent: use a concrete plan_mode, otherwise ultra. Explicit mode wins.
+  # roadmap_next_mode: ultra
+  # Positive integer capacity per mode; omitted keys use these built-in values.
+  # roadmap_next_capacity:
+  #   fast: 1
+  #   full: 2
+  #   ultra: 3
+
   # Automatically create .ai-factory/ directories when missing
   # Default: true
   auto_create_dirs: true

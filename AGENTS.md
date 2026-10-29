@@ -7,7 +7,7 @@
 **AI Factory** (v2) is an npm package + skill system that automates AI agent context setup for projects. It provides:
 
 1. **CLI tool** (`ai-factory init/update/upgrade`) — installs skills and configures MCP
-2. **Built-in skills** (31 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
+2. **Built-in skills** (33 skills, all `aif-*` prefixed) — workflow commands for spec-driven development
 3. **Spec-driven workflow** — structured approach: plan → implement → commit
 4. **Multi-agent support** — 16 agents (Claude Code, Cursor, Windsurf, Roo Code, Kilo Code, Antigravity, OpenCode, Warp,
    Zencoder, Codex CLI, Codex app, GitHub Copilot, Gemini CLI, Junie, Qwen Code, Universal)
@@ -44,8 +44,10 @@ ai-factory/
 │   ├── aif-improve/            # Plan refinement (second iteration)
 │   ├── aif-loop/               # Iterative reflex loop with quality gates
 │   ├── aif-plan/               # Plan implementation (fast/full/ultra modes)
+│   ├── aif-plan-overview/      # Read-only plan summary and file map
 │   ├── aif-review/             # Code review
 │   ├── aif-roadmap/            # Strategic project roadmap
+│   ├── aif-roadmap-next/       # Read-only next-plan scope recommendation
 │   ├── aif-rules/              # Project rules and conventions
 │   ├── aif-rules-check/        # Standalone rules compliance gate
 │   ├── aif-qa/                 # QA workflow: change summary → test plan → test cases
@@ -60,6 +62,20 @@ ai-factory/
 ```
 
 ## Key Concepts
+
+### Read-only planning advisors
+
+`/aif-plan-overview` follows implementation's discovery priority without invoking
+its mutation steps. It reads a full single-file/index plan and only linked ultra
+phase summaries, then renders a declared file map. Its stdlib formatter is under
+`references/plan-overview/file_tree.py` so existing flat workflow packaging also
+delivers it; run with `python3 -I -B`, with manual rendering as a portable fallback.
+
+`/aif-roadmap-next` inventories milestone dependencies and active plan linkage,
+estimates S/M/L/XL scope, and recommends a mode-sized next plan. It owns no files;
+only a selected `/aif-plan` invocation may write after the user chooses. Optional
+`workflow.roadmap_next_mode` / `workflow.roadmap_next_capacity` are user-owned,
+commented in the template and preserved verbatim by setup reruns.
 
 ### Instruction composition records
 
@@ -172,6 +188,7 @@ Context gate policy for quality commands:
 
 - Core workflow and quality: `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`,
   `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-warmup`
+- Read-only planning advisors: `/aif-plan-overview`, `/aif-roadmap-next`
 - Additional utility: `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`,
   `/aif-distillation`,
   `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`
@@ -190,6 +207,7 @@ Current config keys in active use:
 - `git.enabled` / `git.base_branch` / `git.create_branches` / `git.branch_prefix` / `git.skip_push_after_commit` - planning, verification, and commit push behavior
 - `workflow.verify_mode` - default verification strictness
 - `workflow.explore_mode` / `workflow.plan_mode` / `workflow.improve_check` - command defaults (`regular` / `ask` / `false`); explicit arguments win, `/aif` reruns preserve values
+- `workflow.roadmap_next_mode` / `workflow.roadmap_next_capacity` - optional user-owned next-plan recommendation defaults; setup leaves them and their comments intact
 - `warmup.paths` - optional extra files/directories loaded recursively by `/aif-warmup`
 - `rules.base` plus named `rules.<area>` entries - rules hierarchy
 

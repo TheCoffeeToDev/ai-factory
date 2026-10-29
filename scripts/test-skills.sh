@@ -2130,6 +2130,14 @@ else
     fail "evolve ownership or candidate validation reference installation"
 fi
 
+echo -e "\n${BOLD}=== Plan overview and roadmap-next advisors ===${NC}\n"
+
+if node "$ROOT_DIR/scripts/test-plan-advisors.mjs"; then
+    pass "plan advisors, file tree, runtime installation and config preservation"
+else
+    fail "plan advisors, formatter or config preservation"
+fi
+
 echo -e "\n${BOLD}=== Review confidence lifecycle tests ===${NC}\n"
 
 set +e
