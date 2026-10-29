@@ -93,7 +93,7 @@ For `--list`, read [plan listing](references/IMPLEMENT-LIST.md), perform read-on
 
 ### Inline route
 
-For `--without-plan`, read [inline implementation](references/IMPLEMENT-INLINE.md) before parsing the description or editing files; execute that route and STOP. Reject conflicting plan/status/task-id arguments or overbroad scope. Do not read/create plan artifacts, use TaskList, create patches, alter coordinator branches/worktrees, or run plan-backed completion logic. Only existence probes for the skip warning are permitted.
+For `--without-plan`, read [inline implementation](references/IMPLEMENT-INLINE.md) before parsing the description or editing files; execute that route and STOP. Reject conflicting plan/status/task-id arguments or overbroad scope. Do not read/create plan artifacts, use TaskList, create patches, alter coordinator branches/worktrees, or run plan-backed completion logic. Only existence probes needed to warn about ignored plan artifacts are permitted.
 
 ### Recovery route
 
