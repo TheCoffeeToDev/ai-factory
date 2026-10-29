@@ -345,7 +345,18 @@ def _read_skill_frontmatter_name(skill_md: Path):
         if not stripped or stripped.startswith('#') or ':' not in stripped:
             continue
         key, value = stripped.split(':', 1)
-        if key.strip() != 'name':
+        key = key.strip()
+        if key.startswith('"'):
+            try:
+                key = json.loads(key)
+            except ValueError as e:
+                raise RuntimeError(f"cannot establish canonical skill name from {skill_md}") from e
+        elif key.startswith("'"):
+            match = re.fullmatch(r"'((?:[^']|'')*)'", key)
+            if not match:
+                raise RuntimeError(f"cannot establish canonical skill name from {skill_md}")
+            key = match.group(1).replace("''", "'")
+        if key != 'name':
             continue
         value = value.strip()
         # Comments start at a whitespace-separated # outside quoted scalars.

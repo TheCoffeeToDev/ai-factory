@@ -1002,8 +1002,10 @@ import subprocess
 import sys
 import tempfile
 
+from itertools import product
+
 helper = sys.argv[1]
-for requested, directory, canonical, removed in [
+for (requested, directory, canonical, removed), name_key in product([
     ('Convex Best Practices', 'convex-best-practices', 'Convex Best Practices',
      {'Convex Best Practices', 'convex-best-practices'}),
     ('convex-best-practices', 'convex-best-practices', 'Convex Best Practices',
@@ -1018,12 +1020,12 @@ for requested, directory, canonical, removed in [
      {'Convex Best Practices', 'convex-best-practices', 'installed-alias'}),
     ('convex-best-practices', 'convex-best-practices', 'safe-one',
      {'convex-best-practices'}),
-]:
+], ['name', '"name"', "'name'", r'"na\u006de"']):
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         installed = root / '.claude/skills' / directory
         installed.mkdir(parents=True)
-        (installed / 'SKILL.md').write_text(f'---\nname: {canonical}\n---\n')
+        (installed / 'SKILL.md').write_text(f'---\n{name_key}: {canonical}\n---\n')
         sibling = installed.parent / 'safe-one'
         sibling.mkdir()
         (sibling / 'SKILL.md').write_text('---\nname: safe-one\n---\n')
