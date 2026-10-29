@@ -61,6 +61,17 @@ ai-factory/
 
 ## Key Concepts
 
+### Project command catalog
+
+`ai-factory commands [directories...] [--mapping <existing-json>] [--json]` is
+read-only declaration discovery for planning/implementation. Core logic lives in
+`src/core/command-catalog.ts`, CLI rendering in `src/cli/commands/commands.ts`.
+Read bounded npm/Composer JSON, preserve source hashes and per-directory identity,
+and leave dynamic/ambiguous definitions unresolved. Never import project extension
+commands on the catalog route, including help. No discovered command is executed,
+verified or authorized by discovery. No catalog/config files are written. See
+`docs/configuration.md#project-command-catalog` for limits and explicit mappings.
+
 ### Instruction composition records
 
 `ai-factory instructions` is an opt-in recorder for explicitly registered invocations. Core logic is in `src/core/instruction-manifest.ts` and installed-package inventory in `src/core/instruction-inventory.ts`; CLI wiring is in `src/cli/commands/instructions.ts`. The output contract is `schemas/instruction-manifest.schema.json`, documented in `docs/instruction-manifests.md`.

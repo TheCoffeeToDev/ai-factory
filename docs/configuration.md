@@ -2,6 +2,95 @@
 
 # Configuration
 
+## Project Command Catalog
+
+```bash
+ai-factory commands
+ai-factory commands . packages/api packages/web --json
+ai-factory commands --mapping tools/project.json --json
+```
+
+This is a read-only catalog, not a runner. It works without an AI Factory
+installation/configuration in the project. It reads only `package.json` and
+`composer.json` scripts in explicitly selected directories (default: project root),
+plus local package-manager evidence and an optional explicitly selected JSON mapping.
+Present Make/Task/just source files are hashed without parsing or executing recipes.
+No recursive workspace glob expansion, Make/Task/just execution, project imports,
+plugins, lifecycle hooks or `--help` probes take place. The CLI skips extension
+command imports on this route, including its own help. Existing workflows stay intact.
+
+For Node scripts, an explicit `packageManager` or one unambiguous local lock-file
+family selects npm/pnpm/yarn/bun. Unknown managers, conflicting lock families,
+unreadable evidence, unsupported script values and duplicate JSON keys remain
+unresolved. An explicit manager conflicting with a lock family also stays unresolved.
+Composer string/array declarations are cataloged without expanding references,
+callbacks, hooks or external code. No executable/tool availability check is implied.
+
+Both output views contain the same versioned data:
+
+| Field | Meaning |
+|-------|---------|
+| `schema_version` | Currently `1` |
+| `revision_sha256` | Binds all read/missing/unresolved source records, including runner evidence and supported recipe-file fingerprints |
+| `commands[].id` / `name` / `kind` | Exact declaration identity, script label and package/composer/mapping source kind |
+| `cwd` | Project-relative working directory (`.` for root), normalized to forward slashes |
+| `source.path` / `sha256` / `pointer` | Original source location, exact byte revision and JSON pointer; unsupported names use an unresolved ordinal identity |
+| `argv` | Structured invocation tokens, or `null` when unresolved/withheld; never a shell-escaped command string |
+| `inputs` | Explicit mapping input **names**, or `null` when unknown; no input values are collected |
+| `output_mode` | Declared `human` / `json` from a mapping, otherwise `unknown` |
+| `status` / `reason` | `declared` or `unresolved`, with a bounded reason code |
+| `verification` / `effects` | Always `not_run` / `unknown`; declarations cannot claim observed success |
+| `sources` | Read/missing/unresolved source records, including recipe files left unparsed |
+| `ambiguities` | Same-name command IDs with `selection_required: true`; no default is chosen |
+
+Choose an exact ID and CWD, rather than a bare name such as `test`. Use project
+context or ask the user when several definitions apply. Refresh after a source hash
+changes, including catalog `revision_sha256`; previous selection/verification cannot
+silently carry over to new bytes. These are declaration/evidence fingerprints, not
+a complete dependency graph: scripts, imports and external tools invoked by a command
+still require independent inspection and execution evidence.
+Execution requires its own existing authorization and observed evidence. The catalog
+does not grant shell, network, production, commit or publishing access.
+
+### Explicit Project Mappings
+
+Point `--mapping` at an existing project-owned JSON object containing `commands`.
+It can be an existing metadata file with other top-level fields; there is no default
+mapping path, mandatory new config file, schema key, generated registry or config
+rewrite. Example declarations for commands whose Make/Task/just/custom CLI discovery
+is incomplete:
+
+```json
+{
+  "commands": [
+    { "name": "verify", "cwd": ".", "argv": ["make", "verify"], "inputs": ["TEST_FILTER"], "output_mode": "human" },
+    { "name": "diagnostics", "cwd": "packages/api", "argv": ["node", "tools/project.mjs", "diagnose", "--json"], "output_mode": "json" }
+  ]
+}
+```
+
+Entries accept only `name`, `cwd`, `argv`, `inputs` and `output_mode`; they cannot
+declare themselves verified or override an automatically discovered command.
+Their identity includes the mapping path and array index. Existing project owners
+retain ownership of their files; AI Factory only reads them when explicitly selected.
+
+Raw npm/Composer script bodies and unrelated manifest fields are omitted, so embedded
+credentials in those bodies never enter either view. Mapping invocations containing
+credential/authentication markers, URLs, shell substitutions or inline evaluation
+are conservatively withheld as a whole (`argv: null`), rather than partly redacted.
+Command labels containing explicit credential-assignment markers are also withheld.
+This is not a general secret detector: arbitrary unlabeled literals cannot be
+classified. Keep literal secrets out of mappings; use runtime environment/secret
+management and inspect any withheld invocation privately before authorized use.
+
+Discovery accepts up to 32 explicit project-relative directories, 2,000 commands,
+1 MiB per read source and 8 MiB total; limit/access/parse failures stay visible in
+source records. It rejects traversal, absolute/drive paths, symbolic links/junctions,
+non-regular sources and malformed/duplicate-key JSON. Windows separators in relative
+paths are normalized; invocation tokens are not rewritten for another OS. Workspace
+directories and inherited package managers are not guessed: list directories and
+provide local evidence or an explicit mapping. Unknown effects remain unknown.
+
 ## `.ai-factory.json`
 
 ```json

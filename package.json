@@ -17,6 +17,7 @@
     "test:aif-explore-installation": "node scripts/test-aif-explore-installation.mjs",
     "test:evolve-ownership": "node scripts/test-evolve-ownership.mjs",
     "test:shared-skill-context": "node scripts/test-shared-skill-context.mjs",
+    "test:command-catalog": "node scripts/test-command-catalog.mjs",
     "test:api-compatibility": "node scripts/test-api-compatibility.mjs",
     "test:shared-skills": "npm run build && node scripts/test-shared-skill-targets.mjs",
     "test:loop-subagents": "node scripts/test-loop-subagents.mjs",

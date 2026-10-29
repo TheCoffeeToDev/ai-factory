@@ -58,6 +58,11 @@ Path examples below show the default `.ai-factory/` locations. `config.yaml` can
 
 Optional discovery step: use `/aif-explore` before planning to investigate ideas, compare options, and clarify requirements.
 
+Before choosing build/test/verification commands, planning and implementation can
+read the [project command catalog](configuration.md#project-command-catalog).
+Select an exact declaration and working directory; discovery neither runs a command
+nor proves it runnable. Ambiguities and source changes require a fresh decision.
+
 Session startup: use `/aif-warmup` to load the core project artifacts, applicable instructions, and optional extra files/directories from `warmup.paths` into a compact handoff before choosing the next workflow command. The warmed session can then continue directly or be forked.
 
 Reliability gate: use `/aif-grounded` when the main problem is not discovery but certainty - high-stakes answers, changeable facts, version-sensitive behavior, or any request where the model must refuse to guess.

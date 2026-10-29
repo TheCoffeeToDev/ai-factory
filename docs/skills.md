@@ -45,6 +45,11 @@ session's tool definitions.
 
 ## Workflow Skills
 
+Planning and implementation reuse existing project commands through the read-only
+[command catalog](configuration.md#project-command-catalog) when available/permitted,
+with bounded manifest reading as a fallback. They preserve command ID, CWD and source
+revision, resolve ambiguities, and report actual execution separately from discovery.
+
 These skills form the core development loop. See [Development Workflow](workflow.md) for the full diagram and how they connect.
 
 `/aif`, `/aif-implement`, `/aif-verify`, and `/aif-fix` keep mode dispatch, ownership, integrity checks, and stop conditions in their entrypoints. Detailed procedures and templates live in their `references/` directories. Read each reference in full only for its stated route, before the dependent step; missing required references stop that step. Listing/status, inline implementation, recovery, completion, and plan-first fixes do not preload unrelated procedures. Managed extension overrides remain in the entrypoint and retain their precedence; project skill-context overrides still apply to all outputs.

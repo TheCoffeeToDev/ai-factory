@@ -716,6 +716,18 @@ work where none of these signals applies.
 
 ### Step 3: Explore Codebase
 
+**Existing project commands (read-only):** Before choosing build/test/verification
+steps, use `ai-factory commands --json` from project root if that installed command
+is available and permitted. Pass explicit project-relative directories for monorepos
+and `--mapping <existing-project-json>` only when the project already supplies one.
+Otherwise inspect bounded package manifests directly; do not install tooling or run
+Make/Task/just, imports, lifecycle scripts, plugins, or `--help` to discover commands.
+Select the exact command ID and CWD; unresolved entries or multiple applicable
+definitions need source inspection/user selection, not a guessed default. Record the
+source path/hash and catalog `revision_sha256` with planned commands; refresh after
+either changes. `declared`
+and `not_run` are not proof of runnability or authorization to execute anything.
+
 Before planning, understand the existing code through **parallel exploration**.
 
 **Use `Task` tool with `subagent_type: Explore` to investigate the codebase in parallel.** This keeps the main context clean and speeds up research.
