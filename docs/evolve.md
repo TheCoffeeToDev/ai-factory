@@ -132,9 +132,13 @@ shared candidate ineligible. Approval names the exact shared file and every cons
 
 Moving duplicate rules is an explicit validated candidate, including deletions,
 provenance, applicability, and individual exceptions. There is no automatic migration.
-Originals remain if checks/application fail. Equivalent consolidation must demonstrate
+Originals remain if checks/application fail.
+
+Equivalent consolidation must demonstrate
 reduced duplicate copies as a maintenance benefit; unchanged behavior is not a claimed
-behavioral improvement. Fewer stored copies do not establish token savings. Shared
+behavioral improvement. Fewer stored copies do not establish token savings.
+
+Shared
 files use the same English rule format with `Applies to:` consumers. Empty shared
 files may be removed, but their parent directory is never deleted.
 
@@ -159,7 +163,9 @@ choice; symlink aliases are deduplicated, and symlink escapes are rejected.
 `--global` selects existing user-global skills for the active runtime, without installing
 anything or mixing in project skills. If the runtime does not expose its global root,
 evolve asks for an absolute path. Home paths are expanded and canonicalized before any
-file tool call. Project context can inform a global change, but approval names the exact
+file tool call.
+
+Project context can inform a global change, but approval names the exact
 absolute destination and its effect on every project using that skill. Evolution logs
 and the patch cursor stay in the current project. Global built-ins are skipped because
 there is no home-directory skill-context contract; the shared global layer above is project-local.
@@ -225,9 +231,11 @@ an overly broad condition; a narrower candidate must be compared again.
 Possible outcomes are **accept**, **narrow the scope**, **refine**, **keep the old
 version**, or **postpone for lack of data**. Only an exact revision with observed benefit
 and no detected regression can be offered for application. User approval remains required.
+
 Equal behavior is recorded as **the new rule did not improve behavior**; no new instruction
 is added for that candidate. An equivalent consolidation additionally checks measured
 duplicate reduction as maintenance benefit, with every consumer preserving behavior.
+
 Missing runs are `NOTRUN`, unavailable cost metrics are
 `UNKNOWN`, and inconclusive comparisons are postponed.
 When several rules will be applied together, their exact combination is also checked

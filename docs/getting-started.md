@@ -38,9 +38,15 @@ AI Factory works with any AI coding agent. During `ai-factory init`, you choose 
 | Qwen Code | `.qwen/` | `.qwen/skills/` |
 | Universal / Other | `.agents/` | `.agents/skills/` |
 
-When Claude Code is selected, AI Factory installs bundled Claude agent files into `.claude/agents/` and tracks them in `.ai-factory.json` with the universal `agentsDir`, `installedAgentFiles`, and `managedAgentFiles` fields. When Codex CLI is selected, AI Factory also installs bundled Codex native agent TOML files into `.codex/agents/` plus a managed `.codex/config.toml`. When Antigravity is selected, AI Factory installs bundled Antigravity agent files into `.agents/agents/`, triggered rules into `.agents/rules/`, and configures MCP in `.agents/mcp_config.json`. Extensions can additionally provide agent files for Codex or extension-defined runtimes through the same generic agent-files mechanism, but the bundled Claude/Codex/Antigravity package inventory is documented separately in [Subagents](subagents.md).
+When Claude Code is selected, AI Factory installs bundled Claude agent files into `.claude/agents/` and tracks them in `.ai-factory.json` with the universal `agentsDir`, `installedAgentFiles`, and `managedAgentFiles` fields. When Codex CLI is selected, AI Factory also installs bundled Codex native agent TOML files into `.codex/agents/` plus a managed `.codex/config.toml`.
 
-Codex CLI and Codex app receive Codex-style skill content and use `$aif-*` invocations. They can share `.agents/skills/` with Universal / Other: shared skills use the Codex `$aif-*` format, while all selected agents remain separate entries with their own MCP settings. Universal selected alone and other slash-command runtimes keep `/aif-*` examples. See [Codex skill directories and migration](configuration.md#codex-skill-directories-and-migration) for first-init defaults, saved overrides, and conflict recovery.
+When Antigravity is selected, AI Factory installs bundled Antigravity agent files into `.agents/agents/`, triggered rules into `.agents/rules/`, and configures MCP in `.agents/mcp_config.json`.
+
+Extensions can additionally provide agent files for Codex or extension-defined runtimes through the same generic agent-files mechanism, but the bundled Claude/Codex/Antigravity package inventory is documented separately in [Subagents](subagents.md).
+
+Codex CLI and Codex app receive Codex-style skill content and use `$aif-*` invocations. They can share `.agents/skills/` with Universal / Other: shared skills use the Codex `$aif-*` format, while all selected agents remain separate entries with their own MCP settings.
+
+Universal selected alone and other slash-command runtimes keep `/aif-*` examples. See [Codex skill directories and migration](configuration.md#codex-skill-directories-and-migration) for first-init defaults, saved overrides, and conflict recovery.
 
 MCP server configuration is supported for Claude Code, Cursor, GitHub Copilot, Roo Code, Kilo Code, OpenCode, Qwen Code, Codex app, Antigravity, and Universal / Other. Antigravity writes standard MCP settings to `.agents/mcp_config.json`. Universal writes standard MCP settings to `.mcp.json`. Other agents get skills installed with correct paths but without MCP auto-configuration.
 
@@ -68,7 +74,9 @@ ai-factory init
 /aif-plan Add user authentication with OAuth
 ```
 
-If scope is unclear, start with `/aif-explore` (optionally save results to `paths.research`, default: `.ai-factory/RESEARCH.md`). Use `/aif-explore ultra <topic>` when the investigation needs a durable system-analysis bundle with adaptive C4/ADR/dependency views. If the task is clear but the answer must be strictly verified, use `/aif-grounded`; if the direction is already clear, jump straight to `/aif-plan`. From there, AI Factory builds a plan, optionally creates a branch/worktree when git settings allow it, and you run `/aif-implement` to execute it step by step.
+If scope is unclear, start with `/aif-explore` (optionally save results to `paths.research`, default: `.ai-factory/RESEARCH.md`). Use `/aif-explore ultra <topic>` when the investigation needs a durable system-analysis bundle with adaptive C4/ADR/dependency views.
+
+If the task is clear but the answer must be strictly verified, use `/aif-grounded`; if the direction is already clear, jump straight to `/aif-plan`. From there, AI Factory builds a plan, optionally creates a branch/worktree when git settings allow it, and you run `/aif-implement` to execute it step by step.
 
 ## CLI Commands
 
@@ -128,7 +136,11 @@ See [Instruction Manifests](instruction-manifests.md) for preparing `composition
 - `--no-skills` - Select no base skills (useful when only MCP setup is needed); on reruns, removes unchanged base skills with verified ownership
 - `--mcp` - Comma-separated MCP servers to configure (`github`, `postgres`, `filesystem`, `chrome-devtools`, `playwright`)
 
-Rerunning `init` removes deselected base skills only when their saved raw ownership receipt proves that the installed contents are unchanged. This also applies to flat workflow files. Modified skills, extra user files inside a tracked skill directory, and installations without a verifiable receipt are preserved with a warning; the deselected skill is removed from CLI tracking. Cleanup also preserves custom skills, untracked files, and extension replacements. Bundled `loop-*` agent files require `aif-loop` to be selected; `init` and `update` remove previously tracked bundled loop agents when that skill is absent. Other bundled agent files are installed independently of the base skill selection.
+Rerunning `init` removes deselected base skills only when their saved raw ownership receipt proves that the installed contents are unchanged. This also applies to flat workflow files.
+
+Modified skills, extra user files inside a tracked skill directory, and installations without a verifiable receipt are preserved with a warning; the deselected skill is removed from CLI tracking. Cleanup also preserves custom skills, untracked files, and extension replacements.
+
+Bundled `loop-*` agent files require `aif-loop` to be selected; `init` and `update` remove previously tracked bundled loop agents when that skill is absent. Other bundled agent files are installed independently of the base skill selection.
 
 ### Upgrade from v1 to v2
 

@@ -107,8 +107,10 @@ Meaning preservation precedes readability: preserve modality, conditions,
 exceptions, uncertainty, warnings, numbers/units, and project terminology.
 Code, commands, identifiers, paths, link targets, and quoted errors/logs remain
 exact. Failed rewrites are restored; style exceptions are reported separately.
+
 The profile does not affect chat, issues, plans, requirement correctness, or
 quality-gate verdicts. It is not a ГОСТ Р 58049-2017 / ASD-STE100 certification.
+
 Upstream −71% EN / −55% RU lint-hit reductions are heuristic conformance
 metrics, not local results or evidence of fewer technical errors. The bundled
 [profile contract](../skills/aif-docs/references/WRITING-PROFILE.md) links to the
@@ -199,9 +201,13 @@ workflow:
 Mode precedence: explicit valid argument → valid `roadmap_next_mode` → concrete
 `plan_mode` → ultra (`ask` is not a concrete mode). An invalid explicit/present
 override warns and uses built-in ultra; it does not silently fall through to another
-configured preference. Invalid/missing capacity entries keep that mode's built-in
+configured preference.
+
+Invalid/missing capacity entries keep that mode's built-in
 value; a non-mapping value resets all capacity defaults with a warning. Booleans and
-quoted numbers are invalid capacities. S/M/L/XL use 1/2/3/4+ estimated points; XL
+quoted numbers are invalid capacities.
+
+S/M/L/XL use 1/2/3/4+ estimated points; XL
 has no known upper bound and is proposed alone. These are scope estimates, not
 execution time, token limits or a guarantee that the plan fits.
 

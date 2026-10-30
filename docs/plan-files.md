@@ -35,9 +35,11 @@ overrides the configured default.
 `index.md` is the manifest and only progress ledger. It owns the original
 request, settings, research/roadmap context, phase table of contents,
 cross-phase dependencies, task checkboxes, commit plan, and definition of done.
+
 It also contains the exact machine-readable marker
 `<!-- aif:plan-mode:ultra -->`. The marker is never localized; consumers use it
 instead of the human-readable `Mode` label when discovering bundle directories.
+
 Each phase file specifies exact code evidence, paths and symbols, ordered edits,
 interfaces, data flow, errors and logging, test policy, risks, acceptance
 criteria, and verification commands.
@@ -88,6 +90,7 @@ Missing sections remain missing rather than inferred from application code.
 The file map uses source `Files:` declarations or phase file tables. It preserves
 explicit actions/references, merges duplicate paths, expands `{a,b}`, and leaves
 wildcards/generated placeholders literal. Unknown or multiple actions remain visible.
+
 The optional stdlib formatter runs with isolated imports and no bytecode writes;
 it reads only JSON stdin and does not inspect/create project files. Flat workflows
 receive it through the existing references asset mechanism. Without Python, the
@@ -176,7 +179,9 @@ ai-factory audit-artifacts --strict
 ai-factory audit-artifacts --json
 ```
 
-Default discovery scans `.ai-factory`, `docs`, `README.md`, and `AGENTS.md` when those paths exist. Recursive default discovery skips noisy or generated subdirectories such as `qa`, `evolution`, and `evolutions`; pass those paths explicitly when you want to audit them. This default is intentionally default-layout first; projects that relocate artifact directories through `config.yaml` should pass those paths explicitly until the command becomes config-aware.
+Default discovery scans `.ai-factory`, `docs`, `README.md`, and `AGENTS.md` when those paths exist. Recursive default discovery skips noisy or generated subdirectories such as `qa`, `evolution`, and `evolutions`; pass those paths explicitly when you want to audit them.
+
+This default is intentionally default-layout first; projects that relocate artifact directories through `config.yaml` should pass those paths explicitly until the command becomes config-aware.
 
 Positional paths are explicit audit targets. Missing or outside-project explicit targets are failures so CI cannot pass after a typo or file rename. Missing default targets are skipped because many projects do not have every default file. Symlinked targets are canonicalized with `realpath`; a symlink that resolves outside the project is not scanned. For default targets this is a warning, and for explicit targets it is a failure.
 
@@ -248,7 +253,9 @@ derived from the parent of configured `paths.research`, so relocating that file
 also relocates ultra bundles without a second config key. See
 [Research and System Analysis](research.md).
 
-When research influences a plan, `/aif-plan` copies the relevant Active Summary from the selected legacy or bundled `RESEARCH.md` into `## Research Context`. The canonical `Source:` line wraps the exact path in backticks so spaces and brackets remain parseable. That embedded copy is the committed requirements snapshot for implementation and verification. Downstream skills compare its SHA256 revision and warn on drift instead of applying newer research or sibling bundle artifacts to an older plan; `Updated:` is a legacy fallback only when no hash exists.
+When research influences a plan, `/aif-plan` copies the relevant Active Summary from the selected legacy or bundled `RESEARCH.md` into `## Research Context`. The canonical `Source:` line wraps the exact path in backticks so spaces and brackets remain parseable. That embedded copy is the committed requirements snapshot for implementation and verification.
+
+Downstream skills compare its SHA256 revision and warn on drift instead of applying newer research or sibling bundle artifacts to an older plan; `Updated:` is a legacy fallback only when no hash exists.
 
 Plans created before revision markers were introduced may contain a `Source:` or `Reference:` line to `RESEARCH.md` without `Updated:` or `SHA256:` metadata. Downstream skills intentionally treat that as an unverified research link and emit a legacy compatibility `WARN [research-drift]`; they still execute against the embedded plan context instead of silently applying the current Active Summary.
 
@@ -264,7 +271,9 @@ Opt-in [project hypothesis cards](research.md#optional-project-hypotheses) stay
 outside the summary markers in `RESEARCH.md`. Only explicitly accepted actions
 or experiments become tasks. Their material planning facts, including exact
 hypothesis/source/experiment revisions and current outcome, must be promoted
-into a self-contained Active Summary before planning. The hash tracks that
+into a self-contained Active Summary before planning.
+
+The hash tracks that
 summary, not all observations; implementation completion does not confirm the
 hypothesis or silently update the plan's committed Research Context.
 
@@ -297,12 +306,16 @@ Clearer wording cannot increase confidence or change the contract.
 The rewrite gets an explicit `Meaning preservation: PASS` or `FAIL` before
 presentation of the plan or readability results. The `Meaning preservation:`
 label and `PASS` / `FAIL` / `N/A` verdict tokens stay fixed across languages;
-explanations follow the configured output language. Failed comparisons must be
+explanations follow the configured output language.
+
+Failed comparisons must be
 repaired or restored before
 the rewrite is presented as ready; missing source or unresolved ambiguity
 fails the gate. `/aif-improve` checks proposed edits even without `+check` and
 rechecks before saving. Explicitly approved behavioral changes remain separate
-from editorial changes. `/aif-docs` applies the same gate to documentation
+from editorial changes.
+
+`/aif-docs` applies the same gate to documentation
 rewrites, including translation, splitting, and consolidation. When no
 requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
 
@@ -310,11 +323,13 @@ requirements were rewritten, the verdict is `N/A — no requirements rewritten`.
 
 If `.ai-factory/ROADMAP.md` exists, `/aif-plan` may include a `## Roadmap Linkage` section in the plan file.
 This makes milestone alignment explicit for `/aif-implement` completion marking and `/aif-verify` roadmap gates.
+
 A selected group is saved in fast/full plans and ultra `index.md` as one primary
 `Milestone:` plus one quoted `Also completes:` line per additional milestone. Names/IDs
 are preserved, including commas inside quoted names. `/aif-improve` retains the group;
 implementation and verification assess completion of each linked milestone separately.
 Completed plans with still-open links remain pending reconciliation even after archiving.
+
 The English linkage/task headings and labels in examples are structural; artifact
 language still applies. Advisors and completion/verification recognize clear
 localized equivalents while preserving exact milestone names/IDs and task IDs.

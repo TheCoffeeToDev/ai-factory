@@ -4,11 +4,15 @@
 
 > AI Factory ships bundled runtime-native agent files for **Claude Code** and **Codex CLI**. `ai-factory init` installs Claude markdown agents into `.claude/agents/`, and installs Codex TOML agents into `.codex/agents/` plus a managed `.codex/config.toml`. `ai-factory update` refreshes those managed files without touching user-created custom agents. Extensions may additionally provide agent files for Codex or extension-defined runtimes through the extension manifest. This is baseline native-agent support for Codex, not full parity with the broader Claude bundle.
 
-This page focuses on the bundled Claude and Codex files shipped by the base AI Factory package. The generic agent-files infrastructure for extensions and dynamic runtimes is documented in [Extensions](extensions.md) and [Configuration](configuration.md). Extension-provided Codex helpers can be useful, but they are not automatic equivalents of the top-level Claude coordinator loop described on this page, and their runtime settings live in their own runtime-native agent files rather than being passed from Claude-style coordinator prompts. For bounded Codex helpers, prefer read-only advisory workers over writer roles.
+This page focuses on the bundled Claude and Codex files shipped by the base AI Factory package. The generic agent-files infrastructure for extensions and dynamic runtimes is documented in [Extensions](extensions.md) and [Configuration](configuration.md).
+
+Extension-provided Codex helpers can be useful, but they are not automatic equivalents of the top-level Claude coordinator loop described on this page, and their runtime settings live in their own runtime-native agent files rather than being passed from Claude-style coordinator prompts. For bounded Codex helpers, prefer read-only advisory workers over writer roles.
 
 ## Migration Note
 
-Bundled `loop-*` agent files are installed only when `aif-loop` is selected. This rule applies to Claude Markdown and Codex TOML bundles; the current Codex bundle contains no loop roles. Rerunning `init` without `aif-loop`, or running `update` when it is absent from `installedSkills`, removes previously tracked bundled loop files and their metadata. `update --force` respects the same selection. Untracked user files and extension-owned helpers are preserved; other bundled agents remain independent of skill selection.
+Bundled `loop-*` agent files are installed only when `aif-loop` is selected. This rule applies to Claude Markdown and Codex TOML bundles; the current Codex bundle contains no loop roles.
+
+Rerunning `init` without `aif-loop`, or running `update` when it is absent from `installedSkills`, removes previously tracked bundled loop files and their metadata. `update --force` respects the same selection. Untracked user files and extension-owned helpers are preserved; other bundled agents remain independent of skill selection.
 
 If you have an existing AI Factory project that was initialized before bundled agent-file support was added, running `ai-factory update` will automatically install bundled package agent files into the runtime-specific target directory (`.claude/agents/` for Claude, `.codex/agents/` for Codex). `loadConfig()` still reads legacy Claude-only `subagentsDir`, `installedSubagents`, and `managedSubagents`, but persists the universal `agentsDir`, `installedAgentFiles`, `managedAgentFiles`, and `agentFileSources` fields on the next save.
 

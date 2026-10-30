@@ -396,12 +396,16 @@ Reinstall, extension refresh, `init`, `update` (including `--force`), and `upgra
 preserve the existing unowned field while the source owner and its extension-native
 tool declaration remain unchanged, and recompose active requests. This includes user
 removals; changed bundled package defaults for that field require manual reconciliation.
+
 Removing a replacement uses the restored bundled skill's own declaration. Refreshing
 a replacement with a different source or native tool declaration uses the new source
 field, including on same-version local refreshes. Captured native grants and edits
 from the previous source are not carried over; remaining extensions' requests are
-recomposed with their ownership intact. Applied replacement records and installed
+recomposed with their ownership intact.
+
+Applied replacement records and installed
 extension sources establish the source identity, rather than a manifest claim alone.
+
 Permission targets participate in extension rollback. Managed receipts include the
 exact known permission composition; user changes are not promoted into proven package
 ownership.
@@ -566,7 +570,13 @@ The replacement skill is installed **under the base skill name**. For example, `
 
 #### Shared Skill Targets
 
-When Codex CLI and Codex app share a physical skill directory, each installation phase groups work by target. Results still count both runtimes, and each append/prepend injection marker occurs once. During update, a replacement installed by a successful extension refresh is retained; otherwise it is installed in the replacement phase, with base-skill fallback on failure. Installing or refreshing an extension captures each replacement's pre-install state: a partial write failure restores that state, including an initially absent skill, while successful sibling replacements remain installed. Final composition retries custom skills only on targets where refresh did not install them successfully, then restores injections. Re-init and upgrade also restore the registered extension composition after base installation.
+When Codex CLI and Codex app share a physical skill directory, each installation phase groups work by target. Results still count both runtimes, and each append/prepend injection marker occurs once.
+
+During update, a replacement installed by a successful extension refresh is retained; otherwise it is installed in the replacement phase, with base-skill fallback on failure.
+
+Installing or refreshing an extension captures each replacement's pre-install state: a partial write failure restores that state, including an initially absent skill, while successful sibling replacements remain installed.
+
+Final composition retries custom skills only on targets where refresh did not install them successfully, then restores injections. Re-init and upgrade also restore the registered extension composition after base installation.
 
 Extensions must have unambiguous skill ownership. Two different custom sources with the same basename conflict, even within one extension. A custom skill cannot claim a bundled name unless the manifest explicitly declares `replaces`. These conflicts and incompatible shared renderers are checked before installed skill changes.
 

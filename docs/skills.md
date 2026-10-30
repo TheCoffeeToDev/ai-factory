@@ -2,7 +2,9 @@
 
 # Core Skills
 
-**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy. The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
+**Config-aware skills read `.ai-factory/config.yaml` at startup** to resolve paths, language settings, workflow preferences, and rules hierarchy.
+
+The current config-aware set is `/aif`, `/aif-plan`, `/aif-implement`, `/aif-verify`, `/aif-commit`, `/aif-review`, `/aif-rules-check`, `/aif-roadmap`, `/aif-explore`, `/aif-loop`, `/aif-rules`, `/aif-architecture`, `/aif-docs`, `/aif-fix`, `/aif-improve`, `/aif-evolve`, `/aif-skills-audit`, `/aif-transfer`, `/aif-reference`, `/aif-distillation`, `/aif-security-checklist`, `/aif-qa`, `/aif-qa-check`, `/aif-archive`, and `/aif-warmup`.
 
 `/aif` is also the primary writer for `config.yaml`: the initial file comes from the commented template, and setup reruns update only managed keys while preserving comments, unrelated manual edits, and `rules.<area>` entries owned by `/aif-rules`.
 
@@ -21,13 +23,16 @@ A review report's **Questions** section is ordinary report content.
 Ask one focused question at a time with labelled options, in `language.ui` when
 configured. Native batching is allowed only for independent questions when the
 tool supports it. Open-ended input uses native free-text support or plain text
-when the schema cannot represent it. If no usable tool exists, ask the same question as plain text
+when the schema cannot represent it.
+
+If no usable tool exists, ask the same question as plain text
 with numbered choices and accept a free-text answer. Pause actions that depend
 on the answer; independent read-only investigation can continue. An unavailable
 UI does not mean the session is autonomous.
 
 Cancellation, an empty response, a preselected option, and elapsed time are not
 answers or approvals. Reuse decisions already supplied in the conversation.
+
 Background workers and subagents return questions to their parent rather than
 prompting the user. Explicit non-interactive workflows use their declared
 defaults for optional preferences and report assumptions. Required approvals
@@ -37,7 +42,9 @@ blocked-result and quality-gate formats are preserved.
 `/aif-plan`, `/aif-review`, and `/aif-verify` embed this contract so each can be
 installed independently. Skill authors can copy the shared [question-delivery
 snippet](../skills/aif-skill-generator/references/BEST-PRACTICES.md#runtime-aware-questions)
-into other interactive skills. `/aif-skill-generator` applies this contract before
+into other interactive skills.
+
+`/aif-skill-generator` applies this contract before
 mode selection, including URL-based Learn Mode, and embeds it in every generated
 interactive skill. Runtime-specific historical examples such as
 [#62](https://github.com/lee-to/ai-factory/issues/62) do not replace the current
@@ -52,11 +59,19 @@ revision, resolve ambiguities, and report actual execution separately from disco
 
 These skills form the core development loop. See [Development Workflow](workflow.md) for the full diagram and how they connect.
 
-`/aif`, `/aif-implement`, `/aif-verify`, and `/aif-fix` keep mode dispatch, ownership, integrity checks, and stop conditions in their entrypoints. Detailed procedures and templates live in their `references/` directories. Read each reference in full only for its stated route, before the dependent step; missing required references stop that step. Listing/status, inline implementation, recovery, completion, and plan-first fixes do not preload unrelated procedures. Managed extension overrides remain in the entrypoint and retain their precedence; project skill-context overrides still apply to all outputs.
+`/aif`, `/aif-implement`, `/aif-verify`, and `/aif-fix` keep mode dispatch, ownership, integrity checks, and stop conditions in their entrypoints. Detailed procedures and templates live in their `references/` directories. Read each reference in full only for its stated route, before the dependent step; missing required references stop that step.
 
-Reference names are distinct across these skills so flat workflow installs can share a references directory. Codex, KiloCode workflow, and Qwen installations render command invocation prefixes in Markdown references as well as the entrypoint. The shared machine-readable gate contract and `aif-gate-result` JSON blocks retain canonical command identifiers. Helpers and data files retain their original bytes; template variables in Markdown still use the selected runtime's paths.
+Listing/status, inline implementation, recovery, completion, and plan-first fixes do not preload unrelated procedures. Managed extension overrides remain in the entrypoint and retain their precedence; project skill-context overrides still apply to all outputs.
 
-From the AI Factory source checkout, run `node scripts/measure-skill-entrypoints.mjs --baseline <pre-refactor-commit>` for a reproducible package instruction footprint (add `--json` for per-file evidence). It counts UTF-8 bytes/lines for each entrypoint and the full declared reference set of each route. It excludes extension injections, project/source context, executable helpers, tokenization, and actual model behavior. Full sessions may combine routes; shorter entrypoints alone do not prove lower total context usage. Run `npm run test:selective-references` in that checkout for installation/update and route-boundary checks.
+Reference names are distinct across these skills so flat workflow installs can share a references directory. Codex, KiloCode workflow, and Qwen installations render command invocation prefixes in Markdown references as well as the entrypoint.
+
+The shared machine-readable gate contract and `aif-gate-result` JSON blocks retain canonical command identifiers. Helpers and data files retain their original bytes; template variables in Markdown still use the selected runtime's paths.
+
+From the AI Factory source checkout, run `node scripts/measure-skill-entrypoints.mjs --baseline <pre-refactor-commit>` for a reproducible package instruction footprint (add `--json` for per-file evidence). It counts UTF-8 bytes/lines for each entrypoint and the full declared reference set of each route.
+
+It excludes extension injections, project/source context, executable helpers, tokenization, and actual model behavior. Full sessions may combine routes; shorter entrypoints alone do not prove lower total context usage.
+
+Run `npm run test:selective-references` in that checkout for installation/update and route-boundary checks.
 
 ### `/aif-warmup`
 Load the essential project context before starting work:
@@ -124,7 +139,9 @@ generated artifact prose; downstream plan rewrites must preserve it exactly
 even when `language.artifacts` differs. It is omitted only when the plan is
 created solely from `RESEARCH.md` without an explicit user request.
 
-If a relevant configured or marked ultra-bundle `RESEARCH.md` exists, `/aif-plan` may read its `Active Summary` as optional context. It selects at most one source, never by recency alone. It includes `Research Context` only when research content influenced the generated plan. Linked plans include the exact `Source:` path with revision metadata so downstream skills treat the embedded context as committed requirements and warn if live research has drifted.
+If a relevant configured or marked ultra-bundle `RESEARCH.md` exists, `/aif-plan` may read its `Active Summary` as optional context. It selects at most one source, never by recency alone. It includes `Research Context` only when research content influenced the generated plan.
+
+Linked plans include the exact `Source:` path with revision metadata so downstream skills treat the embedded context as committed requirements and warn if live research has drifted.
 
 If the resolved roadmap artifact exists, `/aif-plan` may also capture a `Roadmap Linkage` section (primary milestone, any additional selected milestones, and brief rationale) to make milestone alignment explicit.
 
@@ -162,10 +179,13 @@ search the archive and ambiguous active/archive copies require a choice.
 Reads single-file plans or ultra `index.md` completely. For linked ultra phases it
 reads only titles, objectives and file-change tables, not implementation bodies.
 Reports supplied settings, task progress/dependencies, decisions/out-of-scope,
-commits, questions and roadmap linkage without inventing missing sections. The
+commits, questions and roadmap linkage without inventing missing sections.
+
+The
 optional isolated stdlib Python helper formats deduplicated planned paths, expands
 literal braces, preserves phase/task/action references and collapses folder chains;
 manual rendering works without Python. Globs/placeholders remain declarations.
+
 It does not update checkboxes, sync Handoff, invoke fix, or verify execution. See
 [Plan overview](plan-files.md#read-only-plan-overview).
 
@@ -185,16 +205,20 @@ advice; incomplete dependencies are not treated as completed inside a proposal.
 Reports the proposal, existing code, exclusions, up to two alternatives and remaining
 milestone statuses. `Milestone:` / `Also completes:` in active plan linkage reserve
 work; completed-but-unreconciled plans, including archived plans, also prevent duplicate recommendations. It
-offers finishing an unfinished plan first. Only an explicit scope/mode/start choice
+offers finishing an unfinished plan first.
+
+Only an explicit scope/mode/start choice
 can hand off to installed `/aif-plan`; otherwise all artifacts remain read-only.
 Grouped handoff carries a primary `Milestone:` and the remaining `Also completes:`
 names into the new plan in every mode, preserving claims without editing existing plans.
 The copyable request includes the roadmap source and an explicit ordered milestone
 list, so a fresh session receives the same selection. The planner retains the full
 selection; completion and verification check each linked milestone independently.
+
 Both advisors read clear localized plan headings and labels, including task progress
 and primary/additional milestone linkage in active and archived plans. Ambiguity
 keeps progress/claims uncertain rather than making work ready again.
+
 Unavailable UI uses plain-text choices; background runs return pending choices.
 See [roadmap-next settings](config-reference.md#roadmap-next-defaults) for fallback
 precedence, user-owned capacities and invalid-value behavior.
@@ -518,7 +542,9 @@ without blocking the flow.
 **Optional technical writing profile** — `writing.profile: simple-technical`
 applies adapted RU/EN SimpleEn-RU rules only to exact files in `writing.targets`
 that are already in the authorized docs scope, including runbooks. It is off by
-default. Resolve artifact language first; preserve project dictionary terms,
+default.
+
+Resolve artifact language first; preserve project dictionary terms,
 code, commands, and quoted errors. Meaning preservation precedes readability;
 this does not validate requirement correctness or certify standards compliance.
 See [Writing settings](config-reference.md#writing).
@@ -883,17 +909,33 @@ Modes:
 | `human` | Shows one `TC-NNN` case at a time, asks whether it works, checks passed cases, and records failed comments from the user after mandatory redaction of sensitive values |
 | `agent` | User-only automated execution through the appropriate surface for each case: browser, CLI, API, automated tests, or file/document checks. Browser/UI cases require live browser execution, preferring the in-app Browser and falling back to Playwright MCP; non-browser cases must not be blocked just because browser automation is unavailable. Reads reusable QA agent context/history first, asks the user for missing URL, login, access, setup, route, selector, command, test filter, or fixture information before blocking recoverable cases, offers human-mode continuation only for human-verifiable blocked cases, and requires explicit authorization for unknown/production targets and destructive or external-side-effect cases |
 
-Results are saved to `paths.qa/<branch-slug>/qa-check.md`. Passed cases are checked, failed or blocked cases stay unchecked with comments. The source `test-cases.md` remains read-only. Current results are bound to the tested commit SHA plus working tree digest, or to a manual build/version identifier when git is unavailable, plus the full `test-cases.md` digest and per-case digests; stale results are not counted as current after the branch, dirty working tree, or source cases change. Browser evidence, command output summaries, API observations, file checks, and human-entered failure comments are redacted before they are persisted.
+Results are saved to `paths.qa/<branch-slug>/qa-check.md`. Passed cases are checked, failed or blocked cases stay unchecked with comments. The source `test-cases.md` remains read-only.
 
-Browser/UI automation is saved as one dependency-free Playwright-compatible script per case under `paths.qa/<branch-slug>/browser-replay/TC-NNN.js`. A script is reusable only when its case digest, approved-target fingerprint, and last proven content digest all match. Navigation uses a runtime-bound `AIF_BASE_URL` placeholder, so an old preview or staging target is never silently reused. New or changed scripts run once as their proof; they are not immediately run a second time, and repeating a side-effect case requires restored preconditions plus renewed authorization. Before repair/rebinding, the original script and error are preserved under `browser-replay/history/`. Missing selectors are treated as possible product regressions unless browser evidence proves only locator mechanics changed.
+Current results are bound to the tested commit SHA plus working tree digest, or to a manual build/version identifier when git is unavailable, plus the full `test-cases.md` digest and per-case digests; stale results are not counted as current after the branch, dirty working tree, or source cases change. Browser evidence, command output summaries, API observations, file checks, and human-entered failure comments are redacted before they are persisted.
 
-After a revision, worktree, or manual build change, safe matching scripts for both prior passes and failures are replayed to verify the fix and catch regressions. Replay is the baseline rather than the only check: the agent records whether it ran or skipped one bounded exploratory pass based on concrete risk signals such as shared UI/navigation/auth/state changes, uncertain fix behavior, replay repair, or unexpected adjacent behavior. Narrow isolated fixes with directly covering successful replay skip exploration. Credentials, tokens, cookies, and token-bearing URLs are never persisted in replay artifacts.
+Browser/UI automation is saved as one dependency-free Playwright-compatible script per case under `paths.qa/<branch-slug>/browser-replay/TC-NNN.js`. A script is reusable only when its case digest, approved-target fingerprint, and last proven content digest all match.
 
-Agent mode also maintains `paths.qa/agent-context.md` and `paths.qa/agent-history.md` as cross-QA memory, not per-run logs. `agent-context.md` stores curated non-sensitive facts that unblock future automated QA runs, such as stable target URLs, safe command patterns, reusable test-filter conventions, login route, test account role, seed data patterns, stable selectors, and field IDs. `agent-history.md` is append-only reusable learning for recurring blockers, user answers, resolved friction, command patterns, navigation notes, and selector discoveries. Branch names, QA target paths, `TC-*` mappings, summary counts, assertion totals, one-off command transcripts, and plan-specific claims such as "browser automation is not required" stay in branch-specific `qa-check.md`. Secrets such as passwords, tokens, cookies, authorization headers, one-time codes, and token-bearing URLs must be redacted or omitted.
+Navigation uses a runtime-bound `AIF_BASE_URL` placeholder, so an old preview or staging target is never silently reused. New or changed scripts run once as their proof; they are not immediately run a second time, and repeating a side-effect case requires restored preconditions plus renewed authorization.
 
-Internal deterministic checks, such as service-method outputs, cache/materialized data behavior, formula results, raw database invariants, and CLI internals, are treated as automated checks. `/aif-qa-check agent` should find and run an existing narrow test or command for them; when that test passes, the corresponding `TC-*` is marked `Passed` with the command/test evidence. If coverage is missing, it blocks with a missing-automated-coverage note instead of asking a human to manually verify arrays or database values. Human-mode continuation is offered only for blocked cases that are actually human-verifiable.
+Before repair/rebinding, the original script and error are preserved under `browser-replay/history/`. Missing selectors are treated as possible product regressions unless browser evidence proves only locator mechanics changed.
 
-For browser/UI cases that need login or a specific user state, `/aif-qa-check agent` must resolve a browser test identity before blocking: reuse known safe test accounts, inspect local/test fixtures, create a disposable fixture when the environment is clearly local/test and tooling is available, or ask the user which test credentials/setup to use. Reusable test-only credentials may be saved to `agent-context.md` only with explicit user permission; production or personal credentials, cookies, sessions, and one-time codes are never persisted.
+After a revision, worktree, or manual build change, safe matching scripts for both prior passes and failures are replayed to verify the fix and catch regressions. Replay is the baseline rather than the only check: the agent records whether it ran or skipped one bounded exploratory pass based on concrete risk signals such as shared UI/navigation/auth/state changes, uncertain fix behavior, replay repair, or unexpected adjacent behavior. Narrow isolated fixes with directly covering successful replay skip exploration.
+
+Credentials, tokens, cookies, and token-bearing URLs are never persisted in replay artifacts.
+
+Agent mode also maintains `paths.qa/agent-context.md` and `paths.qa/agent-history.md` as cross-QA memory, not per-run logs.
+
+`agent-context.md` stores curated non-sensitive facts that unblock future automated QA runs, such as stable target URLs, safe command patterns, reusable test-filter conventions, login route, test account role, seed data patterns, stable selectors, and field IDs. `agent-history.md` is append-only reusable learning for recurring blockers, user answers, resolved friction, command patterns, navigation notes, and selector discoveries.
+
+Branch names, QA target paths, `TC-*` mappings, summary counts, assertion totals, one-off command transcripts, and plan-specific claims such as "browser automation is not required" stay in branch-specific `qa-check.md`. Secrets such as passwords, tokens, cookies, authorization headers, one-time codes, and token-bearing URLs must be redacted or omitted.
+
+Internal deterministic checks, such as service-method outputs, cache/materialized data behavior, formula results, raw database invariants, and CLI internals, are treated as automated checks. `/aif-qa-check agent` should find and run an existing narrow test or command for them; when that test passes, the corresponding `TC-*` is marked `Passed` with the command/test evidence.
+
+If coverage is missing, it blocks with a missing-automated-coverage note instead of asking a human to manually verify arrays or database values. Human-mode continuation is offered only for blocked cases that are actually human-verifiable.
+
+For browser/UI cases that need login or a specific user state, `/aif-qa-check agent` must resolve a browser test identity before blocking: reuse known safe test accounts, inspect local/test fixtures, create a disposable fixture when the environment is clearly local/test and tooling is available, or ask the user which test credentials/setup to use.
+
+Reusable test-only credentials may be saved to `agent-context.md` only with explicit user permission; production or personal credentials, cookies, sessions, and one-time codes are never persisted.
 
 - Config policy: config-aware; reads `paths.description`, `paths.architecture`, `paths.qa`, `language.ui`, `language.artifacts`, `language.technical_terms`, `git.enabled`
 

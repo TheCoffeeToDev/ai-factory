@@ -217,7 +217,19 @@ project artifacts. Planning begins only after the user selects a scope and start
 | `/aif-qa-check` | Execute QA cases manually or through automated agent checks | No | `paths.qa/<branch-slug>/qa-check.md` and browser replay scripts; agent mode also maintains `paths.qa/agent-context.md` and `paths.qa/agent-history.md` |
 | `/aif-archive` | Archive completed plans and trim closed roadmap milestones | No | `paths.archive/plans/*`, `paths.archive/roadmap/*.md` (default: `.ai-factory/archive/`) |
 
-`/aif-qa change-summary` normally derives context from git diffs. When `git.enabled=false` or the target/base refs cannot be resolved locally or through `origin/<base_branch>`, it asks for manual change context instead of failing on git commands. `/aif-qa-check` consumes the resulting `test-cases.md`; human mode asks for one result at a time, and agent mode uses the appropriate execution surface for each case: browser, CLI, API, automated tests, or file/document checks. Browser/UI cases still require live browser execution, preferring the in-app Browser and falling back to Playwright MCP. Their dependency-free replay scripts are reused only when case, approved-target, and proven-content digests match; a new or changed script runs once as proof, while stateful repeat execution requires restored preconditions and renewed authorization. Original scripts/errors are preserved before repair, and selector failures remain product failures unless only locator mechanics demonstrably changed. Replay is followed by a recorded decision to run or skip one bounded exploratory pass based on concrete change-risk signals, so saved scripts do not become the only source of browser coverage. Non-browser cases are not blocked merely because browser automation is unavailable. Agent mode reads `agent-context.md` and `agent-history.md` first, asks the user for missing recoverable execution context before blocking, records only reusable non-sensitive cross-QA facts in those root-level files, and offers human-mode continuation only for human-verifiable blocked cases. Run-specific details stay in branch-specific `qa-check.md`. QA check results are bound to the tested commit plus worktree digest, or to a manual build identifier when git is unavailable, plus source/case/replay digests, so stale passes are not counted after the branch, dirty working tree, target, replay script, or test cases change.
+`/aif-qa change-summary` normally derives context from git diffs. When `git.enabled=false` or the target/base refs cannot be resolved locally or through `origin/<base_branch>`, it asks for manual change context instead of failing on git commands.
+
+`/aif-qa-check` consumes the resulting `test-cases.md`; human mode asks for one result at a time, and agent mode uses the appropriate execution surface for each case: browser, CLI, API, automated tests, or file/document checks.
+
+Browser/UI cases still require live browser execution, preferring the in-app Browser and falling back to Playwright MCP.
+
+Their dependency-free replay scripts are reused only when case, approved-target, and proven-content digests match; a new or changed script runs once as proof, while stateful repeat execution requires restored preconditions and renewed authorization.
+
+Original scripts/errors are preserved before repair, and selector failures remain product failures unless only locator mechanics demonstrably changed. Replay is followed by a recorded decision to run or skip one bounded exploratory pass based on concrete change-risk signals, so saved scripts do not become the only source of browser coverage. Non-browser cases are not blocked merely because browser automation is unavailable.
+
+Agent mode reads `agent-context.md` and `agent-history.md` first, asks the user for missing recoverable execution context before blocking, records only reusable non-sensitive cross-QA facts in those root-level files, and offers human-mode continuation only for human-verifiable blocked cases. Run-specific details stay in branch-specific `qa-check.md`.
+
+QA check results are bound to the tested commit plus worktree digest, or to a manual build identifier when git is unavailable, plus source/case/replay digests, so stale passes are not counted after the branch, dirty working tree, target, replay script, or test cases change.
 
 ## Artifact Ownership and Context Gates
 
@@ -268,10 +280,12 @@ These skills form the development pipeline. Each one feeds into the next.
 Thinking-partner mode for exploring ideas, constraints, and trade-offs without
 implementing code. Reads resolved context plus relevant active plan artifacts.
 If you want the context to persist after `/clear`, save it to `paths.research`.
+
 Ultra mode, selected explicitly or through `workflow.explore_mode: ultra`,
 persists an English-slug topic bundle. A leading `regular` overrides the default.
 Ultra always writes a manifest `INDEX.md` and plan-compatible `RESEARCH.md`, then adds C4 views, ADRs,
 or a dependency graph only when evidence crosses their inclusion thresholds.
+
 Ultra additionally checks that Active Summary claims have self-contained bundle
 support and material supporting conclusions are reflected back into the summary.
 When direction is clear, transition to `/aif-plan fast`, `full`, or `ultra`.
@@ -315,21 +329,26 @@ High-level project planning. Creates `paths.roadmap` (default: `.ai-factory/ROAD
 Three modes — **fast** (quick single file), **full** (rich single file), and
 **ultra** (a directory whose `index.md` owns scope/progress and whose phase files
 specify implementation in code-level detail). Full and ultra share testing,
-logging, docs, roadmap, branch, and worktree preferences. In every mode, an explicitly
+logging, docs, roadmap, branch, and worktree preferences.
+
+In every mode, an explicitly
 selected milestone group is persisted as `Milestone:` plus `Also completes:` lines;
 completion checks each linked milestone separately, and archived completed plans
 with open roadmap links remain pending reconciliation. Sequential IDs put
 `NNNN_` on the full filename or ultra directory and count active full files plus
 directories whose `index.md` contains the stable ultra marker.
+
 A leading mode token overrides `workflow.plan_mode`. With its default `ask`,
 omitting the mode preserves the full/fast question (fast in non-interactive
 Handoff mode). Ultra requires a leading `ultra` token or `workflow.plan_mode: ultra`.
 See [Command defaults](config-reference.md#command-defaults).
+
 If the description comes from a research Active Summary, keep the resolved mode
 (including configured ultra) without asking for the mode again.
 Ultra discovery uses the exact untranslated
 `<!-- aif:plan-mode:ultra -->` entrypoint marker, so artifact localization cannot
 change bundle recognition.
+
 All modes preserve an explicit `Original Request`; research-backed plans commit
 a revisioned `Research Context`. Ultra additionally requires exact paths and
 symbols, ordered edits, contracts, errors/logging, test policy, acceptance
@@ -350,14 +369,20 @@ have to reconstruct architecture. See [Plan Files](plan-files.md).
 Second-pass analysis. Finds missing tasks, fixes dependencies, removes redundant
 work, and reports useful-but-out-of-scope ideas. Discovery priority is explicit
 file/ultra directory, branch-based full/ultra artifact, single named artifact,
-fast plan, then fix plan. Ultra refinement reads and updates `index.md` plus all
+fast plan, then fix plan.
+
+Ultra refinement reads and updates `index.md` plus all
 linked phase files as one bundle, preserves task progress in the index, and
 reruns link/task/dependency integrity checks. `Original Request` stays verbatim;
 revisioned Research Context remains committed scope and drift produces
 `WARN [research-drift]`. `--list` is read-only.
 
 Optional `+check` (also enabled by `workflow.improve_check: true`, overridden
-for one invocation with `--no-check`) runs a single fresh-context `review-validator` with a runtime-enforced `Read`, `Glob`, `Grep` allowlist on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation. If that allowlist is unavailable or unenforced (including Codex), no validator is dispatched: findings stay unchanged, counters are omitted, and `WARN [+check]` explains the limitation. There is no full-tool fallback. Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
+for one invocation with `--no-check`) runs a single fresh-context `review-validator` with a runtime-enforced `Read`, `Glob`, `Grep` allowlist on the refinements (`missing` / `improvements` / `removals` / `out_of_scope` groups), drops invented items, rewrites partially-correct ones, and appends `Hidden by +check` / `Adjusted by +check` counters to the Step 5 Summary block. Dependency fixes are recomputed against the filtered list after validation.
+
+If that allowlist is unavailable or unenforced (including Codex), no validator is dispatched: findings stay unchanged, counters are omitted, and `WARN [+check]` explains the limitation. There is no full-tool fallback.
+
+Combined with `--list`, validation flags and the configured default are silently ignored — there is no refinement to validate.
 
 ### `/aif-loop [new|resume|status|stop|list|history|clean] [task or alias]` — iterative quality loop
 
@@ -370,7 +395,15 @@ for one invocation with `--no-check`) runs a single fresh-context `review-valida
 /aif-loop clean courses-api-ddd
 ```
 
-Runs a strict Reflex Loop with 6 phases: PLAN -> PRODUCE||PREPARE -> EVALUATE -> CRITIQUE -> REFINE. PRODUCE and PREPARE run in parallel via `Task` tool; EVALUATE runs check groups in parallel. Before iteration 1, it always asks for explicit confirmation of success criteria, max iterations, and a non-`none` time budget (even if they are already in task text). Keeps one active loop pointer under `paths.evolution/current.json` and per-task run state in `paths.evolution/<alias>/run.json` with append-only events in `history.jsonl` and latest output in `artifact.md`. Stops by a fixed precedence contract — `threshold_reached`, `no_major_issues`, `user_stop`, `stagnation`, `budget_exceeded`, `iteration_limit` (default max iterations: 4) — where the optional soft budget (`run.json.max_completed_phase_seconds`) is checked at phase boundaries only, never interrupts a running phase, and counts completed segments alone. If loop stops on max iterations or the time budget without passing criteria, final summary includes distance-to-success metrics (threshold gap + remaining blocking fail-rules). Use `list` to see all loop runs, `history` to view events, `clean` to remove old loop runs.
+Runs a strict Reflex Loop with 6 phases: PLAN -> PRODUCE||PREPARE -> EVALUATE -> CRITIQUE -> REFINE. PRODUCE and PREPARE run in parallel via `Task` tool; EVALUATE runs check groups in parallel.
+
+Before iteration 1, it always asks for explicit confirmation of success criteria, max iterations, and a non-`none` time budget (even if they are already in task text).
+
+Keeps one active loop pointer under `paths.evolution/current.json` and per-task run state in `paths.evolution/<alias>/run.json` with append-only events in `history.jsonl` and latest output in `artifact.md`.
+
+Stops by a fixed precedence contract — `threshold_reached`, `no_major_issues`, `user_stop`, `stagnation`, `budget_exceeded`, `iteration_limit` (default max iterations: 4) — where the optional soft budget (`run.json.max_completed_phase_seconds`) is checked at phase boundaries only, never interrupts a running phase, and counts completed segments alone.
+
+If loop stops on max iterations or the time budget without passing criteria, final summary includes distance-to-success metrics (threshold gap + remaining blocking fail-rules). Use `list` to see all loop runs, `history` to view events, `clean` to remove old loop runs.
 
 For full contracts and state transition rules, see [Reflex Loop](loop.md).
 
@@ -390,6 +423,7 @@ needed. Executes tasks one by one with commit checkpoints. Discovery supports an
 explicit plan file or ultra directory, branch/single named full or ultra
 artifact, fast plan, then fix-plan redirect. For ultra, it reads the complete
 phase file before executing a task and updates progress only in `index.md`.
+
 `Original Request` supplies original scope; committed Research Context supplies
 revisioned requirements. `--list` is read-only. Docs policy remains
 `Docs: yes` → mandatory `/aif-docs` checkpoint; `no`/unset → `WARN [docs]`.
@@ -409,7 +443,11 @@ When executing through the Claude top-level `implement-coordinator`, the quality
 /aif-verify --strict # Strict mode — zero tolerance for gaps
 ```
 
-Optional step after `/aif-implement`. Goes through every task in the plan and verifies the code actually implements it. If the plan contains `Original Request`, `/aif-verify` uses it as original scope context while the task list and committed Research Context remain the executable verification inputs. If the plan references `RESEARCH.md`, `/aif-verify` verifies against the embedded Research Context and checks the exact legacy or bundled source only for revision drift. Checks build, tests, lint, looks for leftover TODOs, undocumented env vars, and plan-vs-code drift. If gaps are found, it first suggests `/aif-fix <issue summary>` (recommended). If verification is clean, it suggests `/aif-security-checklist` and `/aif-review`. Use `--strict` before merging to the configured base branch.
+Optional step after `/aif-implement`. Goes through every task in the plan and verifies the code actually implements it.
+
+If the plan contains `Original Request`, `/aif-verify` uses it as original scope context while the task list and committed Research Context remain the executable verification inputs. If the plan references `RESEARCH.md`, `/aif-verify` verifies against the embedded Research Context and checks the exact legacy or bundled source only for revision drift.
+
+Checks build, tests, lint, looks for leftover TODOs, undocumented env vars, and plan-vs-code drift. If gaps are found, it first suggests `/aif-fix <issue summary>` (recommended). If verification is clean, it suggests `/aif-security-checklist` and `/aif-review`. Use `--strict` before merging to the configured base branch.
 
 Also runs read-only context gates against the resolved architecture, roadmap, and RULES.md artifacts. In normal mode, roadmap/milestone linkage gaps are warnings; in strict mode, clear roadmap mismatch is a failure, while missing `feat`/`fix`/`perf` milestone linkage remains a warning. The final output appends an `aif-gate-result` JSON block for orchestrators.
 
@@ -419,21 +457,45 @@ Checks only rules compliance for staged changes, working-tree changes, or a prov
 
 ### `/aif-review [PR number or URL] [+check]` — code review with read-only context gates
 
-Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks. Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
+Explicit `+check` is driven by the shared executable host protocol in [CHECK-MODE.md](../skills/aif-review/references/CHECK-MODE.md). Its source → internal reviewer → validator → gate sequence is exercised offline by `npm run test:review-check`, also included in `npm test`, using deterministic tool responses and versioned reports. [Replay maintenance](../skills/aif-review/tests/README.md) describes the recording format and failure checks.
+
+Protocol v3 independently collects config and description at the pinned head before Reviewer. A nonempty excerpt and its file record must match that independent result, including the description path resolved from pinned config; Reviewer-supplied content and hashes alone cannot establish provenance; an unavailable description is recorded explicitly and retains source uncertainty. Validator blocks with missing, blank, or duplicate `Reason` keep the original finding and emit a warning.
 
 Reviews staged changes or PR diff and reports correctness/security/performance findings. Includes read-only architecture/roadmap/rules gate notes in review output (`WARN` for non-blocking inconsistencies, `ERROR` only for explicitly blocking criteria), then appends an `aif-gate-result` JSON block.
 
 For application API changes, the [API compatibility reference](../skills/aif-review/references/API-COMPATIBILITY.md) adds a bounded comparison of supported contract revisions and actual consumers. It separates wire compatibility from semantics and preserves the existing findings, validation, source and gate contracts.
 
-In PR mode, the review and validator share one source package bound to full base/head/merge-base SHAs and the exact diff hash. Additional code and versioned context artifacts come from that tree without switching branches. **Review Sources** lists file versions, local discrepancies, unavailable context and PR freshness. Missing evidence remains a visible limitation (`warn` at minimum), including empty-item runs and validation failure; actionable hypotheses retain the existing confidence-marker lifecycle. See the [review reference](skills.md) and [source package contract](../skills/aif-review/references/PR-SOURCE.md).
+In PR mode, the review and validator share one source package bound to full base/head/merge-base SHAs and the exact diff hash. Additional code and versioned context artifacts come from that tree without switching branches.
 
-The finding stage is **coverage-first**: it reports uncertain and low-severity findings instead of pre-filtering them. Severity picks the section by impact, and confidence is carried separately as a `(confidence: low)` / `(confidence: medium)` marker on the item text. A marker never reaches the published gate: a review that produced at least one marker runs the `+check` validation automatically, even when the flag was not given. Each marked finding is either confirmed — returned without the marker and counted as an ordinary finding of its section, so a confirmed critical is a blocker and drives `fail` — or refuted and dropped. The `aif-gate-result` block is computed from the post-validation findings, so it never encodes an unverified potential blocker (`warn` plus `suggested_next.command: null`). If the pass fails to resolve a marker — a contract-violating or malformed validator response for that item, or a whole-dispatch failure while markers are present — the gate reports the failure itself rather than a verdict: `status: fail`, `blocking: true`, a `review-validation-failed` blocker, the unresolved findings excluded from `blockers`, and `suggested_next.command: null` with a reason to re-run `/aif-review +check`; a `WARN [+check]` line names the cause.
+**Review Sources** lists file versions, local discrepancies, unavailable context and PR freshness. Missing evidence remains a visible limitation (`warn` at minimum), including empty-item runs and validation failure; actionable hypotheses retain the existing confidence-marker lifecycle. See the [review reference](skills.md) and [source package contract](../skills/aif-review/references/PR-SOURCE.md).
 
-Optional `+check` runs a single fresh-context `review-validator` subagent — on Claude Code the bundled agent allowlisted to `Read`, `Glob`, `Grep`; on Codex a read-only-sandbox agent without a tool allowlist — on the drafted findings (Critical Issues and Suggestions only): drops invented items, rewrites partially-correct ones in place, and may reclassify items between the two severity levels — promote a suggestion to "Critical Issues" when the cited behavior is actually merge-blocking, or demote a critical finding to "Suggestions" when the framing was too harsh. Severity definitions and the promotion/demotion rules live in `skills/aif-review/references/SEVERITY.md`. The rendered review gains a final line `Filtered: N hidden, M adjusted, K reclassified by +check`. The `aif-gate-result` block is rebuilt **after** filtering — from the surviving findings merged with the unchanged context-gate result, so a failing context gate keeps `status` at `fail` even when no Critical Issues remain; `suggested_next` is recomputed (`/aif-commit` when no blockers remain; otherwise `/aif-fix`, or the failing gate's own command — `/aif-rules`, `/aif-architecture`, `/aif-roadmap` — when a single context gate is the sole blocker). If the validator call fails entirely the unfiltered review is kept and a single `WARN [+check]` line is appended above the `aif-gate-result` block (which always stays last); a marker-free review then keeps its pre-validation gate, a review with markers publishes the `review-validation-failed` gate described above. A run that markers made automatic takes that same failure path when `review-validator` is not installed or its runtime does not enforce the tool allowlist (Codex), rather than falling back to a weaker boundary — the prompt carries the reviewed diff verbatim, and an unflagged run must not let the reviewed content reach a wider tool set than the review itself had.
+The finding stage is **coverage-first**: it reports uncertain and low-severity findings instead of pre-filtering them. Severity picks the section by impact, and confidence is carried separately as a `(confidence: low)` / `(confidence: medium)` marker on the item text.
+
+A marker never reaches the published gate: a review that produced at least one marker runs the `+check` validation automatically, even when the flag was not given. Each marked finding is either confirmed — returned without the marker and counted as an ordinary finding of its section, so a confirmed critical is a blocker and drives `fail` — or refuted and dropped.
+
+The `aif-gate-result` block is computed from the post-validation findings, so it never encodes an unverified potential blocker (`warn` plus `suggested_next.command: null`).
+
+If the pass fails to resolve a marker — a contract-violating or malformed validator response for that item, or a whole-dispatch failure while markers are present — the gate reports the failure itself rather than a verdict: `status: fail`, `blocking: true`, a `review-validation-failed` blocker, the unresolved findings excluded from `blockers`, and `suggested_next.command: null` with a reason to re-run `/aif-review +check`; a `WARN [+check]` line names the cause.
+
+Optional `+check` runs a single fresh-context `review-validator` subagent — on Claude Code the bundled agent allowlisted to `Read`, `Glob`, `Grep`; on Codex a read-only-sandbox agent without a tool allowlist — on the drafted findings (Critical Issues and Suggestions only): drops invented items, rewrites partially-correct ones in place, and may reclassify items between the two severity levels — promote a suggestion to "Critical Issues" when the cited behavior is actually merge-blocking, or demote a critical finding to "Suggestions" when the framing was too harsh.
+
+Severity definitions and the promotion/demotion rules live in `skills/aif-review/references/SEVERITY.md`. The rendered review gains a final line `Filtered: N hidden, M adjusted, K reclassified by +check`.
+
+The `aif-gate-result` block is rebuilt **after** filtering — from the surviving findings merged with the unchanged context-gate result, so a failing context gate keeps `status` at `fail` even when no Critical Issues remain; `suggested_next` is recomputed (`/aif-commit` when no blockers remain; otherwise `/aif-fix`, or the failing gate's own command — `/aif-rules`, `/aif-architecture`, `/aif-roadmap` — when a single context gate is the sole blocker).
+
+If the validator call fails entirely the unfiltered review is kept and a single `WARN [+check]` line is appended above the `aif-gate-result` block (which always stays last); a marker-free review then keeps its pre-validation gate, a review with markers publishes the `review-validation-failed` gate described above.
+
+A run that markers made automatic takes that same failure path when `review-validator` is not installed or its runtime does not enforce the tool allowlist (Codex), rather than falling back to a weaker boundary — the prompt carries the reviewed diff verbatim, and an unflagged run must not let the reviewed content reach a wider tool set than the review itself had.
 
 ### `/aif-commit` — conventional commit with read-only context gates
 
-Creates conventional commits from staged changes and runs read-only architecture/roadmap/rules checks before finalizing the message. When an active plan contains `## Commit Plan`, it can use the planned commit groups first; for ultra plans it reads the relevant phase files and maps group tasks through `Files to Change` plus the task specifications. Unmapped staged files trigger a question before staging or committing, and no commit plan leaves staged-diff behavior unchanged. If the same file spans multiple groups, `/aif-commit` must use hunk-level staging or stop before changing staging. Whole-file staging is allowed only when grouped files do not overlap unstaged worktree paths. By default this remains warning-first (no implicit strict mode). For `feat`/`fix`/`perf` commits, missing roadmap milestone linkage is reported as warning.
+Creates conventional commits from staged changes and runs read-only architecture/roadmap/rules checks before finalizing the message.
+
+When an active plan contains `## Commit Plan`, it can use the planned commit groups first; for ultra plans it reads the relevant phase files and maps group tasks through `Files to Change` plus the task specifications.
+
+Unmapped staged files trigger a question before staging or committing, and no commit plan leaves staged-diff behavior unchanged. If the same file spans multiple groups, `/aif-commit` must use hunk-level staging or stop before changing staging. Whole-file staging is allowed only when grouped files do not overlap unstaged worktree paths.
+
+By default this remains warning-first (no implicit strict mode). For `feat`/`fix`/`perf` commits, missing roadmap milestone linkage is reported as warning.
 
 ### `/aif-fix [bug description]` — fix and learn
 
@@ -468,10 +530,12 @@ Every fix creates a **self-improvement patch** in `paths.patches` (default: `.ai
 
 First resolves canonical skill targets and installation ownership. Project built-ins
 use skill-context; verified user-owned skills use their exact approved paths.
+
 Shared project layers load global → build (fix/implement/plan/verify/improve only) →
 individual, with individual taking precedence. Project `all` evolution can consolidate
 rules only after validating every affected consumer; named runs stay individual.
 See [Shared Evolution and Consolidation](evolve.md#shared-evolution-and-consolidation).
+
 Extension-managed and unknown targets are skipped. Global user-owned edits require
 `--global` and approval stating their cross-project reach; global built-ins are skipped.
 See [Skill Ownership and Write Destinations](evolve.md#skill-ownership-and-write-destinations).
@@ -479,9 +543,12 @@ See [Skill Ownership and Write Destinations](evolve.md#skill-ownership-and-write
 Reads patches incrementally using an evolve cursor, analyzes project patterns, and creates
 rule candidates. Each candidate is compared with the current effective instructions on
 the same original case, counterexample, and relevant regressions, with extra cost recorded.
+
 Only an exact revision with demonstrated benefit and no detected regression is offered
 for user approval. Narrowed/refined rules require another comparison; missing execution
-evidence means postpone. Logs preserve negative results, including "the new rule did
+evidence means postpone.
+
+Logs preserve negative results, including "the new rule did
 not improve behavior", without adding those instructions to active skill-context.
 See [Comparing Rule Candidates](evolve.md#comparing-rule-candidates).
 

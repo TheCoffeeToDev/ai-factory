@@ -14,9 +14,12 @@ This is a read-only catalog, not a runner. It works without an AI Factory
 installation/configuration in the project. It reads only `package.json` and
 `composer.json` scripts in explicitly selected directories (default: project root),
 plus local package-manager evidence and an optional explicitly selected JSON mapping.
+
 Present Make/Task/just source files are hashed without parsing or executing recipes.
 No recursive workspace glob expansion, Make/Task/just execution, project imports,
-plugins, lifecycle hooks or `--help` probes take place. The CLI skips extension
+plugins, lifecycle hooks or `--help` probes take place.
+
+The CLI skips extension
 command imports on this route, including its own help. Existing workflows stay intact.
 
 For Node scripts, an explicit `packageManager` or one unambiguous local lock-file
@@ -46,9 +49,12 @@ Both output views contain the same versioned data:
 Choose an exact ID and CWD, rather than a bare name such as `test`. Use project
 context or ask the user when several definitions apply. Refresh after a source hash
 changes, including catalog `revision_sha256`; previous selection/verification cannot
-silently carry over to new bytes. These are declaration/evidence fingerprints, not
+silently carry over to new bytes.
+
+These are declaration/evidence fingerprints, not
 a complete dependency graph: scripts, imports and external tools invoked by a command
 still require independent inspection and execution evidence.
+
 Execution requires its own existing authorization and observed evidence. The catalog
 does not grant shell, network, production, commit or publishing access.
 
@@ -79,6 +85,7 @@ credentials in those bodies never enter either view. Mapping invocations contain
 credential/authentication markers, URLs, shell substitutions or inline evaluation
 are conservatively withheld as a whole (`argv: null`), rather than partly redacted.
 Command labels containing explicit credential-assignment markers are also withheld.
+
 This is not a general secret detector: arbitrary unlabeled literals cannot be
 classified. Keep literal secrets out of mappings; use runtime environment/secret
 management and inspect any withheld invocation privately before authorized use.
@@ -86,7 +93,9 @@ management and inspect any withheld invocation privately before authorized use.
 Discovery accepts up to 32 explicit project-relative directories, 2,000 commands,
 1 MiB per read source and 8 MiB total; limit/access/parse failures stay visible in
 source records. It rejects traversal, absolute/drive paths, symbolic links/junctions,
-non-regular sources and malformed/duplicate-key JSON. Windows separators in relative
+non-regular sources and malformed/duplicate-key JSON.
+
+Windows separators in relative
 paths are normalized; invocation tokens are not rewritten for another OS. Workspace
 directories and inherited package managers are not guessed: list directories and
 provide local evidence or an explicit mapping. Unknown effects remain unknown.
@@ -219,7 +228,9 @@ Removing a runtime deletes its unneeded skills only when they match the saved ra
 
 Extensions may declare skill/runtime-scoped `toolPermissions` in their manifest.
 Claude Code skill fields carry `aif-ext-tools` ownership comments; no global permission
-settings or new `.ai-factory.json` permission map is created. Updates preserve the
+settings or new `.ai-factory.json` permission map is created.
+
+Updates preserve the
 unowned field while its source owner and extension-native declaration stay unchanged.
 Replacement removal or changed replacement defaults use the current source field
 and recompose remaining requests, without retaining the previous source's grants. Other runtimes are
@@ -228,7 +239,9 @@ for syntax, native policy behavior, and the package-default reconciliation limit
 
 `agentFileSources` records bundled or extension ownership. `loadConfig()` still reads legacy Claude-only `subagentsDir`, `installedSubagents`, and `managedSubagents` keys; new saves use the universal names and backfill sources when bundled inventory or installed extension manifests provide evidence.
 
-Extension-provided agent files can target non-Claude runtimes such as Codex. Those files are often bounded helper workers (for example, one-shot reviewers or plan polishers), not automatic equivalents of the bundled Claude coordinator agents. Documentation and prompts should describe those support boundaries explicitly instead of implying full parity across runtimes. AI Factory copies those runtime-specific agent files verbatim; runtime-local keys such as `model`, `model_reasoning_effort`, `sandbox_mode`, and `developer_instructions` belong in the agent file itself rather than in `.ai-factory.json` or workflow prompts. For bounded Codex helpers, prefer read-only advisory workers unless the runtime-native agent truly owns writes to a specific artifact.
+Extension-provided agent files can target non-Claude runtimes such as Codex. Those files are often bounded helper workers (for example, one-shot reviewers or plan polishers), not automatic equivalents of the bundled Claude coordinator agents. Documentation and prompts should describe those support boundaries explicitly instead of implying full parity across runtimes.
+
+AI Factory copies those runtime-specific agent files verbatim; runtime-local keys such as `model`, `model_reasoning_effort`, `sandbox_mode`, and `developer_instructions` belong in the agent file itself rather than in `.ai-factory.json` or workflow prompts. For bounded Codex helpers, prefer read-only advisory workers unless the runtime-native agent truly owns writes to a specific artifact.
 
 Agent-file lifecycle is now consistent across the CLI:
 - Bundled `loop-*` files require `aif-loop` in the runtime's `installedSkills`. `init` and `update` (including `--force`) skip them when absent and remove previously tracked bundled loop files from disk and the `installedAgentFiles`, `agentFileSources`, and `managedAgentFiles` fields. This applies to Claude and Codex bundles; extension-owned and untracked user files are preserved. See [Subagents](subagents.md#migration-note).
@@ -263,7 +276,11 @@ The presence of `.codex/` does not override an existing `.agents/` directory. An
 
 CLI and app can use one physical skill directory. AI Factory installs their combined required skill set once, while retaining each runtime's selections and results. Shared content uses `$aif-*`, the effective skill path, `.codex` configuration paths, and a common Codex rendering profile. A singleton keeps its own runtime metadata; sharing does not change either runtime's MCP capabilities.
 
-Custom project paths affect project-local helper references. Home-scope references keep the runtime's normal home skill directory; a project override is not treated as a home override. CLI and app sharing a custom target use the common Codex home profile (`~/.codex/skills`); a singleton app keeps `~/.agents/skills`. Universal can share a physical skill directory with Codex CLI or Codex app using the common Codex rendering profile and `$aif-*` examples. Universal in its own directory keeps its default profile. Other incompatible renderers cannot share a physical directory. Nested targets, paths outside the project, unsafe links, and overlaps with native files or migration state are rejected before installed-file changes.
+Custom project paths affect project-local helper references. Home-scope references keep the runtime's normal home skill directory; a project override is not treated as a home override. CLI and app sharing a custom target use the common Codex home profile (`~/.codex/skills`); a singleton app keeps `~/.agents/skills`.
+
+Universal can share a physical skill directory with Codex CLI or Codex app using the common Codex rendering profile and `$aif-*` examples. Universal in its own directory keeps its default profile.
+
+Other incompatible renderers cannot share a physical directory. Nested targets, paths outside the project, unsafe links, and overlaps with native files or migration state are rejected before installed-file changes.
 
 Only skills move. `.codex/agents/`, `.codex/config.toml`, custom native files, and their ownership records stay in place during migration. Later native updates run separately. Removing one runtime preserves skills required by the survivor and preserves `.codex/config.toml` while another runtime still uses it. Moving skills does not guarantee that Codex context-budget warnings disappear.
 

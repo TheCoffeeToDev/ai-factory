@@ -19,7 +19,9 @@ ai-factory instructions prepare .agents/skills/aif-implement \
 ai-factory instructions start --spec composition.json
 ```
 
-Use the actual installed directory for your runtime. For flat workflow files, pass their containing directory and `--entry aif-implement.md`; only that entry and the shared `references/` tree are inventoried. For directory skills, `prepare` inventories regular package files, excluding the top-level authoring `tests/` directory. It does not read those files into the model's execution context. Missing context files remain explicit missing resources after `start`. `--output` writes a new UTF-8 file without a BOM, avoiding PowerShell redirection encoding differences. JSON inputs also accept UTF-8 BOMs and UTF-16LE BOMs.
+Use the actual installed directory for your runtime. For flat workflow files, pass their containing directory and `--entry aif-implement.md`; only that entry and the shared `references/` tree are inventoried. For directory skills, `prepare` inventories regular package files, excluding the top-level authoring `tests/` directory. It does not read those files into the model's execution context.
+
+Missing context files remain explicit missing resources after `start`. `--output` writes a new UTF-8 file without a BOM, avoiding PowerShell redirection encoding differences. JSON inputs also accept UTF-8 BOMs and UTF-16LE BOMs.
 
 If shared skill-context files exist, callers also list
 `.ai-factory/skill-context/global-skill-context.md` and, for its five workflow
@@ -78,9 +80,13 @@ The registered package includes installed bytes and references; it does not infe
 }
 ```
 
-This is a template: use real resources and operations. Initial operation endpoints are resource IDs; `start` binds them to revision 1. Further `operation` commands use exact `id@revision` references. Supported kinds are `replace`, `transform`, `template`, `prepend`, `append`, and `include`. These are **declarations**, not a new composition engine or an independently verified recipe. Preserve intermediate outputs if their history matters. Prepending A then B places B before A; operation order does not establish instruction precedence.
+This is a template: use real resources and operations. Initial operation endpoints are resource IDs; `start` binds them to revision 1. Further `operation` commands use exact `id@revision` references. Supported kinds are `replace`, `transform`, `template`, `prepend`, `append`, and `include`.
 
-The manifest always labels coverage `declared_only`, dependency discovery `unknown`, and runtime evidence `caller_supplied`. The producer must include dependencies it knows about, including missing mandatory resources and configured project rules. Declaration conditions are preserved; the recorder does not evaluate them or resolve #110 grouping. References in arbitrary prose or opaque runtime settings cannot be discovered reliably by this recorder.
+These are **declarations**, not a new composition engine or an independently verified recipe. Preserve intermediate outputs if their history matters. Prepending A then B places B before A; operation order does not establish instruction precedence.
+
+The manifest always labels coverage `declared_only`, dependency discovery `unknown`, and runtime evidence `caller_supplied`. The producer must include dependencies it knows about, including missing mandatory resources and configured project rules.
+
+Declaration conditions are preserved; the recorder does not evaluate them or resolve #110 grouping. References in arbitrary prose or opaque runtime settings cannot be discovered reliably by this recorder.
 
 ## Append revisions and load observations
 
@@ -120,15 +126,29 @@ ai-factory instructions verify RUN
 ai-factory instructions verify RUN --restore restored-instructions
 ```
 
-`finish` explicitly finalizes recording, not task success or complete instruction loading. A run remains open until then. A killed capture leaves an open invocation; an interrupted initial capture remains `initialization: capturing` and rejects further mutations, including finalization. Create a new invocation linked through `previous_run_id` to resume it. A detected resource-capture failure preserves completed captures and records `run.capture_error` with the failing `resource_id` and a sanitized reason (safe recorder messages or a filesystem error code, without the source path or raw filesystem error). The CLI identifies the run and resource even if the diagnostic cannot be persisted. Other resumed invocations use the same predecessor field, which must name an existing local predecessor. Missing task/stage/predecessor information is `unknown`; `not_applicable` can explicitly describe an absent predecessor.
+`finish` explicitly finalizes recording, not task success or complete instruction loading. A run remains open until then. A killed capture leaves an open invocation; an interrupted initial capture remains `initialization: capturing` and rejects further mutations, including finalization. Create a new invocation linked through `previous_run_id` to resume it.
 
-Writes are serialized by a run-local `.lock`; initialization holds it continuously from the first published placeholder through completed capture. Concurrent writers fail explicitly instead of modifying a placeholder that initialization could overwrite. Manifest replacement uses an atomic rename. If a process is killed while holding the lock, `show` and `verify` still read the last published record. Confirm the process has stopped before manually removing its `.lock`. Finalized runs reject all further resource/operation/observation writes.
+A detected resource-capture failure preserves completed captures and records `run.capture_error` with the failing `resource_id` and a sanitized reason (safe recorder messages or a filesystem error code, without the source path or raw filesystem error). The CLI identifies the run and resource even if the diagnostic cannot be persisted.
 
-`verify` validates persisted record shapes before accounting or resolving output paths, checks every preserved resource against its exact-byte SHA-256 and length, checks dependency/operation/observation references, and recomputes composition, accounting, and load status. Its JSON result uses `pass`, `warn`, or `fail`; only `fail` sets a nonzero exit code. Unreadable, malformed, or unsupported manifests produce structured `fail` with unknown completeness/accounting and no restoration. Missing required dependencies, incomplete runs, and unpreserved resources are explicit warnings. Missing/corrupt promised snapshots are failures and make reconstruction unavailable; a requested restore also returns `fail` without creating its destination when verification has failed.
+Other resumed invocations use the same predecessor field, which must name an existing local predecessor. Missing task/stage/predecessor information is `unknown`; `not_applicable` can explicitly describe an absent predecessor.
 
-Persisted objects reject fields outside the published schema. Resource states are checked together: a captured resource requires a hash and byte count; `preservation: snapshot` also requires its matching locator. Metadata-only captured resources have `preservation: not_preserved` and no snapshot locator. Excluded, missing, and unavailable resources cannot claim preserved bytes. Removing a promised snapshot field is a failure, not a metadata-only warning.
+Writes are serialized by a run-local `.lock`; initialization holds it continuously from the first published placeholder through completed capture. Concurrent writers fail explicitly instead of modifying a placeholder that initialization could overwrite. Manifest replacement uses an atomic rename.
 
-`--restore` requires a new project-relative destination and never overwrites installed instructions. It restores current resources with `output_path`, including archived references, and verifies the restored bytes. This reconstructs preserved installed output bytes; it does not execute old transformation implementations or replay the model session. Operations remain provenance declarations. `reconstructable` refers to declared outputs, not preservation of every input or complete runtime visibility.
+If a process is killed while holding the lock, `show` and `verify` still read the last published record. Confirm the process has stopped before manually removing its `.lock`. Finalized runs reject all further resource/operation/observation writes.
+
+`verify` validates persisted record shapes before accounting or resolving output paths, checks every preserved resource against its exact-byte SHA-256 and length, checks dependency/operation/observation references, and recomputes composition, accounting, and load status. Its JSON result uses `pass`, `warn`, or `fail`; only `fail` sets a nonzero exit code.
+
+Unreadable, malformed, or unsupported manifests produce structured `fail` with unknown completeness/accounting and no restoration. Missing required dependencies, incomplete runs, and unpreserved resources are explicit warnings.
+
+Missing/corrupt promised snapshots are failures and make reconstruction unavailable; a requested restore also returns `fail` without creating its destination when verification has failed.
+
+Persisted objects reject fields outside the published schema. Resource states are checked together: a captured resource requires a hash and byte count; `preservation: snapshot` also requires its matching locator. Metadata-only captured resources have `preservation: not_preserved` and no snapshot locator.
+
+Excluded, missing, and unavailable resources cannot claim preserved bytes. Removing a promised snapshot field is a failure, not a metadata-only warning.
+
+`--restore` requires a new project-relative destination and never overwrites installed instructions. It restores current resources with `output_path`, including archived references, and verifies the restored bytes.
+
+This reconstructs preserved installed output bytes; it does not execute old transformation implementations or replay the model session. Operations remain provenance declarations. `reconstructable` refers to declared outputs, not preservation of every input or complete runtime visibility.
 
 ## Privacy and retention
 
@@ -142,9 +162,13 @@ Persisted objects reject fields outside the published schema. Resource states ar
 
 ## Size accounting and optional budgets
 
-`in_composition: true` marks a resource contributing to the prepared instruction package. `addition: true` contributes to the separately measured additions. For an injection embedded in a composed installed file, set `addition: true` on the injection and leave its `in_composition` false; the installed file already includes it. Separately loaded project rules can have both flags true. Package references are inventoried without claiming they were prepared or loaded; the producer can mark their actual contribution explicitly.
+`in_composition: true` marks a resource contributing to the prepared instruction package. `addition: true` contributes to the separately measured additions. For an injection embedded in a composed installed file, set `addition: true` on the injection and leave its `in_composition` false; the installed file already includes it. Separately loaded project rules can have both flags true.
 
-Composition/addition sizes sum the latest revisions of the respective declared resources. Unknown or excluded contributors make that measurement `unknown`. `known_unique_resource_bytes` deduplicates known hashes across all revisions. Observed load volume sums delivered payload sizes per observation, including repeated loads; it is `unknown` if any payload is unavailable or no observations exist. These are recorded-byte measurements, **not the model's total context**. `model_context_bytes` remains `unknown`.
+Package references are inventoried without claiming they were prepared or loaded; the producer can mark their actual contribution explicitly.
+
+Composition/addition sizes sum the latest revisions of the respective declared resources. Unknown or excluded contributors make that measurement `unknown`. `known_unique_resource_bytes` deduplicates known hashes across all revisions.
+
+Observed load volume sums delivered payload sizes per observation, including repeated loads; it is `unknown` if any payload is unavailable or no observations exist. These are recorded-byte measurements, **not the model's total context**. `model_context_bytes` remains `unknown`.
 
 Token estimates use `ceil(utf8_bytes / 4)`, an explicitly named heuristic, never actual billed usage. A caller/runtime may supply an optional budget in the initial specification:
 
