@@ -13,16 +13,18 @@ Paths below show the default `.ai-factory/` layout. `config.yaml` can relocate p
 ## The Learning Loop
 
 ```
-  /aif-fix            patches/             /aif-evolve           skill rules
- ┌──────────┐      ┌──────────────┐      ┌──────────────┐      ┌──────────────┐
- │ Find bug │ ───▶ │ Save patch   │ ───▶ │ Analyze new  │ ───▶ │ Add rules to │
- │ Fix it   │      │ with root    │      │ patches +    │      │ skills so    │
- │ Log it   │      │ cause + tags │      │ project ctx  │      │ they don't   │
- └──────────┘      └──────────────┘      └──────────────┘      │ repeat the   │
-      ▲                                                        │ same bugs    │
-      │                                                        └──────┬───────┘
-      │                                                               │
-      └──────────── better /aif-fix, /aif-implement, /aif-review ◀────┘
+/aif-fix                patches/                /aif-evolve             skill rules
+
+┌────────────────┐      ┌────────────────┐      ┌────────────────┐      ┌────────────────┐
+│    Find bug    │      │   Save patch   │      │  Analyze new   │      │  Add rules to  │
+│     Fix it     │─────▶│   with root    │─────▶│   patches +    │─────▶│   skills so    │
+│     Log it     │      │  cause + tags  │      │  project ctx   │      │   they don't   │
+└────────────────┘      └────────────────┘      └────────────────┘      │   repeat the   │
+        ▲                                                               │   same bugs    │
+        │                                                               └────────────────┘
+        │                                                                       │
+        │   better /aif-fix, /aif-implement, /aif-review                        │
+        └──────────────────────────────────────────────────────────────────────◀┘
 ```
 
 Patches supply hypotheses for targeted guards. `/aif-evolve` compares each proposed rule

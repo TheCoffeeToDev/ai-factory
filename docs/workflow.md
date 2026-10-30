@@ -15,39 +15,41 @@ Run once per project. Sets up context files that all workflow skills depend on.
 During `/aif`, the initial `.ai-factory/config.yaml` is created from the commented template, and setup reruns refresh only the managed keys so manual comments and unrelated customizations survive.
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                       PROJECT CONFIGURATION                             │
-└─────────────────────────────────────────────────────────────────────────┘
+┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                     PROJECT CONFIGURATION                                      │
+└────────────────────────────────────────────────────────────────────────────────────────────────┘
 
-  ┌──────────────┐      ┌──────────────┐      ┌──────────────────────────┐
-  │              │      │   claude     │      │                          │
-  │ ai-factory   │ ───▶ │ (or any AI   │ ───▶│      /aif                │
-  │    init      │      │    agent)    │      │   (setup context)        │
-  │              │      │              │      │                          │
-  └──────────────┘      └──────────────┘      │  DESCRIPTION.md          │
-                                              │  AGENTS.md               │
-                                              │  Skills + MCP configured │
-                                              └────────────┬─────────────┘
-                                                           │
-                                                           ▼
-                                              ┌──────────────────────────┐
-                                              │ /aif-architecture        │
-                                              │  (ARCHITECTURE.md)       │
-                                              └────────────┬─────────────┘
-                                                           │
-                                         ┌─────────────────┼─────────────────┐
-                                         │                 │                 │
-                                         ▼                 ▼                 ▼
-                                  ┌───────────────┐  ┌──────────────┐  ┌─────────────┐
-                                  │ /aif-rules    │  │ /aif-roadmap │  │  /aif-docs  │
-                                  │ (optional)    │  │(recommended) │  │ (optional)  │
-                                  └───────────────┘  └──────────────┘  └─────────────┘
 
-                                  ┌───────────────┐  ┌──────────────┐  ┌──────────────┐
-                                  │ /aif-dockerize│  │  /aif-ci     │  │ /aif-build-  │
-                                  │ (optional)    │  │ (optional)   │  │  automation  │
-                                  └───────────────┘  └──────────────┘  │ (optional)   │
-                                                                       └──────────────┘
+┌────────────────┐       ┌──────────────────┐       ┌────────────────────────────────────┐
+│   ai-factory   │       │      claude      │       │                /aif                │
+│      init      │──────▶│    (or any AI    │──────▶│          (setup context)           │
+│                │       │      agent)      │       │                                    │
+└────────────────┘       └──────────────────┘       │           DESCRIPTION.md           │
+                                                    │             AGENTS.md              │
+                                                    │      Skills + MCP configured       │
+                                                    └────────────────────────────────────┘
+                                                                       │
+                                                                       │
+                                                                       │
+                                                                       ▼
+                                                    ┌────────────────────────────────────┐
+                                                    │         /aif-architecture          │
+                                                    │         (ARCHITECTURE.md)          │
+                                                    └────────────────────────────────────┘
+                                                                       │
+                                                                       │
+                                  ┌─────────────────────────┬──────────┴──────────────┐
+                                  ▼                         ▼                         ▼
+                      ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
+                      │      /aif-rules      │  │     /aif-roadmap     │  │      /aif-docs       │
+                      │      (optional)      │  │    (recommended)     │  │      (optional)      │
+                      └──────────────────────┘  └──────────────────────┘  └──────────────────────┘
+
+
+                      ┌──────────────────────┐  ┌──────────────────────┐  ┌──────────────────────┐
+                      │    /aif-dockerize    │  │       /aif-ci        │  │/aif-build-automation │
+                      │      (optional)      │  │      (optional)      │  │      (optional)      │
+                      └──────────────────────┘  └──────────────────────┘  └──────────────────────┘
 ```
 
 ## Development Workflow
@@ -79,103 +81,102 @@ Optional conventions step: use `/aif-rules` to append or refine project-wide axi
 ![workflow](https://github.com/lee-to/ai-factory/raw/2.x/art/workflow.png)
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                       DEVELOPMENT WORKFLOW                              │
-└─────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                               DEVELOPMENT WORKFLOW                                               │
+└──────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 
-   Need to think first?                         Need certainty first?
-          │                                             │
-          ▼                                             ▼
-   ┌───────────────┐                            ┌────────────────┐
-   │ /aif-explore  │                            │ /aif-grounded  │
-   │ clarify scope │                            │ verify facts   │
-   │ compare paths │                            │ reject guesses │
-   └───────┬───────┘                            └────────┬───────┘
-           │                                             │
-           └──────────────────────┬──────────────────────┘
-                                  ▼
+          Need to think first?                        Need certainty first?
 
-               ┌──────────────────────────┐                         ┌──────────────┐
-               │                          │                         │              │
-               │    /aif-plan             │                         │ /aif-fix     │
-               │                          │                         │              │
-               │  fast → no branch,       │                         │              │
-               │         PLAN.md          │                         │ Bug fixes    │
-               │  full → git branch,      │                         │ Optional plan│
-               │         plans/<br>.md    │                         │ With logging │
-               │                          │                         │              │
-               └────────────┬─────────────┘                         └───────┬──────┘
-                            │                                               │
-                            │                                               ▼
-                            │                                      ┌──────────────────┐
-                            │                                      │ .ai-factory/     │
-                            │                                      │   patches/       │
-                            │                                      │ Self-improvement │
-                            └───────────┬──────────────────────────└────────┬─────────┘
-                                        │                                   │
-                                        ▼                                   │
-                             ┌─────────────────────┐                        │
-                             │                     │                        │
-                             │ /aif-improve        │                        │
-                             │    (optional)       │                        │
-                             │                     │                        │
-                             │ Refine plan with    │                        │
-                             │ deeper analysis     │                        │
-                             │                     │                        │
-                             └──────────┬──────────┘                        │
-                                        │                                   │
-                                        ▼                                   │
-                             ┌──────────────────────┐                       │
-                             │                      │◀── skill-context  ────┘
-                             │ /aif-implement       │       (+limited patch fallback)
-                             │ ──── error?          │
-                             │  ──▶ /aif-fix        │
-                             │  Execute tasks       │
-                             │  Commit checkpoints  │
-                             │                      │
-                             └──────────┬───────────┘
-                                        │
-                                        ├─────────────────────────────────────────────────┐
-                                        │                                                 │
-                                        ▼                                                 ▼
-                             ┌──────────────────────────────────────┐       ┌───────────────────────────┐
-                             │                                      │       │                           │
-                             │ /aif-verify                          │       │ /aif-qa                   │
-                             │    (optional)                        │       │    (optional)             │
-                             │                                      │       │                           │
-                             │ Check completeness                   │       │ Manual QA artifacts:      │
-                             │ Build / test / lint                  │       │ → change-summary          │
-                             │    ↓                                 │       │ → test-plan               │
-                             │ → /aif-security-checklist            │       │ → test-cases              │
-                             │ → /aif-review                        │       │                           │
-                             │                                      │       │ paths.qa/<branch-slug>/   │
-                             └──────────────────┬───────────────────┘       └───────────────────────────┘
-                                        │
-                                        ▼
-                             ┌─────────────────────┐
-                             │                     │
-                             │ /aif-commit         │
-                             │                     │
-                             └──────────┬──────────┘
-                                        │
-                        ┌───────────────┴───────────────┐
-                        │                               │
-                        ▼                               ▼
-                   More work?                        Done!
-                   Loop back ↑                          │
-                                                        ▼
-                                             ┌─────────────────────┐
-                                             │                     │
-                                             │ /aif-evolve         │
-                                             │ or /aif-transfer    │
-                                             │                     │
-                                             │ Patches/experience  │
-                                             │ + current context   │
-                                             │       ↓             │
-                                             │ Compare rule cases  │
-                                             │                     │
-                                             └─────────────────────┘
-
+        ┌────────────────────────────┐              ┌────────────────────────────┐
+        │        /aif-explore        │              │       /aif-grounded        │
+        │       clarify scope        │              │        verify facts        │
+        │       compare paths        │              │       reject guesses       │
+        └────────────────────────────┘              └────────────────────────────┘
+                       │                                           │
+                       │                                           │
+                       └─────────────────────┬─────────────────────┘
+                                             │
+                                             ▼
+                        ┌────────────────────────────────────────┐                  ┌──────────────────────────────┐
+                        │               /aif-plan                │                  │           /aif-fix           │
+                        │                                        │                  │                              │
+                        │       fast → no branch, PLAN.md        │                  │          Bug fixes           │
+                        │    full → git branch, plans/<br>.md    │                  │        Optional plan         │
+                        └────────────────────────────────────────┘                  │         With logging         │
+                                             │                                      └──────────────────────────────┘
+                                             │                                                      │
+                                             │                                                      │
+                                             │                                                      │
+                                             │                                                      ▼
+                                             │                                      ┌──────────────────────────────┐
+                                             │                                      │         .ai-factory/         │
+                                             ├◀─────────────────────────────────────│           patches/           │
+                                             │                                      │       Self-improvement       │
+                                             │                                      └──────────────────────────────┘
+                                             │                                                      │
+                                             │                                                      │
+                                             │                                                      │
+                                             ▼                                                      │
+                        ┌────────────────────────────────────────┐                                  │
+                        │              /aif-improve              │                                  │
+                        │               (optional)               │                                  │
+                        │                                        │                                  │
+                        │            Refine plan with            │                                  │
+                        │            deeper analysis             │                                  │
+                        └────────────────────────────────────────┘                                  │
+                                             │                                                      │
+                                             │                                                      │
+                                             │                                                      │
+                                             ▼                                                      │
+                        ┌────────────────────────────────────────┐                                  │
+                        │             /aif-implement             │      skill-context               │
+                        │                                        │◀─────────────────────────────────┘
+                        │           error? → /aif-fix            │   (+limited patch fallback)
+                        │             Execute tasks              │
+                        │           Commit checkpoints           │
+                        └────────────────────────────────────────┘
+                                             │
+                                             │
+                                             │
+                                             ├──────────────────────────────────────────────────────┐
+                                             │                                                      │
+                                             │                                                      │
+                                             ▼                                                      ▼
+                        ┌────────────────────────────────────────┐                  ┌──────────────────────────────┐
+                        │              /aif-verify               │                  │           /aif-qa            │
+                        │               (optional)               │                  │          (optional)          │
+                        │                                        │                  │                              │
+                        │           Check completeness           │                  │     Manual QA artifacts:     │
+                        │          Build / test / lint           │                  │       → change-summary       │
+                        │                   ↓                    │                  │         → test-plan          │
+                        │       → /aif-security-checklist        │                  │         → test-cases         │
+                        │             → /aif-review              │                  │                              │
+                        └────────────────────────────────────────┘                  │   paths.qa/<branch-slug>/    │
+                                             │                                      └──────────────────────────────┘
+                                             │
+                                             │
+                                             ▼
+                        ┌────────────────────────────────────────┐
+                        │              /aif-commit               │
+                        └────────────────────────────────────────┘
+                                             │
+                       ┌─────────────────────┴──────────────────────────────────┐
+                       │                                                        │
+                       ▼                                                        ▼
+                  More work?                                                  Done!
+                  Loop back ↑                                                   │
+                                                                                │
+                                                                                │
+                                                                                ▼
+                                                           ┌────────────────────────────────────────┐
+                                                           │              /aif-evolve               │
+                                                           │            or /aif-transfer            │
+                                                           │                                        │
+                                                           │           Patches/experience           │
+                                                           │           + current context            │
+                                                           │                   ↓                    │
+                                                           │           Compare rule cases           │
+                                                           └────────────────────────────────────────┘
 ```
 
 ## When to Use What?
